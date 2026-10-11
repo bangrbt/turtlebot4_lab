@@ -1,0 +1,10 @@
+{
+  "odom": {
+    "linear_x": -1.5089564429552906e-16,
+    "angular_z": 4.0325384460738757e-16,
+    "stamp": 21.936
+  },
+  "nonzero_commands": 0,
+  "odom_count": 35,
+  "passed": true
+}
