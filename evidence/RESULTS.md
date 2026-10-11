@@ -71,3 +71,16 @@ Nội dung báo cáo/checklist có placeholder rõ; chờ mẫu LaTeX, câu hỏ
 4. Quay video, cung cấp mẫu LaTeX và phần Nội dung cần hiểu; link repo/video sau upload.
 
 README A–Z và bảng `docs/requirements.md` chỉ đường tới source/bằng chứng từng yêu cầu.
+
+## Cập nhật teleop giữ/thả phím
+
+Thay teleop terminal bằng scripts/teleop_hold.py: đọc trực tiếp trạng thái phím
+X11, không chờ chữ từ bộ gõ Bamboo đang bật. Giữ WASD/mũi tên để chạy, thả để dừng;
+chỉ nhận điều khiển khi cửa sổ của bài có focus; phát /cmd_vel 20 Hz. Mặc định
+0.25 m/s, quay 0.6 rad/s. Không đổi driver/controller. Dependency Tkinter/Xlib đã có.
+
+Build: build_hold_teleop.txt đạt. Test X11 + ROS thật: giữ W 0.832 s không Enter,
+15 lệnh nonzero, command speed 0.25 m/s, đi 0.144 m; lệnh về zero sau 0.021 s từ
+release và final odom velocity gần 0 (hold_teleop_check.json). Các lần kiểm tra
+chưa đạt được giữ riêng initial_/focus_attempt_ để không lẫn với test cuối.
+Teleop cũ dừng, chỉ giữ cửa sổ HOLD TELEOP mới; map chưa lưu và AMCL/Nav2 chưa chạy.

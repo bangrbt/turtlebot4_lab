@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "test": "actual X11 key press/hold/release and live ROS /cmd_vel/odom",
+  "front_clearance_m": 3.6244235038757324,
+  "start_xy": [
+    -6.81659418918149,
+    6.287209287369034
+  ],
+  "held_wall_seconds": 0.8321948909997445,
+  "nonzero_commands_while_held": 15,
+  "commanded_speed_m_s": 0.25,
+  "release_to_zero_seconds": 0.020579274000283476,
+  "distance_m": 0.14399999999184404,
+  "final_linear_x": -3.7104298229335455e-16,
+  "final_angular_z": -1.9659749275634743e-15
+}

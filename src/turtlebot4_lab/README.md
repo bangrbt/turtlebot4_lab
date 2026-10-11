@@ -183,17 +183,24 @@ ros2 launch turtlebot4_lab mapping.launch.py \
 
 ```bash
 ros2 action send_goal /undock irobot_create_msgs/action/Undock '{}' --feedback
-ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args \
-  -p speed:=0.15 -p turn:=0.4 \
-  -r cmd_vel:=/cmd_vel
+ros2 run turtlebot4_lab teleop_hold.py --speed 0.25 --turn 0.6 \
+  --log "$TB4_LAB_WS/evidence/teleop_hold.jsonl"
 ```
 
-Bản teleop_twist_keyboard 2.4.1 đã cài chỉ khai báo `speed`, `turn`, `stamped`,
-`frame_id`; không dùng arguments `repeat_rate`/`key_timeout` của phiên bản cũ.
-Mỗi phím phát một lệnh; giữ/nhấn lặp phím để di chuyển liên tục.
-Focus terminal teleop. `i` tiến, `,` lùi, `j` quay trái, `l` quay phải, `k` dừng;
-`u/o/m/.` đi cong. `z` giảm cả hai tốc độ, `x` giảm tịnh tiến, `c` giảm quay.
-Không nhấn nhầm phím tăng tốc. Dừng trước khi chuyển focus sang RViz/Gazebo.
+Click cửa sổ **TurtleBot 4 - HOLD TELEOP**, giữ `W/A/S/D` hoặc mũi tên để chạy,
+thả phím để dừng; không cần Enter. `W/↑/i` tiến, `S/↓/,` lùi, `A/←/j` quay trái,
+`D/→/l` quay phải; giữ W+A hoặc W+D để đi cong. `Space`, `k`, `Esc` hoặc nút
+DỪNG ROBOT dừng ngay. Chuyển focus sang cửa sổ khác cũng dừng. Lệnh phát 20 Hz,
+trạng thái phím được đọc trực tiếp từ X11, không qua bộ gõ Bamboo/IME, mỗi 50 ms;
+release được xử lý sau tối đa khoảng 50 ms (trong điều kiện GUI không bị treo).
+Tốc độ mặc định 0.25 m/s, quay 0.6 rad/s; spinbox giới hạn 0.35 m/s và 1 rad/s.
+Script chỉ phát `/cmd_vel` vào Create 3 motion_control, không thay controller/driver;
+không cho chạy khi Nav2 đang hoạt động hoặc simulation clock đứng. Dùng Tkinter
+và Xlib (`python3-tk`, `python3-xlib`, đã có trên máy thực hành). Đóng cửa sổ để dừng teleop trước Nav2.
+
+Bản `teleop_twist_keyboard` 2.4.1 chính thức vẫn dùng được làm lựa chọn terminal,
+nhưng không hỗ trợ `repeat_rate`/`key_timeout`; cửa sổ giữ/thả phím ở trên là cách
+điều khiển mặc định của bài này. Chỉ mở **một** teleop mỗi lần.
 Khảo sát phần lớn hành lang có thể đi, quay chậm, tránh va tường và quay quá gấp.
 Đi vòng trở lại khu vực đã quét để có loop closure. Theo dõi LaserScan khớp tường,
 map tăng vùng đã biết; nếu tường đôi/lệch, dừng và kiểm tra TF/time, không tiếp tục
@@ -209,7 +216,7 @@ ros2 run tf2_ros tf2_echo map odom
 # Ctrl+C dừng tf2_echo.
 ```
 
-Khi map đủ tốt: nhấn `k`, Ctrl+C teleop, chụp `03_mapping.png`, rồi **Terminal D**:
+Khi map đủ tốt: nhấn `k`, đóng cửa sổ HOLD TELEOP, chụp `03_mapping.png`, rồi **Terminal D**:
 
 ```bash
 ros2 run turtlebot4_lab save_map.py --output "$TB4_LAB_WS/src/turtlebot4_lab/maps/map"
@@ -224,7 +231,7 @@ hay thay thế khảo sát teleop; từ chối ghi đè. Nếu đã có output c
 hoặc chọn prefix khác. Cặp ảnh/YAML giữ `image: map.pgm` để clone sang máy khác.
 Chụp `04_saved_map.png`. Build lại để map được install vào share package.
 
-**Dừng trước localization:** Ctrl+C Terminal C (teleop), Terminal B (SLAM/RViz),
+**Dừng trước localization:** đóng cửa sổ HOLD TELEOP hoặc Ctrl+C Terminal C, Terminal B (SLAM/RViz),
 Terminal A (simulation). Trong D xác minh SLAM đã biến mất:
 
 ```bash

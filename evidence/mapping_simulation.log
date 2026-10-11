@@ -516,3 +516,4 @@ ign_args is deprecated, migrate to gz_args!
 [motion_control-35] [INFO] [1791730933.550319340] [motion_control]: Undock Goal Succeeded
 [turtlebot4_node-30] [ERROR] [1791730949.514960071] [turtlebot4_node]: Service oakd/start_camera unavailable.
 [turtlebot4_node-30] [ERROR] [1791730949.525495807] [turtlebot4_node]: Service start_motor unavailable.
+[motion_control-35] [WARN] [1791731312.134384623] [motion_control]: Ignoring velocities commanded while an autonomous behavior is running!

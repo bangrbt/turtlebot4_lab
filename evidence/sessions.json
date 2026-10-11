@@ -10,8 +10,10 @@
     "log": "mapping.log"
   },
   "teleop": {
-    "pid": 15330,
-    "terminal": "TurtleBot 4 - TELEOP mapping"
+    "pid": 42208,
+    "window": "TurtleBot 4 - HOLD TELEOP",
+    "speed": 0.25,
+    "turn": 0.6
   },
   "environment": {
     "ROS_DOMAIN_ID": 64,

@@ -4,7 +4,7 @@ Video chưa được quay. Không tick bước chưa thực hiện.
 
 1. (0:00–0:30) Giới thiệu OS/ROS, world maze và package độc lập. Hiện terminal source/build.
 2. (0:30–1:00) Gazebo robot chạy, RViz LiDAR, /scan /odom clock/TF; undock nếu cần.
-3. (1:00–3:30 hoặc timelapse rõ nhãn) Teleop tốc độ vừa phải, cho thấy map mở rộng,
+3. (1:00–3:30 hoặc timelapse rõ nhãn) Giữ phím trong cửa sổ HOLD TELEOP, tốc độ vừa phải, cho thấy map mở rộng,
    khảo sát hành lang/nhánh, loop closure; dùng dữ liệu mapping thật.
 4. (3:30–4:00) Dừng teleop, map hoàn chỉnh, chạy saver/validator, hiện cặp YAML/PGM.
 5. (4:00–4:30) Ctrl+C SLAM và simulation, node list không còn slam_toolbox; restart maze.
