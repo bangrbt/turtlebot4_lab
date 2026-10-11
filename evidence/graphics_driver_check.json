@@ -1,5 +1,0 @@
-{
-  "kernel_driver": "NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  595.91.07  Release Build  (dvs-builder@U22-I3-B08-02-2)  Wed Jul 29 03:01:16 UTC 2026\nGCC version:  gcc version 12.3.0 (Ubuntu 12.3.0-1ubuntu1~22.04.3) \n",
-  "nvidia_smi": "Failed to initialize NVML: Driver/library version mismatch\nNVML library version: 595.99\n",
-  "diagnosis": "Running kernel 595.91.07 vs NVML/library 595.99.02; native Gazebo GLX context creation failed. Temporary per-process Mesa rendering restores topics/TF but measured RTF ~0.092. Reboot required to load updated driver; no reboot or system driver modifications performed."
-}

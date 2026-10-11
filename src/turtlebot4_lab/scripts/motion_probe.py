@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Short guarded simulation movement on the verified /cmd_vel path; always publish stop."""
+"""Short guarded simulation movement on the verified /cmd_vel path; always stop after this probe begins motion."""
 import argparse
 import json
 import math
@@ -11,6 +11,8 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from nav_msgs.msg import Odometry
 from rosgraph_msgs.msg import Clock
+from tf2_ros import Buffer, TransformListener
+from rclpy.time import Time
 
 
 def main():
@@ -20,6 +22,9 @@ def main():
     rclpy.init()
     node = rclpy.create_node('turtlebot4_lab_motion_probe')
     latest = {}
+    buffer = Buffer()
+    listener = TransformListener(buffer, node)
+    motion_started = False
     def remember(key):
         return lambda msg: latest.update({key:(msg,time.monotonic())})
     subscriptions = [node.create_subscription(LaserScan,'/scan',remember('scan'),qos_profile_sensor_data),
@@ -35,11 +40,33 @@ def main():
         if 'scan' not in latest or time.monotonic()-latest['scan'][1]>1:
             raise RuntimeError('Scan missing/stale')
         scan = latest['scan'][0]
-        front = [v for i,v in enumerate(scan.ranges) if abs(math.atan2(
-            math.sin(scan.angle_min+i*scan.angle_increment),
-            math.cos(scan.angle_min+i*scan.angle_increment)))<math.radians(25)]
-        if not front or any(math.isnan(v) or v<scan.range_min for v in front):
-            raise RuntimeError('Invalid front scan')
+        base = latest.get('odom', (None,))[0]
+        if base is None or not base.child_frame_id:
+            raise RuntimeError('Base frame unavailable from odometry')
+        try:
+            transform = buffer.lookup_transform(base.child_frame_id, scan.header.frame_id, Time())
+        except Exception as exc:
+            raise RuntimeError(f'Cannot determine lidar direction in base frame: {exc}') from exc
+        q = transform.transform.rotation
+        yaw = math.atan2(2 * (q.w * q.z + q.x * q.y),
+                         1 - 2 * (q.y * q.y + q.z * q.z))
+        offset = transform.transform.translation
+        report.update(clearance_frame=base.child_frame_id, lidar_yaw_in_base_rad=yaw)
+        front = []
+        for index, distance in enumerate(scan.ranges):
+            angle = scan.angle_min + index * scan.angle_increment + yaw
+            if abs(math.atan2(math.sin(angle), math.cos(angle))) >= math.radians(25):
+                continue
+            if math.isnan(distance) or distance < scan.range_min:
+                raise RuntimeError('Invalid scan in base forward sector')
+            if math.isinf(distance):
+                front.append(math.inf)
+            else:
+                x = offset.x + distance * math.cos(angle)
+                y = offset.y + distance * math.sin(angle)
+                front.append(math.hypot(x, y))
+        if not front:
+            raise RuntimeError('No rays in base forward sector')
         return min(front)
     try:
         spin_for(3)
@@ -65,6 +92,7 @@ def main():
         report['start_xy'] = [start.x,start.y]
         command = Twist()
         command.linear.x = 0.08
+        motion_started = True
         end = time.monotonic()+2
         while time.monotonic()<end:
             if clearance()<0.6 or time.monotonic()-latest['odom'][1]>1:
@@ -75,10 +103,12 @@ def main():
     except (RuntimeError,KeyboardInterrupt) as exc:
         report['error'] = str(exc) or 'Interrupted'
     finally:
-        for _ in range(10):
-            pub.publish(Twist())
-            spin_for(0.05)
-        spin_for(0.5)
+        if motion_started:
+            for _ in range(10):
+                pub.publish(Twist())
+                spin_for(0.05)
+            spin_for(0.5)
+        report['motion_started'] = motion_started
         if 'odom' in latest and 'start_xy' in report:
             end_pose = latest['odom'][0].pose.pose.position
             velocity = latest['odom'][0].twist.twist

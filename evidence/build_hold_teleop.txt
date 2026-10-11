@@ -1,4 +1,0 @@
-Starting >>> turtlebot4_lab
-Finished <<< turtlebot4_lab [1.08s]
-
-Summary: 1 package finished [2.27s]

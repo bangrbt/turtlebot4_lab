@@ -1,7 +1,0 @@
-{
-  "samples": 186,
-  "renderer": "Mesa software fallback after NVIDIA driver/library mismatch",
-  "wall_seconds": 6.0469105760003,
-  "sim_seconds": 0.5550000000000002,
-  "real_time_factor": 0.09178240574662214
-}

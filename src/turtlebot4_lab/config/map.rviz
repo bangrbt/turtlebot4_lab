@@ -128,7 +128,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/TopDownOrtho
-      Scale: 45
+      Scale: 30
       Target Frame: <Fixed Frame>
       X: 0
       Y: 0

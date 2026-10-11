@@ -7,7 +7,7 @@ from pathlib import Path
 import rclpy
 from rclpy.qos import QoSProfile, DurabilityPolicy
 from geometry_msgs.msg import PoseStamped
-from nav_msgs.msg import Odometry
+from nav_msgs.msg import Path as NavPath
 from action_msgs.msg import GoalStatusArray
 from nav2_msgs.action import NavigateToPose
 from rosidl_runtime_py.convert import message_to_ordereddict
@@ -25,6 +25,7 @@ def main():
     states={}
     pending=[]
     observed_goals=[]
+    planned_endpoints=[]
     def log(record):
         record['wall_time_unix']=time.time()
         record['sim_time_ns']=node.get_clock().now().nanoseconds
@@ -35,6 +36,17 @@ def main():
     def goal(msg):
         observed_goals.append(message_to_ordereddict(msg))
         log({'event':'rviz_goal_pose_observed','pose':observed_goals[-1]})
+    def plan(msg):
+        if not msg.poses:
+            return
+        endpoint=message_to_ordereddict(msg.poses[-1])
+        # Nav2 Humble GoalTool sends through its panel, so /goal_pose can be absent.
+        # A planner endpoint is supporting evidence, not the original action request.
+        key=endpoint['pose']
+        if not planned_endpoints or planned_endpoints[-1]['pose']!=key:
+            planned_endpoints.append(endpoint)
+            log({'event':'plan_endpoint_observed','endpoint':endpoint,
+                 'source':'/plan last pose; compare navigator log and RViz screenshot'})
     def status(msg):
         for item in msg.status_list:
             uuid=bytes(item.goal_info.goal_id.uuid).hex()
@@ -45,12 +57,14 @@ def main():
             log({'event':'action_status','goal_uuid':uuid,'status':item.status,
                  'goal_stamp':message_to_ordereddict(item.goal_info.stamp),
                  'latest_observed_goal_pose':observed_goals[-1] if observed_goals else None,
+                 'latest_plan_endpoint':planned_endpoints[-1] if planned_endpoints else None,
                  'pose_association':'temporal hint only; match screenshot and UUID, especially for overlapping goals'})
             if item.status in [4,5,6] and client.service_is_ready():
                 req=NavigateToPose.Impl.GetResultService.Request()
                 req.goal_id=item.goal_info.goal_id
                 pending.append((uuid,client.call_async(req)))
     subscriptions=[node.create_subscription(PoseStamped,'/goal_pose',goal,10),
+        node.create_subscription(NavPath,'/plan',plan,10),
         node.create_subscription(GoalStatusArray,'/navigate_to_pose/_action/status',status,
                                  QoSProfile(depth=10,durability=DurabilityPolicy.TRANSIENT_LOCAL))]
     node.set_parameters([rclpy.parameter.Parameter('use_sim_time',value=True)])

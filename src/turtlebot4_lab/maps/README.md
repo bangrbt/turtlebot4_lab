@@ -1,14 +1,8 @@
-# Bản đồ thực
+# Bản đồ thực nghiệm
 
-Thư mục này cố ý chưa có `map.yaml`/`map.pgm` khi chưa mapping thật.
-Không sử dụng bản đồ mẫu làm kết quả bài thực hành.
-
-Sau khi teleop khảo sát và kiểm tra bản đồ, lưu vào source bằng:
-
-```bash
-ros2 run turtlebot4_lab save_map.py --output "$TB4_LAB_WS/src/turtlebot4_lab/maps/map"
-ros2 run turtlebot4_lab validate_map.py "$TB4_LAB_WS/src/turtlebot4_lab/maps/map.yaml"
-```
-
-`image: map.pgm` phải là đường dẫn tương đối. Build lại để cài bản đồ vào package,
-hoặc truyền `map:=` với đường dẫn tuyệt đối đến bản đồ trong source.
+map.yaml và map.pgm được lưu trực tiếp từ /map bằng Nav2 map_saver_cli sau khi
+người dùng teleop khảo sát world maze trên TurtleBot 4 Standard, ROS 2 Humble.
+405 x 404 ô, resolution 0.05 m, origin [-10.1, -10.2, 0]. YAML trỏ `image: map.pgm`.
+Log nguồn: evidence/post_reboot_20261011_230015/save_map.log và map_validation.json.
+Không tạo/chỉnh ảnh occupancy để thay dữ liệu khảo sát. Bản đồ có một vài ô chưa biết
+trong vùng vật cản; kiểm tra free/costmap trước khi gửi goal.

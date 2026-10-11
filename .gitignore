@@ -15,7 +15,11 @@ __pycache__/
 *.out
 *.toc
 *.synctex.gz
-/evidence/*.xwd
+.vscode/
 
-# Preserve small real runtime evidence logs.
-!/evidence/*.log
+# Ignore evidence, reports, and miscellaneous media/images
+/evidence/
+/src/turtlebot4_lab/docs/
+*.png
+*.jpg
+*.jpeg

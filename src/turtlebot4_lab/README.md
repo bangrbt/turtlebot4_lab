@@ -165,6 +165,11 @@ Gazebo và RViz vào `evidence/` (`01_gazebo.png`, `02_rviz_lidar.png`).
 
 ### Robot bò chậm sau cập nhật NVIDIA
 
+Cập nhật sau reboot 11/10/2026: NVIDIA 595.99.02 đã hoạt động; phiên GPU
+`evidence/post_reboot_20261011_230015/` đạt kiểm tra mapping và hold teleop.
+Tỷ lệ thời gian mô phỏng đo được 0.679 (so với 0.092 ở Mesa). Gazebo/SLAM/teleop
+đang mở để khảo sát map; chưa lưu YAML/PGM, chưa chạy AMCL/Nav2.
+
 Nếu `nvidia-smi` báo `Driver/library version mismatch`, so sánh với
 `cat /proc/driver/nvidia/version`. Phiên kiểm tra tăng tốc ghi nhận kernel driver
 595.91.07 và thư viện 595.99.02; Gazebo/RViz không tạo được GLX context. Khởi động
@@ -292,15 +297,20 @@ ros2 launch turtlebot4_lab navigation.launch.py nav2:=false \
 Gazebo Play; RViz Fixed Frame `map`. Chọn **2D Pose Estimate**, click vị trí robot
 ban đầu trên map đã lưu và kéo mũi tên hướng đúng theo Gazebo. Không mặc định map
 origin trùng tọa độ Gazebo; dùng hình dạng tường và pose khi mapping để đối chiếu.
-Kiểm tra scan khớp tường/map, pose và covariance AMCL. Undock bằng action trước
-navigation nếu còn ở dock; quay/di chuyển rất nhẹ trước goal có thể giúp AMCL hội tụ.
+Undock bằng action trước khi đặt initial pose nếu còn ở dock: action không chỉ
+lùi khỏi dock mà còn quay gần 180°. Phải đặt hướng mũi tên theo robot SAU undock,
+không giả định yaw vẫn bằng 0. Phiên thực tế đã có goal ABORTED do đặt sai hướng;
+log giữ nguyên trong evidence/navigation_20261011_232532. Trong simulation có thể
+đối chiếu `ros2 topic echo /sim_ground_truth_pose --once --qos-reliability best_effort`
+để biết pose thật; ground truth chỉ hỗ trợ kiểm tra/initial pose, không điều khiển goal.
+Kiểm tra scan khớp tường/map, pose và covariance AMCL trước navigation.
 
 **Terminal C**:
 
 ```bash
 ros2 run turtlebot4_lab check_runtime.py --stage localization \
   --output "$TB4_LAB_WS/evidence/localization_check.json"
-ros2 topic echo /amcl_pose --once --qos-reliability best_effort
+ros2 topic echo /amcl_pose --once --qos-reliability reliable --qos-durability transient_local
 ros2 lifecycle get /map_server
 ros2 lifecycle get /amcl
 ros2 run tf2_ros tf2_echo map base_link
@@ -308,8 +318,10 @@ ros2 run tf2_ros tf2_echo map base_link
 ```
 
 `map → odom → base_link` phải có và scan khớp map trước khi gửi goal. AMCL không
-nhất thiết phát pose liên tục khi robot đứng yên: nếu chưa nhận pose, đặt initial
-pose lại và đợi scan hoặc chuyển động nhỏ trước goal. Chụp `05_localization.png`.
+nhất thiết phát pose liên tục khi robot đứng yên. Publisher /amcl_pose dùng
+Transient Local; check_runtime.py và config RViz dùng đúng durability để nhận pose
+cuối khi subscribe muộn. Có thể gọi `ros2 service call /request_nomotion_update std_srvs/srv/Empty '{}'`
+để AMCL xử lý scan mới lúc robot đứng yên. Chụp `05_localization.png`.
 
 ## Giai đoạn 4 — Nav2 và ba goal qua RViz
 
@@ -340,8 +352,10 @@ khác nhau**, đợi goal trước kết thúc rồi mới gửi goal tiếp the
 thực sự tới đích, quan sát đường/costmap và tránh vật cản. Chụp `06_goal1.png`,
 `07_goal2.png`, `08_goal3.png`, ghi bảng thực tế ở docs. **Không teleop sau khi gửi
 goal để đưa robot tới đích.** Recorder không gửi goal/velocity; status 5 canceled,
-6 aborted phải ghi đúng. Pose trên `/goal_pose` là gợi ý liên kết theo thời gian;
-đối chiếu UUID/log/ảnh khi đánh giá. Không suy ra tránh vật cản chỉ từ SUCCEEDED.
+6 aborted phải ghi đúng. GoalTool Humble dùng GoalUpdater của panel và có thể không phát `/goal_pose`.
+Recorder cũng ghi endpoint `/plan`; endpoint chỉ là bằng chứng bổ sung từ planner,
+không phải request action gốc. Đối chiếu UUID, dòng `Begin navigating` trong log,
+ảnh và endpoint khi chỉ một goal đang chạy; khi đánh giá. Không suy ra tránh vật cản chỉ từ SUCCEEDED.
 
 Goal lỗi: giữ log, xem `ros2 lifecycle get /planner_server`, `/controller_server`,
 TF, initial pose, map, costmap và `/scan`; đọc `nav2.log` để phân biệt lỗi lập

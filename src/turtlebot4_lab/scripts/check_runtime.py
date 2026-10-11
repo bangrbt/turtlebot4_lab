@@ -59,7 +59,7 @@ def main():
             QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)))
     if args.stage in ['localization', 'navigation']:
         subs.append(node.create_subscription(PoseWithCovarianceStamped, '/amcl_pose',
-                    receive('amcl_pose'), qos_profile_sensor_data))
+                    receive('amcl_pose'), QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)))
     deadline = time.monotonic() + args.seconds
     while time.monotonic() < deadline:
         rclpy.spin_once(node, timeout_sec=0.1)
