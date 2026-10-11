@@ -1,0 +1,615 @@
+[INFO] [launch]: All log files can be found below /home/anhbang/turtlebot4_lab_ws/log/ros/2026-10-11-21-57-39-344866-legion-12503
+[INFO] [launch]: Default logging verbosity is set to INFO
+ign_args is deprecated, migrate to gz_args!
+[INFO] [ign gazebo-1]: process started with pid [12508]
+[INFO] [parameter_bridge-2]: process started with pid [12510]
+[INFO] [robot_state_publisher-3]: process started with pid [12513]
+[INFO] [joint_state_publisher-4]: process started with pid [12515]
+[INFO] [robot_state_publisher-5]: process started with pid [12517]
+[INFO] [static_transform_publisher-6]: process started with pid [12519]
+[INFO] [create-7]: process started with pid [12521]
+[INFO] [create-8]: process started with pid [12523]
+[INFO] [parameter_bridge-9]: process started with pid [12525]
+[INFO] [parameter_bridge-10]: process started with pid [12529]
+[INFO] [parameter_bridge-11]: process started with pid [12532]
+[INFO] [parameter_bridge-12]: process started with pid [12535]
+[INFO] [parameter_bridge-13]: process started with pid [12537]
+[INFO] [parameter_bridge-14]: process started with pid [12539]
+[INFO] [parameter_bridge-15]: process started with pid [12541]
+[INFO] [parameter_bridge-16]: process started with pid [12543]
+[INFO] [parameter_bridge-17]: process started with pid [12545]
+[INFO] [parameter_bridge-18]: process started with pid [12576]
+[INFO] [parameter_bridge-19]: process started with pid [12582]
+[INFO] [parameter_bridge-20]: process started with pid [12584]
+[INFO] [parameter_bridge-21]: process started with pid [12588]
+[INFO] [parameter_bridge-22]: process started with pid [12590]
+[INFO] [parameter_bridge-23]: process started with pid [12595]
+[INFO] [parameter_bridge-24]: process started with pid [12604]
+[INFO] [parameter_bridge-25]: process started with pid [12608]
+[INFO] [parameter_bridge-26]: process started with pid [12617]
+[INFO] [parameter_bridge-27]: process started with pid [12620]
+[INFO] [parameter_bridge-28]: process started with pid [12623]
+[INFO] [parameter_bridge-29]: process started with pid [12625]
+[INFO] [turtlebot4_node-30]: process started with pid [12636]
+[INFO] [turtlebot4_ignition_hmi_node-31]: process started with pid [12643]
+[INFO] [spawner-32]: process started with pid [12659]
+[INFO] [hazards_vector_publisher-33]: process started with pid [12665]
+[INFO] [ir_intensity_vector_publisher-34]: process started with pid [12671]
+[INFO] [motion_control-35]: process started with pid [12677]
+[INFO] [wheel_status_publisher-36]: process started with pid [12679]
+[INFO] [mock_publisher-37]: process started with pid [12681]
+[INFO] [robot_state-38]: process started with pid [12685]
+[INFO] [kidnap_estimator_publisher-39]: process started with pid [12707]
+[INFO] [ui_mgr-40]: process started with pid [12731]
+[INFO] [pose_republisher_node-41]: process started with pid [12756]
+[INFO] [sensors_node-42]: process started with pid [12770]
+[INFO] [interface_buttons_node-43]: process started with pid [12785]
+[INFO] [static_transform_publisher-44]: process started with pid [12806]
+[INFO] [static_transform_publisher-45]: process started with pid [12838]
+[robot_state_publisher-3] [WARN] [1791730660.824069071] [kdl_parser]: The root link base_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[robot_state_publisher-3] [INFO] [1791730660.824604434] [robot_state_publisher]: got segment base_link
+[robot_state_publisher-3] [INFO] [1791730660.824804124] [robot_state_publisher]: got segment bump_front_center
+[robot_state_publisher-3] [INFO] [1791730660.824836933] [robot_state_publisher]: got segment bump_front_left
+[robot_state_publisher-3] [INFO] [1791730660.824859290] [robot_state_publisher]: got segment bump_front_right
+[robot_state_publisher-3] [INFO] [1791730660.824880080] [robot_state_publisher]: got segment bump_left
+[robot_state_publisher-3] [INFO] [1791730660.824899909] [robot_state_publisher]: got segment bump_right
+[robot_state_publisher-3] [INFO] [1791730660.824919669] [robot_state_publisher]: got segment bumper
+[robot_state_publisher-3] [INFO] [1791730660.824939798] [robot_state_publisher]: got segment button_1
+[robot_state_publisher-3] [INFO] [1791730660.824959248] [robot_state_publisher]: got segment button_2
+[robot_state_publisher-3] [INFO] [1791730660.824978650] [robot_state_publisher]: got segment button_power
+[robot_state_publisher-3] [INFO] [1791730660.824998092] [robot_state_publisher]: got segment cliff_front_left
+[robot_state_publisher-3] [INFO] [1791730660.825017437] [robot_state_publisher]: got segment cliff_front_right
+[robot_state_publisher-3] [INFO] [1791730660.825036702] [robot_state_publisher]: got segment cliff_side_left
+[robot_state_publisher-3] [INFO] [1791730660.825056029] [robot_state_publisher]: got segment cliff_side_right
+[robot_state_publisher-3] [INFO] [1791730660.825075197] [robot_state_publisher]: got segment front_caster_link
+[robot_state_publisher-3] [INFO] [1791730660.825095031] [robot_state_publisher]: got segment front_left_bottom_weight_block
+[robot_state_publisher-3] [INFO] [1791730660.825117271] [robot_state_publisher]: got segment front_left_top_weight_block
+[robot_state_publisher-3] [INFO] [1791730660.825137802] [robot_state_publisher]: got segment front_left_tower_standoff
+[robot_state_publisher-3] [INFO] [1791730660.825157288] [robot_state_publisher]: got segment front_right_bottom_weight_block
+[robot_state_publisher-3] [INFO] [1791730660.825177012] [robot_state_publisher]: got segment front_right_top_weight_block
+[robot_state_publisher-3] [INFO] [1791730660.825196760] [robot_state_publisher]: got segment front_right_tower_standoff
+[robot_state_publisher-3] [INFO] [1791730660.825216291] [robot_state_publisher]: got segment imu_link
+[robot_state_publisher-3] [INFO] [1791730660.825236491] [robot_state_publisher]: got segment ir_intensity_front_center_left
+[robot_state_publisher-3] [INFO] [1791730660.825357268] [robot_state_publisher]: got segment ir_intensity_front_center_right
+[robot_state_publisher-3] [INFO] [1791730660.825394320] [robot_state_publisher]: got segment ir_intensity_front_left
+[robot_state_publisher-3] [INFO] [1791730660.825414610] [robot_state_publisher]: got segment ir_intensity_front_right
+[robot_state_publisher-3] [INFO] [1791730660.825434464] [robot_state_publisher]: got segment ir_intensity_left
+[robot_state_publisher-3] [INFO] [1791730660.825454373] [robot_state_publisher]: got segment ir_intensity_right
+[robot_state_publisher-3] [INFO] [1791730660.825473922] [robot_state_publisher]: got segment ir_intensity_side_left
+[robot_state_publisher-3] [INFO] [1791730660.825493497] [robot_state_publisher]: got segment ir_omni
+[robot_state_publisher-3] [INFO] [1791730660.825513471] [robot_state_publisher]: got segment left_wheel
+[robot_state_publisher-3] [INFO] [1791730660.825532363] [robot_state_publisher]: got segment mouse
+[robot_state_publisher-3] [INFO] [1791730660.825551869] [robot_state_publisher]: got segment oakd_camera_bracket
+[robot_state_publisher-3] [INFO] [1791730660.825571102] [robot_state_publisher]: got segment oakd_imu_frame
+[robot_state_publisher-3] [INFO] [1791730660.825590148] [robot_state_publisher]: got segment oakd_left_camera_frame
+[robot_state_publisher-3] [INFO] [1791730660.825609662] [robot_state_publisher]: got segment oakd_left_camera_optical_frame
+[robot_state_publisher-3] [INFO] [1791730660.825629484] [robot_state_publisher]: got segment oakd_link
+[robot_state_publisher-3] [INFO] [1791730660.825648797] [robot_state_publisher]: got segment oakd_rgb_camera_frame
+[robot_state_publisher-3] [INFO] [1791730660.825668278] [robot_state_publisher]: got segment oakd_rgb_camera_optical_frame
+[robot_state_publisher-3] [INFO] [1791730660.825687614] [robot_state_publisher]: got segment oakd_right_camera_frame
+[robot_state_publisher-3] [INFO] [1791730660.825707122] [robot_state_publisher]: got segment oakd_right_camera_optical_frame
+[robot_state_publisher-3] [INFO] [1791730660.825726589] [robot_state_publisher]: got segment rear_left_tower_standoff
+[robot_state_publisher-3] [INFO] [1791730660.825745780] [robot_state_publisher]: got segment rear_right_tower_standoff
+[robot_state_publisher-3] [INFO] [1791730660.825765210] [robot_state_publisher]: got segment right_wheel
+[robot_state_publisher-3] [INFO] [1791730660.825785115] [robot_state_publisher]: got segment rplidar_link
+[robot_state_publisher-3] [INFO] [1791730660.825876496] [robot_state_publisher]: got segment shell_link
+[robot_state_publisher-3] [INFO] [1791730660.825905377] [robot_state_publisher]: got segment tower_sensor_plate
+[robot_state_publisher-3] [INFO] [1791730660.825926037] [robot_state_publisher]: got segment wheel_drop_left
+[robot_state_publisher-3] [INFO] [1791730660.825946041] [robot_state_publisher]: got segment wheel_drop_right
+[robot_state_publisher-5] [WARN] [1791730660.811373055] [kdl_parser]: The root link std_dock_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[robot_state_publisher-5] [INFO] [1791730660.811577828] [dock_state_publisher]: got segment green_buoy_link
+[robot_state_publisher-5] [INFO] [1791730660.811775137] [dock_state_publisher]: got segment halo_link
+[robot_state_publisher-5] [INFO] [1791730660.811805164] [dock_state_publisher]: got segment red_buoy_link
+[robot_state_publisher-5] [INFO] [1791730660.811827066] [dock_state_publisher]: got segment std_dock_link
+[robot_state_publisher-5] [INFO] [1791730660.811847871] [dock_state_publisher]: got segment yellow_buoy_link
+[static_transform_publisher-6] [WARN] [1791730660.746624315] []: Old-style arguments are deprecated; see --help for new-style arguments
+[static_transform_publisher-6] [INFO] [1791730660.809831485] [tf_odom_std_dock_link_publisher]: Spinning until stopped - publishing transform
+[static_transform_publisher-6] translation: ('0.157000', '0.000000', '0.000000')
+[static_transform_publisher-6] rotation: ('0.000000', '0.000000', '1.000000', '0.000000')
+[static_transform_publisher-6] from 'odom' to 'std_dock_link'
+[create-7] [ros_ign_gazebo] is deprecated! Redirecting to use [ros_gz_sim] instead!
+[create-7] 
+[create-7] [INFO] [1791730660.902846634] [ros_gz_sim]: Requesting list of world names.
+[create-8] [ros_ign_gazebo] is deprecated! Redirecting to use [ros_gz_sim] instead!
+[create-8] 
+[create-8] [INFO] [1791730660.946739904] [ros_gz_sim]: Requesting list of world names.
+[parameter_bridge-9] [INFO] [1791730661.024042987] [cmd_vel_bridge]: Creating GZ->ROS Bridge: [/cmd_vel (ignition.msgs.Twist) -> /cmd_vel (geometry_msgs/msg/Twist)] (Lazy 0)
+[parameter_bridge-11] [INFO] [1791730661.050056809] [odom_base_tf_bridge]: Creating GZ->ROS Bridge: [/model/turtlebot4/tf (ignition.msgs.Pose_V) -> /model/turtlebot4/tf (tf2_msgs/msg/TFMessage)] (Lazy 0)
+[parameter_bridge-12] [INFO] [1791730661.036124195] [bumper_contact_bridge]: Creating GZ->ROS Bridge: [/bumper_contact (ignition.msgs.Contacts) -> /bumper_contact (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
+[static_transform_publisher-44] [WARN] [1791730661.061598187] []: Old-style arguments are deprecated; see --help for new-style arguments
+[parameter_bridge-9] [INFO] [1791730661.074879028] [cmd_vel_bridge]: Creating ROS->GZ Bridge: [/model/turtlebot4/cmd_vel (geometry_msgs/msg/Twist) -> /model/turtlebot4/cmd_vel (ignition.msgs.Twist)] (Lazy 0)
+[static_transform_publisher-45] [WARN] [1791730661.085613750] []: Old-style arguments are deprecated; see --help for new-style arguments
+[parameter_bridge-24] [INFO] [1791730661.132757525] [buttons_msg_bridge]: Creating GZ->ROS Bridge: [/create3_buttons (ignition.msgs.Int32) -> /create3_buttons (std_msgs/msg/Int32)] (Lazy 0)
+[parameter_bridge-16] [INFO] [1791730661.160415577] [cliff_side_right_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/base_link/sensor/cliff_side_right/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/base_link/sensor/cliff_side_right/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[ir_intensity_vector_publisher-34] [INFO] [1791730661.179662800] [ir_intensity_vector_publisher]: Advertised topic: ir_intensity
+[ir_intensity_vector_publisher-34] [INFO] [1791730661.189503286] [ir_intensity_vector_publisher]: Subscription to topic: _internal/ir_intensity_front_center_left
+[ir_intensity_vector_publisher-34] [INFO] [1791730661.190280637] [ir_intensity_vector_publisher]: Subscription to topic: _internal/ir_intensity_front_center_right
+[ir_intensity_vector_publisher-34] [INFO] [1791730661.191101489] [ir_intensity_vector_publisher]: Subscription to topic: _internal/ir_intensity_front_left
+[ir_intensity_vector_publisher-34] [INFO] [1791730661.192808654] [ir_intensity_vector_publisher]: Subscription to topic: _internal/ir_intensity_front_right
+[ir_intensity_vector_publisher-34] [INFO] [1791730661.215943795] [ir_intensity_vector_publisher]: Subscription to topic: _internal/ir_intensity_left
+[ir_intensity_vector_publisher-34] [INFO] [1791730661.218616100] [ir_intensity_vector_publisher]: Subscription to topic: _internal/ir_intensity_right
+[ir_intensity_vector_publisher-34] [INFO] [1791730661.219504394] [ir_intensity_vector_publisher]: Subscription to topic: _internal/ir_intensity_side_left
+[wheel_status_publisher-36] [INFO] [1791730661.242676934] [wheel_status_publisher]: Advertised topic: wheel_vels
+[mock_publisher-37] [INFO] [1791730661.250586767] [mock_publisher]: Advertised mocked topic: slip_status
+[wheel_status_publisher-36] [INFO] [1791730661.255438754] [wheel_status_publisher]: Advertised topic: wheel_ticks
+[parameter_bridge-14] [INFO] [1791730661.277850595] [cliff_front_right_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/base_link/sensor/cliff_front_right/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/base_link/sensor/cliff_front_right/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[parameter_bridge-21] [INFO] [1791730661.291580698] [ir_intensity_left_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/ir_intensity_left/sensor/ir_intensity_left/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/ir_intensity_left/sensor/ir_intensity_left/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[turtlebot4_node-30] [INFO] [1791730661.292186712] [turtlebot4_node]: Init Turtlebot4 Node Main
+[parameter_bridge-2] [INFO] [1791730661.324494174] [clock_bridge]: Creating GZ->ROS Bridge: [/clock (ignition.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[robot_state-38] [INFO] [1791730661.360622348] [robot_state]: Advertised topic: battery_state
+[robot_state-38] [INFO] [1791730661.374271725] [robot_state]: Subscription to topic: dock_status
+[robot_state-38] [INFO] [1791730661.375593151] [robot_state]: Advertised topic: stop_status
+[ui_mgr-40] [INFO] [1791730661.396648615] [ui_mgr]: Subscription to topic: cmd_lightring
+[robot_state-38] [INFO] [1791730661.397482544] [robot_state]: Subscription to topic: odom
+[ui_mgr-40] [INFO] [1791730661.403594224] [ui_mgr]: Subscription to topic: cmd_audio
+[parameter_bridge-10] [INFO] [1791730661.408942842] [pose_bridge]: Creating GZ->ROS Bridge: [/model/turtlebot4/pose (ignition.msgs.Pose_V) -> /model/turtlebot4/pose (tf2_msgs/msg/TFMessage)] (Lazy 0)
+[hazards_vector_publisher-33] [INFO] [1791730661.419912426] [hazards_vector_publisher]: Advertised topic: hazard_detection
+[hazards_vector_publisher-33] [INFO] [1791730661.433815157] [hazards_vector_publisher]: Subscription to topic: _internal/bumper/event
+[parameter_bridge-13] [INFO] [1791730661.438556753] [cliff_front_left_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/base_link/sensor/cliff_front_left/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/base_link/sensor/cliff_front_left/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[parameter_bridge-23] [INFO] [1791730661.454826559] [ir_intensity_side_left_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/ir_intensity_side_left/sensor/ir_intensity_side_left/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/ir_intensity_side_left/sensor/ir_intensity_side_left/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[hazards_vector_publisher-33] [INFO] [1791730661.467830976] [hazards_vector_publisher]: Subscription to topic: _internal/cliff_front_left/event
+[hazards_vector_publisher-33] [INFO] [1791730661.468920593] [hazards_vector_publisher]: Subscription to topic: _internal/cliff_front_right/event
+[hazards_vector_publisher-33] [INFO] [1791730661.469887448] [hazards_vector_publisher]: Subscription to topic: _internal/cliff_side_left/event
+[parameter_bridge-19] [INFO] [1791730661.482494904] [ir_intensity_front_left_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/ir_intensity_front_left/sensor/ir_intensity_front_left/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/ir_intensity_front_left/sensor/ir_intensity_front_left/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[parameter_bridge-10] [INFO] [1791730661.486624000] [pose_bridge]: Creating GZ->ROS Bridge: [/model/standard_dock/pose (ignition.msgs.Pose_V) -> /model/standard_dock/pose (tf2_msgs/msg/TFMessage)] (Lazy 0)
+[hazards_vector_publisher-33] [INFO] [1791730661.488167793] [hazards_vector_publisher]: Subscription to topic: _internal/cliff_side_right/event
+[hazards_vector_publisher-33] [INFO] [1791730661.489269437] [hazards_vector_publisher]: Subscription to topic: _internal/wheel_drop/left_wheel/event
+[hazards_vector_publisher-33] [INFO] [1791730661.490240158] [hazards_vector_publisher]: Subscription to topic: _internal/wheel_drop/right_wheel/event
+[hazards_vector_publisher-33] [INFO] [1791730661.491200621] [hazards_vector_publisher]: Subscription to topic: _internal/backup_limit
+[parameter_bridge-18] [INFO] [1791730661.688001988] [ir_intensity_front_center_right_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/ir_intensity_front_center_right/sensor/ir_intensity_front_center_right/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/ir_intensity_front_center_right/sensor/ir_intensity_front_center_right/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[static_transform_publisher-45] [INFO] [1791730661.710734831] [camera_stf]: Spinning until stopped - publishing transform
+[static_transform_publisher-45] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-45] rotation: ('0.499952', '-0.500000', '0.500000', '0.500048')
+[static_transform_publisher-45] from 'oakd_rgb_camera_optical_frame' to 'turtlebot4/oakd_rgb_camera_frame/rgbd_camera'
+[parameter_bridge-20] [INFO] [1791730661.734378797] [ir_intensity_front_right_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/ir_intensity_front_right/sensor/ir_intensity_front_right/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/ir_intensity_front_right/sensor/ir_intensity_front_right/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[parameter_bridge-15] [INFO] [1791730661.825010202] [cliff_side_left_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/base_link/sensor/cliff_side_left/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/base_link/sensor/cliff_side_left/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[parameter_bridge-25] [INFO] [1791730661.937138568] [hmi_display_msg_bridge]: Creating ROS->GZ Bridge: [/hmi/display/raw (std_msgs/msg/String) -> /hmi/display/raw (ignition.msgs.StringMsg)] (Lazy 0)
+[parameter_bridge-17] [INFO] [1791730662.011905745] [ir_intensity_front_center_left_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/ir_intensity_front_center_left/sensor/ir_intensity_front_center_left/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/ir_intensity_front_center_left/sensor/ir_intensity_front_center_left/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[static_transform_publisher-44] [INFO] [1791730662.039924859] [rplidar_stf]: Spinning until stopped - publishing transform
+[static_transform_publisher-44] translation: ('0.000000', '0.000000', '0.000000')
+[static_transform_publisher-44] rotation: ('0.000000', '0.000000', '0.000000', '1.000000')
+[static_transform_publisher-44] from 'rplidar_link' to 'turtlebot4/rplidar_link/rplidar'
+[parameter_bridge-25] [INFO] [1791730662.100602052] [hmi_display_msg_bridge]: Creating ROS->GZ Bridge: [/hmi/display/selected (std_msgs/msg/Int32) -> /hmi/display/selected (ignition.msgs.Int32)] (Lazy 0)
+[kidnap_estimator_publisher-39] [INFO] [1791730662.129496347] [kidnap_estimator_publisher]: Advertised topic: kidnap_status
+[kidnap_estimator_publisher-39] [INFO] [1791730662.150745918] [kidnap_estimator_publisher]: Subscription to topic: hazard_detection
+[parameter_bridge-26] [INFO] [1791730662.152644663] [hmi_buttons_msg_bridge]: Creating GZ->ROS Bridge: [/hmi/buttons (ignition.msgs.Int32) -> /hmi/buttons (std_msgs/msg/Int32)] (Lazy 0)
+[parameter_bridge-28] [INFO] [1791730662.191736165] [lidar_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/rplidar_link/sensor/rplidar/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/rplidar_link/sensor/rplidar/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[parameter_bridge-22] [INFO] [1791730662.269238899] [ir_intensity_right_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/ir_intensity_right/sensor/ir_intensity_right/scan (ignition.msgs.LaserScan) -> /world/maze/model/turtlebot4/link/ir_intensity_right/sensor/ir_intensity_right/scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[parameter_bridge-29] [INFO] [1791730662.320789059] [camera_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera/image (ignition.msgs.Image) -> /world/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera/image (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-27] [INFO] [1791730662.424316200] [hmi_led_msg_bridge]: Creating ROS->GZ Bridge: [/hmi/led/power (std_msgs/msg/Int32) -> /hmi/led/power (ignition.msgs.Int32)] (Lazy 0)
+[parameter_bridge-29] [INFO] [1791730662.444974576] [camera_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera/depth_image (ignition.msgs.Image) -> /world/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera/depth_image (sensor_msgs/msg/Image)] (Lazy 0)
+[parameter_bridge-29] [INFO] [1791730662.465997692] [camera_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera/points (ignition.msgs.PointCloudPacked) -> /world/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[create-8] [INFO] [1791730662.498224524] [ros_gz_sim]: Waiting messages on topic [standard_dock_description].
+[parameter_bridge-29] [INFO] [1791730662.502155105] [camera_bridge]: Creating GZ->ROS Bridge: [/world/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera/camera_info (ignition.msgs.CameraInfo) -> /world/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera/camera_info (sensor_msgs/msg/CameraInfo)] (Lazy 0)
+[parameter_bridge-27] [INFO] [1791730662.513449958] [hmi_led_msg_bridge]: Creating ROS->GZ Bridge: [/hmi/led/motors (std_msgs/msg/Int32) -> /hmi/led/motors (ignition.msgs.Int32)] (Lazy 0)
+[parameter_bridge-27] [INFO] [1791730662.576246817] [hmi_led_msg_bridge]: Creating ROS->GZ Bridge: [/hmi/led/comms (std_msgs/msg/Int32) -> /hmi/led/comms (ignition.msgs.Int32)] (Lazy 0)
+[ign gazebo-1] [1;36m[Dbg] [gz.cc:161] [0m[1;36mSubscribing to [[0m[1;36m/gazebo/starting_world[0m[1;36m].[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [gz.cc:163] [0m[1;36mWaiting for a world to be set from the GUI...[0m[1;36m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mReceived world [[0m[1;32mmaze.sdf[0m[1;32m] from the GUI.[0m[1;32m[0m
+[ign gazebo-1] [1;36m[Dbg] [gz.cc:167] [0m[1;36mUnsubscribing from [[0m[1;36m/gazebo/starting_world[0m[1;36m].[0m[1;36m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mIgnition Gazebo Server v[0m[1;32m6.18.0[0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mLoading SDF world file[[0m[1;32m/opt/ros/humble/share/turtlebot4_ignition_bringup/worlds/maze.sdf[0m[1;32m].[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServing entity system service on [[0m[1;32m/[0m[1;32mentity/system/add[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;36m[Dbg] [Physics.cc:804] [0m[1;36mLoaded [[0m[1;36mignition::physics::dartsim::Plugin[0m[1;36m] from library [[0m[1;36m/usr/lib/x86_64-linux-gnu/ign-physics-5/engine-plugins/libignition-physics-dartsim-plugin.so[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SystemManager.cc:73] [0m[1;36mLoaded system [[0m[1;36mignition::gazebo::systems::Physics[0m[1;36m] for entity [[0m[1;36m1[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mCreate service on [[0m[1;32m/world/maze/create[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mRemove service on [[0m[1;32m/world/maze/remove[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mPose service on [[0m[1;32m/world/maze/set_pose[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mPose service on [[0m[1;32m/world/maze/set_pose_vector[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mLight configuration service on [[0m[1;32m/world/maze/light_config[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mPhysics service on [[0m[1;32m/world/maze/set_physics[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mSphericalCoordinates service on [[0m[1;32m/world/maze/set_spherical_coordinates[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mEnable collision service on [[0m[1;32m/world/maze/enable_collision[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mDisable collision service on [[0m[1;32m/world/maze/disable_collision[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mMaterial service on [[0m[1;32m/world/maze/visual_config[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mMaterial service on [[0m[1;32m/world/maze/wheel_slip[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;36m[Dbg] [SystemManager.cc:73] [0m[1;36mLoaded system [[0m[1;36mignition::gazebo::systems::UserCommands[0m[1;36m] for entity [[0m[1;36m1[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SystemManager.cc:73] [0m[1;36mLoaded system [[0m[1;36mignition::gazebo::systems::SceneBroadcaster[0m[1;36m] for entity [[0m[1;36m1[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SystemManager.cc:73] [0m[1;36mLoaded system [[0m[1;36mignition::gazebo::systems::Contact[0m[1;36m] for entity [[0m[1;36m1[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mLoaded level [[0m[1;32m3[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServing world controls on [[0m[1;32m/world/maze[0m[1;32m/control], [[0m[1;32m/world/maze[0m[1;32m/control/state] and [[0m[1;32m/world/maze[0m[1;32m/playback/control][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServing GUI information on [[0m[1;32m/world/maze[0m[1;32m/[0m[1;32mgui/info[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mWorld [[0m[1;32mmaze[0m[1;32m] initialized with [[0m[1;32m1ms[0m[1;32m] physics profile.[0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServing world SDF generation service on [[0m[1;32m/world/maze[0m[1;32m/[0m[1;32mgenerate_world_sdf[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServing world names on [[0m[1;32m/gazebo/worlds[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mResource path add service on [[0m[1;32m/gazebo/resource_paths/add[0m[1;32m].[0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mResource path get service on [[0m[1;32m/gazebo/resource_paths/get[0m[1;32m].[0m[1;32m[0m
+[parameter_bridge-27] [INFO] [1791730662.671472925] [hmi_led_msg_bridge]: Creating ROS->GZ Bridge: [/hmi/led/wifi (std_msgs/msg/Int32) -> /hmi/led/wifi (ignition.msgs.Int32)] (Lazy 0)
+[parameter_bridge-27] [INFO] [1791730662.684850819] [hmi_led_msg_bridge]: Creating ROS->GZ Bridge: [/hmi/led/battery (std_msgs/msg/Int32) -> /hmi/led/battery (ignition.msgs.Int32)] (Lazy 0)
+[create-7] [INFO] [1791730662.693414562] [ros_gz_sim]: Waiting messages on topic [robot_description].
+[create-8] [INFO] [1791730662.743794413] [ros_gz_sim]: Requested creation of entity.
+[create-8] [INFO] [1791730662.743917542] [ros_gz_sim]: OK creation of entity.
+[parameter_bridge-27] [INFO] [1791730662.745370513] [hmi_led_msg_bridge]: Creating ROS->GZ Bridge: [/hmi/led/user1 (std_msgs/msg/Int32) -> /hmi/led/user1 (ignition.msgs.Int32)] (Lazy 0)
+[parameter_bridge-27] [INFO] [1791730662.781992937] [hmi_led_msg_bridge]: Creating ROS->GZ Bridge: [/hmi/led/user2 (std_msgs/msg/Int32) -> /hmi/led/user2 (ignition.msgs.Int32)] (Lazy 0)
+[create-7] [INFO] [1791730663.163501659] [ros_gz_sim]: Requested creation of entity.
+[create-7] [INFO] [1791730663.163628479] [ros_gz_sim]: OK creation of entity.
+[joint_state_publisher-4] [INFO] [1791730663.439057899] [joint_state_publisher]: Waiting for robot_description to be published on the robot_description topic...
+[spawner-32] [INFO] [1791730663.557237540] [spawner_joint_state_broadcaster]: waiting for service /controller_manager/list_controllers to become available...
+[motion_control-35] [INFO] [1791730664.226192395] [motion_control]: Enabling REFLEX_BUMP
+[motion_control-35] [INFO] [1791730664.226883223] [motion_control]: Enabling REFLEX_CLIFF
+[motion_control-35] [INFO] [1791730664.274327056] [motion_control]: Enabling REFLEX_STUCK
+[motion_control-35] [INFO] [1791730664.274930099] [motion_control]: Enabling REFLEX_WHEEL_DROP
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/Gazebo/GazeboDrawer.qml:242:3: QML Connections: Implicitly defined onFoo properties in Connections are deprecated. Use this syntax instead: function onFoo(<arguments>) { ... }[0m[1;33m[0m
+[INFO] [create-7]: process has finished cleanly [pid 12521]
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Scene3D.cc:2941] [0m[1;33mThe GzScene3D plugin is deprecated on v6 and will be removed on [0m[1;33mv7. Use MinimalScene together with other plugins as needed.[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/GzScene3D/GzScene3D.qml:108:3: QML Connections: Implicitly defined onFoo properties in Connections are deprecated. Use this syntax instead: function onFoo(<arguments>) { ... }[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/GzScene3D/GzScene3D.qml:63:5: QML Connections: Implicitly defined onFoo properties in Connections are deprecated. Use this syntax instead: function onFoo(<arguments>) { ... }[0m[1;33m[0m
+[ign gazebo-1] [INFO] [1791730665.073915573] [GazeboSimROS2ControlPlugin]: robot_param_node is robot_state_publisher
+[ign gazebo-1] [INFO] [1791730665.074491479] [GazeboSimROS2ControlPlugin]: robot_param_node is robot_description
+[turtlebot4_node-30] [INFO] [1791730665.304713050] [turtlebot4_node]: Buttons Init
+[turtlebot4_node-30] [INFO] [1791730665.398433061] [turtlebot4_node]: Init Display
+[turtlebot4_node-30] [INFO] [1791730665.489431231] [turtlebot4_node]: Leds Init
+[turtlebot4_node-30] [INFO] [1791730665.847712675] [turtlebot4_node]: Turtlebot4 standard running.
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mResource path resolve service on [[0m[1;32m/gazebo/resource[1;32m[Msg] [0m[1;32mIgnition Gazebo GUI    v[0m[1;32m6.18.0[0m[1;32m[0m
+[ign gazebo-1] [1;36m[Dbg] [Gui.cc:253] [0m[1;36mWaiting for subscribers to [[0m[1;36m/gazebo/starting_world[0m[1;36m]...[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Application.cc:92] [0m[1;36mInitializing application.[0m[1;36m[0m
+[ign gazebo-1] [1;36m[GUI] [Dbg] [Application.cc:560] [0m[1;36mCreate main window[0m[1;36m[0m
+[ign gazebo-1] [1;36m[GUI] [Dbg] [PathManager.cc:66] [0m[1;36mRequesting resource paths through [[0m[1;36m/gazebo/resource_paths/get[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[GUI] [Dbg] [PathManager.cc:55] [0m[1;36mReceived resource paths.[0m[1;36m[0m
+[ign gazebo-1] [1;36m[GUI] [Dbg] [Gui.cc:333] [0m[1;36mGUI requesting list of world names. The server may be busy [0m[1;36mdownloading resources. Please be patient.[0m[1;36m[0m
+[ign gazebo-1] [1;36m[GUI] [Dbg] [GuiRunner.cc:145] [0m[1;36mRequesting initial state from [[0m[1;36m/world/maze/state[0m[1;36m]...[0m[1;36m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mLoading config [[0m[1;32m/opt/ros/humble/share/turtlebot4_ignition_bringup/gui/standard/gui.config[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;36m[GUI] [Dbg] [Application.cc:431] [0m[1;36mLoading plugin [[0m[1;36mGzScene3D[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mVideo recorder stats topic advertised on [[0m[1;32m/gui/record_video/stats[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mTransform mode service on [[0m[1;32m/gui/transform_mode[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mRecord video service on [[0m[1;32m/gui/record_video[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mMove to service on [[0m[1;32m/gui/move_to[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mFollow service on [[0m[1;32m/gui/follow[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mFollow offset service on [[0m[1;32m/gui/follow/offset[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mView angle service on [[0m[1;32m/gui/view_angle[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mMove to pose service on [[0m[1;32m/gui/move_to/pose[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mCamera pose topic advertised on [[0m[1;32m/gui/camera/pose[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mView as transparent service on [[0m[1;32m/gui/view/transparent[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mView center of mass service on [[0m[1;32m/gui/view/com[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mView inertia service on [[0m[1;32m/gui/view/inertia[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mView joints service on [[0m[1;32m/gui/view/joints[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mView wireframes service on [[0m[1;32m/gui/view/wireframes[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mView collisions service on [[0m[1;32m/gui/view/collisions[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mCamera view controller topic advertised on [[0m[1;32m/gui/camera/view_control[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mAdded plugin [[0m[1;32m3D View[0m[1;32m] to main window[0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mLoaded plugin [[0m[1;32mGzScene3D[0m[1;32m] from path [[0m[1;32m/usr/lib/x86_64-linux-gnu/ign-gazebo-6/plugins/gui/libGzScene3D.so[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;36m[GUI] [Dbg] [Application.cc:431] [0m[1;36mLoading plugin [[0m[1;36mWorldControl[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mUsing world control service [[0m[1;32m/world/maze/control[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mListening to stats on [[0m[1;32m/world/maze/stats[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;36m[GUI] [Dbg] [WorldControl.cc:248] [0m[1;36mUsing a service to share WorldControl msgs with the server[0m
+[parameter_bridge-27] [INFO] [1791730665.898924840] [hmi_led_msg_bridge]: Passing message from ROS std_msgs/msg/Int32 to Gazebo gz.msgs.Int32 (showing msg only once per type)
+[parameter_bridge-25] [INFO] [1791730665.900130080] [hmi_display_msg_bridge]: Passing message from ROS std_msgs/msg/String to Gazebo gz.msgs.StringMsg (showing msg only once per type)
+[parameter_bridge-25] [INFO] [1791730665.900358774] [hmi_display_msg_bridge]: Passing message from ROS std_msgs/msg/Int32 to Gazebo gz.msgs.Int32 (showing msg only once per type)
+[ign gazebo-1] [ERROR] [1791730666.060155730] [gz_ros2_control]: robot_state_publisher service not available, waiting again...
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/TransformControl/TransformControl.qml:104:3: QML Connections: Implicitly defined onFoo properties in Connections are deprecated. Use this syntax instead: function onFoo(<arguments>) { ... }[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/TransformControl/TransformControl.qml:99:3: QML Connections: Implicitly defined onFoo properties in Connections are deprecated. Use this syntax instead: function onFoo(<arguments>) { ... }[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/TransformControl/TransformControl.qml:94:3: QML Connections: Implicitly defined onFoo properties in Connections are deprecated. Use this syntax instead: function onFoo(<arguments>) { ... }[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/TransformControl/TransformControl.qml:89:3: QML Connections: Implicitly defined onFoo properties in Connections are deprecated. Use this syntax instead: function onFoo(<arguments>) { ... }[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/Turtlebot4Hmi/Turtlebot4Hmi.qml:36:3: QML Connections: Implicitly defined onFoo properties in Connections are deprecated. Use this syntax instead: function onFoo(<arguments>) { ... }[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/Turtlebot4Hmi/Turtlebot4Hmi.qml:388: ReferenceError: control is not defined[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/Turtlebot4Hmi/Turtlebot4Hmi.qml:410: ReferenceError: control is not defined[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/Turtlebot4Hmi/Turtlebot4Hmi.qml:432: ReferenceError: control is not defined[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/Turtlebot4Hmi/Turtlebot4Hmi.qml:454: ReferenceError: control is not defined[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/Turtlebot4Hmi/Turtlebot4Hmi.qml:102:7: Unable to assign [undefined] to QString[0m[1;33m[0m
+[ign gazebo-1] [ERROR] [1791730666.561104468] [gz_ros2_control]: robot_state_publisher service not available, waiting again...
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Application.cc:802] [0m[1;33m[QT] file::/WorldStats/WorldStats.qml:53:3: QML RowLayout: Binding loop detected for property "x"[0m[1;33m[0m
+[ign gazebo-1] [ERROR] [1791730667.061508991] [gz_ros2_control]: robot_state_publisher service not available, waiting again...
+[ign gazebo-1] libEGL warning: egl: failed to create dri2 screen
+[ign gazebo-1] libEGL warning: egl: failed to create dri2 screen
+[ign gazebo-1] [INFO] [1791730667.362823380] [gz_ros2_control]: connected to service!! robot_state_publisher asking for robot_description
+[ign gazebo-1] [INFO] [1791730667.366524444] [gz_ros2_control]: Received URDF from param server
+[ign gazebo-1] [INFO] [1791730667.380842945] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['bumper_joint'] (Entity='231') is skipped.
+[ign gazebo-1] [INFO] [1791730667.380978006] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['front_caster_joint'] (Entity='232') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381016688] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['front_left_bottom_weight_block_joint'] (Entity='233') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381049653] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['front_left_top_weight_block_joint'] (Entity='234') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381080355] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['front_right_bottom_weight_block_joint'] (Entity='235') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381111236] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['front_right_top_weight_block_joint'] (Entity='236') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381140441] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['imu_joint'] (Entity='237') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381169100] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['ir_intensity_front_center_left_joint'] (Entity='238') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381198158] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['ir_intensity_front_center_right_joint'] (Entity='239') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381227550] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['ir_intensity_front_left_joint'] (Entity='240') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381268457] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['ir_intensity_front_right_joint'] (Entity='241') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381303537] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['ir_intensity_left_joint'] (Entity='242') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381332682] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['ir_intensity_right_joint'] (Entity='243') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381363551] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['ir_intensity_side_left_joint'] (Entity='244') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381391803] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['ir_omni_joint'] (Entity='245') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381419454] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['mouse_joint'] (Entity='246') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381446582] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['front_left_tower_standoff_joint'] (Entity='247') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381474693] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['front_right_tower_standoff_joint'] (Entity='248') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381503205] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['oakd_camera_bracket_joint'] (Entity='249') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381531114] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['oakd_joint'] (Entity='250') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381558693] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['oakd_imu_joint'] (Entity='251') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381587200] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['oakd_left_camera_joint'] (Entity='252') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381616450] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['oakd_left_camera_optical_joint'] (Entity='253') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381644823] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['oakd_rgb_camera_joint'] (Entity='254') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381672889] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['oakd_rgb_camera_optical_joint'] (Entity='255') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381700401] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['oakd_right_camera_joint'] (Entity='256') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381728511] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['oakd_right_camera_optical_joint'] (Entity='257') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381755704] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['rear_left_tower_standoff_joint'] (Entity='258') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381782841] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['rear_right_tower_standoff_joint'] (Entity='259') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381883276] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['rplidar_joint'] (Entity='260') is skipped.
+[ign gazebo-1] [INFO] [1791730667.381920520] [gz_ros2_control]: [gz_ros2_control] Fixed joint ['tower_sensor_plate_joint'] (Entity='261') is skipped.
+[ign gazebo-1] [INFO] [1791730667.397567646] [gz_ros2_control]: The position_proportional_gain has been set to: 0.1
+[ign gazebo-1] [INFO] [1791730667.397882199] [gz_ros2_control]: Loading joint: left_wheel_joint
+[ign gazebo-1] [INFO] [1791730667.397956201] [gz_ros2_control]: 	State:
+[ign gazebo-1] [INFO] [1791730667.397995238] [gz_ros2_control]: 		 velocity
+[ign gazebo-1] [INFO] [1791730667.398024989] [gz_ros2_control]: 		 position
+[ign gazebo-1] [INFO] [1791730667.398052944] [gz_ros2_control]: 	Command:
+[ign gazebo-1] [INFO] [1791730667.398079616] [gz_ros2_control]: 		 velocity
+[ign gazebo-1] [INFO] [1791730667.398520778] [gz_ros2_control]: Loading sensor: imu
+[ign gazebo-1] [INFO] [1791730667.398584762] [gz_ros2_control]: 	State:
+[ign gazebo-1] [WARN] [1791730667.398614324] [gz_ros2_control]: IMU sensor 'imu' not found in hardware_info, skipping.
+[ign gazebo-1] [INFO] [1791730667.398868955] [resource_manager]: Initialize hardware 'left_wheel_controller' 
+[ign gazebo-1] [WARN] [1791730667.398968318] [gz_ros2_control]: The ign_ros2_control plugin got renamed to gz_ros2_control.
+[ign gazebo-1] Update the <ros2_control> tag and gazebo plugin to
+[ign gazebo-1] <hardware>
+[ign gazebo-1]   <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+[ign gazebo-1] </hardware>
+[ign gazebo-1] <gazebo>
+[ign gazebo-1]   <plugin filename="gz_ros2_control-system"name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+[ign gazebo-1]     ...
+[ign gazebo-1]   </plugin>
+[ign gazebo-1] </gazebo>
+[ign gazebo-1] [INFO] [1791730667.399139604] [resource_manager]: Successful initialization of hardware 'left_wheel_controller'
+[ign gazebo-1] [INFO] [1791730667.399274567] [resource_manager]: 'configure' hardware 'left_wheel_controller' 
+[ign gazebo-1] [INFO] [1791730667.399298618] [gz_ros2_control]: System Successfully configured!
+[ign gazebo-1] [INFO] [1791730667.399355355] [resource_manager]: Successful 'configure' of hardware 'left_wheel_controller'
+[ign gazebo-1] [INFO] [1791730667.399375468] [resource_manager]: 'activate' hardware 'left_wheel_controller' 
+[ign gazebo-1] [INFO] [1791730667.399405187] [resource_manager]: Successful 'activate' of hardware 'left_wheel_controller'
+[ign gazebo-1] [INFO] [1791730667.399749063] [gz_ros2_control]: The position_proportional_gain has been set to: 0.1
+[ign gazebo-1] [INFO] [1791730667.399860369] [gz_ros2_control]: Loading joint: right_wheel_joint
+[ign gazebo-1] [INFO] [1791730667.399899356] [gz_ros2_control]: 	State:
+[ign gazebo-1] [INFO] [1791730667.399929662] [gz_ros2_control]: 		 velocity
+[ign gazebo-1] [INFO] [1791730667.399960988] [gz_ros2_control]: 		 position
+[ign gazebo-1] [INFO] [1791730667.399988444] [gz_ros2_control]: 	Command:
+[ign gazebo-1] [INFO] [1791730667.400014828] [gz_ros2_control]: 		 velocity
+[ign gazebo-1] [INFO] [1791730667.400083108] [gz_ros2_control]: Loading sensor: imu
+[ign gazebo-1] [INFO] [1791730667.400119032] [gz_ros2_control]: 	State:
+[ign gazebo-1] [WARN] [1791730667.400146667] [gz_ros2_control]: IMU sensor 'imu' not found in hardware_info, skipping.
+[ign gazebo-1] [INFO] [1791730667.400180475] [resource_manager]: Initialize hardware 'right_wheel_controller' 
+[ign gazebo-1] [WARN] [1791730667.400223157] [gz_ros2_control]: The ign_ros2_control plugin got renamed to gz_ros2_control.
+[ign gazebo-1] Update the <ros2_control> tag and gazebo plugin to
+[ign gazebo-1] <hardware>
+[ign gazebo-1]   <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+[ign gazebo-1] </hardware>
+[ign gazebo-1] <gazebo>
+[ign gazebo-1]   <plugin filename="gz_ros2_control-system"name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+[ign gazebo-1]     ...
+[ign gazebo-1]   </plugin>
+[ign gazebo-1] </gazebo>
+[ign gazebo-1] [INFO] [1791730667.400583079] [resource_manager]: Successful initialization of hardware 'right_wheel_controller'
+[ign gazebo-1] [INFO] [1791730667.400645343] [resource_manager]: 'configure' hardware 'right_wheel_controller' 
+[ign gazebo-1] [INFO] [1791730667.400660668] [gz_ros2_control]: System Successfully configured!
+[ign gazebo-1] [INFO] [1791730667.400708567] [resource_manager]: Successful 'configure' of hardware 'right_wheel_controller'
+[ign gazebo-1] [INFO] [1791730667.400726137] [resource_manager]: 'activate' hardware 'right_wheel_controller' 
+[ign gazebo-1] [INFO] [1791730667.400742556] [resource_manager]: Successful 'activate' of hardware 'right_wheel_controller'
+[ign gazebo-1] [INFO] [1791730667.400757691] [gz_ros2_control]: Loading controller_manager
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Ogre2Camera.cc:390] [0m[1;33mOgre2Camera::SetVisibilityMask: Mask bits [0m[1;33mc0000000[0m[1;33m are set but will be ignored as they conflict with the [0m[1;33mreserved bits used internally by the ogre2 backend.[0m[1;33m[0m
+[ign gazebo-1] [1;33m[Wrn] [Component.hh:127] [0m[1;33mTrying to serialize component with data type [[0m[1;33mSt10shared_ptrIN3sdf3v127ElementEE[0m[1;33m], which doesn't have [0m[1;33m`operator<<`. Component will not be serialized.[0m[1;33m[0m
+[ign gazebo-1] [1;32m[GUI] [0m[1;32m[Msg] [0m[1;32mAdded plugin [[0m[1;32mWor_paths/resolve[0m[1;32m].[0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mResource paths published on [[0m[1;32m/gazebo/resource_paths[0m[1;32m].[0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServer control service on [[0m[1;32m/server_control[0m[1;32m].[0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mFound no publishers on /stats, adding root stats topic[0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mFound no publishers on /clock, adding root clock topic[0m[1;32m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:501] [0m[1;36mCreating PostUpdate worker threads: [0m[1;36m3[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:512] [0m[1;36mCreating postupdate worker thread ([0m[1;36m0[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:512] [0m[1;36mCreating postupdate worker thread ([0m[1;36m1[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SystemManager.cc:73] [0m[1;36mLoaded system [[0m[1;36mignition::gazebo::systems::PosePublisher[0m[1;36m] for entity [[0m[1;36m132[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [UserCommands.cc:1303] [0m[1;36mCreated entity [[0m[1;36m132[0m[1;36m] named [[0m[1;36mstandard_dock[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SystemManager.cc:73] [0m[1;36mLoaded system [[0m[1;36mign_ros2_control::IgnitionROS2ControlPlugin[0m[1;36m] for entity [[0m[1;36m148[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SystemManager.cc:73] [0m[1;36mLoaded system [[0m[1;36mignition::gazebo::systems::PosePublisher[0m[1;36m] for entity [[0m[1;36m148[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SystemManager.cc:73] [0m[1;36mLoaded system [[0m[1;36mignition::gazebo::systems::Contact[0m[1;36m] for entity [[0m[1;36m148[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Sensors.cc:506] [0m[1;36mConfiguring Sensors system[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Sensors.cc:431] [0m[1;36mSensorsPrivate::Run[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SystemManager.cc:73] [0m[1;36mLoaded system [[0m[1;36mignition::gazebo::systems::Sensors[0m[1;36m] for entity [[0m[1;36m148[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Sensors.cc:411] [0m[1;36mSensorsPrivate::RenderThread started[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Sensors.cc:258] [0m[1;36mWaiting for init[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [UserCommands.cc:1303] [0m[1;36mCreated entity [[0m[1;36m148[0m[1;36m] named [[0m[1;36mturtlebot4[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mContact system publishing on [0m[1;32m/bumper_contact[0m[1;32m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationFeatures.cc:71] [0m[1;36mSimulation timestep set to: [0m[1;36m0.003[0m[1;36m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServing scene information on [[0m[1;32m/world/maze[0m[1;32m/[0m[1;32mscene/info[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServing graph information on [[0m[1;32m/world/maze[0m[1;32m/[0m[1;32mscene/graph[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServing full state on [[0m[1;32m/world/maze[0m[1;32m/[0m[1;32mstate[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mServing full state (async) on [[0m[1;32m/world/maze[0m[1;32m/[0m[1;32mstate_async[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mPublishing scene information on [[0m[1;32m/world/maze/scene/info[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mPublishing entity deletions on [[0m[1;32m/world/maze/scene/deletion[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mPublishing state changes on [[0m[1;32m/world/maze/state[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mPublishing pose messages on [[0m[1;32m/world/maze[0m[1;32m/[0m[1;32mpose/info[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mPublishing dynamic pose messages on [[0m[1;32m/world/maze[0m[1;32m/[0m[1;32mdynamic_pose/info[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;36m[Dbg] [EntityComponentManager.cc:1635] [0m[1;36mUpdated state thread iterators: [0m[1;36m16[0m[1;36m threads processing around [0m[1;36m17[0m[1;36m entities each.[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:528] [0m[1;36mExiting postupdate worker thread ([0m[1;36m0[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [ERROR] [1791730668.582055079] [gz_ros2_control]: Desired controller update period (0.001 s) is faster than the gazebo simulation period (0.003 s).
+[ign gazebo-1] [INFO] [1791730668.821028779] [controller_manager]: Loading controller 'joint_state_broadcaster'
+[spawner-32] [INFO] [1791730669.314857598] [spawner_joint_state_broadcaster]: [94mLoaded [1mjoint_state_broadcaster[0m
+[ign gazebo-1] [INFO] [1791730669.321865465] [controller_manager]: Configuring controller 'joint_state_broadcaster'
+[ign gazebo-1] [INFO] [1791730669.322339480] [joint_state_broadcaster]: 'joints' or 'interfaces' parameter is empty. All available state interfaces will be published
+[ign gazebo-1] [1;33m[GUI] [Wrn] [Component.hh:172] [0m[1;33mTrying to deserialize component with data type [[0m[1;33mSt10shared_ptrIN3sdf3v127ElementEE[0m[1;33m], which doesn't have [0m[1;33m`operator>>`. Component will not be deserialized.[0m[1;33m[0m
+[ign gazebo-1] [1;33m[Wrn] [ColladaLoader.cc:2394] [0m[1;33mTriangle input semantic: '[0m[1;33mCOLOR[0m[1;33m' is currently[0m[1;33m not supported[0m[1;33m[0m
+[ign gazebo-1] [1;33m[Wrn] [ColladaLoader.cc:2394] [0m[1;33mTriangle input semantic: '[0m[1;33mCOLOR[0m[1;33m' is currently[0m[1;33m not supported[0m[1;33m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:528] [0m[1;36mExiting postupdate worker thread ([0m[1;36m1[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:501] [0m[1;36mCreating PostUpdate worker threads: [0m[1;36m8[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:512] [0m[1;36mCreating postupdate worker thread ([0m[1;36m0[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:512] [0m[1;36mCreating postupdate worker thread ([0m[1;36m1[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:512] [0m[1;36mCreating postupdate worker thread ([0m[1;36m2[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:512] [0m[1;36mCreating postupdate worker thread ([0m[1;36m3[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:512] [0m[1;36mCreating postupdate worker thread ([0m[1;36m4[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:512] [0m[1;36mCreating postupdate worker thread ([0m[1;36m5[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [SimulationRunner.cc:512] [0m[1;36mCreating postupdate worker thread ([0m[1;36m6[0m[1;36m)[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Sensors.cc:610] [0m[1;36mInitialization needed[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Sensors.cc:270] [0m[1;36mInitializing render context[0m[1;36m[0m
+[ign gazebo-1] [1;32m[Msg] [0m[1;32mLoading plugin [[0m[1;32mignition-rendering-ogre[0m[1;32m][0m[1;32m[0m
+[ign gazebo-1] [1;36m[Dbg] [RenderUtil.cc:2591] [0m[1;36mCreate scene [[0m[1;36mscene[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Sensors.cc:610] [0m[1;36mInitialization needed[0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Sensors.cc:284] [0m[1;36mRendering Thread initialized[0m[1;36m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [ColladaLoader.cc:2394] [0m[1;33mTriangle input semantic: '[0m[1;33mCOLOR[0m[1;33m' is currently[0m[1;33m not supported[0m[1;33m[0m
+[ign gazebo-1] [1;33m[GUI] [Wrn] [ColladaLoader.cc:2394] [0m[1;33mTriangle input semantic: '[0m[1;33mCOLOR[0m[1;33m' is currently[0m[1;33m not supported[0m[1;33m[0m
+[ign gazebo-1] [1;36m[Dbg] [RgbdCameraSensor.cc:219] [0m[1;36mRGB images for [[0m[1;36mturtlebot4::oakd_rgb_camera_frame::rgbd_camera[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera[0m[1;36m/image][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [RgbdCameraSensor.cc:233] [0m[1;36mDepth images for [[0m[1;36mturtlebot4::oakd_rgb_camera_frame::rgbd_camera[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera[0m[1;36m/depth_image][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [RgbdCameraSensor.cc:247] [0m[1;36mPoints for [[0m[1;36mturtlebot4::oakd_rgb_camera_frame::rgbd_camera[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera[0m[1;36m/points][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [CameraSensor.cc:705] [0m[1;36mCamera info for [[0m[1;36mturtlebot4::oakd_rgb_camera_frame::rgbd_camera[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/oakd_rgb_camera_frame/sensor/rgbd_camera/camera_info[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mstandard_dock::green_buoy_link::green_buoy[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/standard_dock/link/green_buoy_link/sensor/green_buoy/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mstandard_dock::green_buoy_link::green_buoy[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/standard_dock/link/green_buoy_link/sensor/green_buoy/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mstandard_dock::halo_link::halo[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/standard_dock/link/halo_link/sensor/halo/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mstandard_dock::halo_link::halo[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/standard_dock/link/halo_link/sensor/halo/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mstandard_dock::red_buoy_link::red_buoy[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/standard_dock/link/red_buoy_link/sensor/red_buoy/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mstandard_dock::red_buoy_link::red_buoy[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/standard_dock/link/red_buoy_link/sensor/red_buoy/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mstandard_dock::yellow_buoy_link::yellow_buoy[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/standard_dock/link/yellow_buoy_link/sensor/yellow_buoy/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mstandard_dock::yellow_buoy_link::yellow_buoy[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/standard_dock/link/yellow_buoy_link/sensor/yellow_buoy/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::base_link::cliff_front_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/base_link/sensor/cliff_front_left/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::base_link::cliff_front_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/base_link/sensor/cliff_front_left/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::base_link::cliff_front_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/base_link/sensor/cliff_front_right/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::base_link::cliff_front_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/base_link/sensor/cliff_front_right/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::base_link::cliff_side_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/base_link/sensor/cliff_side_left/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::base_link::cliff_side_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/base_link/sensor/cliff_side_left/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::base_link::cliff_side_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/base_link/sensor/cliff_side_right/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::base_link::cliff_side_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/base_link/sensor/cliff_side_right/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::ir_intensity_front_center_left::ir_intensity_front_center_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_front_center_left/sensor/ir_intensity_front_center_left/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::ir_intensity_front_center_left::ir_intensity_front_center_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_front_center_left/sensor/ir_intensity_front_center_left/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::ir_intensity_front_center_right::ir_intensity_front_center_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_front_center_right/sensor/ir_intensity_front_center_right/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::ir_intensity_front_center_right::ir_intensity_front_center_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_front_center_right/sensor/ir_intensity_front_center_right/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::ir_intensity_front_left::ir_intensity_front_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_front_left/sensor/ir_intensity_front_left/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::ir_intensity_front_left::ir_intensity_front_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_front_left/sensor/ir_intensity_front_left/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::ir_intensity_front_right::ir_intensity_front_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_front_right/sensor/ir_intensity_front_right/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::ir_intensity_front_right::ir_intensity_front_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_front_right/sensor/ir_intensity_front_right/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::ir_intensity_left::ir_intensity_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_left/sensor/ir_intensity_left/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::ir_intensity_left::ir_intensity_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_left/sensor/ir_intensity_left/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;33m[Wrn] [OgreGpuRays.cc:258] [0m[1;33mHorizontal FOV for GPU rays is capped at 180 degrees.[0m
+[parameter_bridge-9] [INFO] [1791730671.577566811] [cmd_vel_bridge]: Passing message from ROS geometry_msgs/msg/Twist to Gazebo gz.msgs.Twist (showing msg only once per type)
+[spawner-32] [INFO] [1791730671.578531924] [spawner_joint_state_broadcaster]: [92mConfigured and activated [1mjoint_state_broadcaster[0m
+[turtlebot4_node-30] [INFO] [1791730671.614480696] [turtlebot4_node]: OAKD stopped
+[turtlebot4_node-30] [INFO] [1791730671.614659604] [turtlebot4_node]: RPLIDAR stopped
+[INFO] [spawner-32]: process has finished cleanly [pid 12659]
+[ERROR] [launch_ros.actions.node]: Error while expanding or validating node name or namespace for 'package=controller_manager, executable=spawner, name=None, namespace=<launch.substitutions.launch_configuration.LaunchConfiguration object at 0x7e6ba5030400>':
+[ERROR] [launch]: Caught exception in launch (see debug for traceback): launch configuration 'namespace' does not exist
+[INFO] [static_transform_publisher-45]: sending signal 'SIGINT' to process[static_transform_publisher-45]
+[INFO] [static_transform_publisher-44]: sending signal 'SIGINT' to process[static_transform_publisher-44]
+[INFO] [interface_buttons_node-43]: sending signal 'SIGINT' to process[interface_buttons_node-43]
+[INFO] [sensors_node-42]: sending signal 'SIGINT' to process[sensors_node-42]
+[INFO] [pose_republisher_node-41]: sending signal 'SIGINT' to process[pose_republisher_node-41]
+[INFO] [ui_mgr-40]: sending signal 'SIGINT' to process[ui_mgr-40]
+[INFO] [kidnap_estimator_publisher-39]: sending signal 'SIGINT' to process[kidnap_estimator_publisher-39]
+[INFO] [static_transform_publisher-45]: process has finished cleanly [pid 12838]
+[INFO] [robot_state-38]: sending signal 'SIGINT' to process[robot_state-38]
+[INFO] [mock_publisher-37]: sending signal 'SIGINT' to process[mock_publisher-37]
+[INFO] [static_transform_publisher-44]: process has finished cleanly [pid 12806]
+[INFO] [wheel_status_publisher-36]: sending signal 'SIGINT' to process[wheel_status_publisher-36]
+[INFO] [motion_control-35]: sending signal 'SIGINT' to process[motion_control-35]
+[INFO] [interface_buttons_node-43]: process has finished cleanly [pid 12785]
+[INFO] [ir_intensity_vector_publisher-34]: sending signal 'SIGINT' to process[ir_intensity_vector_publisher-34]
+[INFO] [hazards_vector_publisher-33]: sending signal 'SIGINT' to process[hazards_vector_publisher-33]
+[INFO] [turtlebot4_ignition_hmi_node-31]: sending signal 'SIGINT' to process[turtlebot4_ignition_hmi_node-31]
+[INFO] [pose_republisher_node-41]: process has finished cleanly [pid 12756]
+[INFO] [turtlebot4_node-30]: sending signal 'SIGINT' to process[turtlebot4_node-30]
+[INFO] [parameter_bridge-29]: sending signal 'SIGINT' to process[parameter_bridge-29]
+[INFO] [kidnap_estimator_publisher-39]: process has finished cleanly [pid 12707]
+[INFO] [mock_publisher-37]: process has finished cleanly [pid 12681]
+[INFO] [robot_state-38]: process has finished cleanly [pid 12685]
+[INFO] [parameter_bridge-28]: sending signal 'SIGINT' to process[parameter_bridge-28]
+[INFO] [wheel_status_publisher-36]: process has finished cleanly [pid 12679]
+[INFO] [parameter_bridge-27]: sending signal 'SIGINT' to process[parameter_bridge-27]
+[INFO] [ui_mgr-40]: process has finished cleanly [pid 12731]
+[INFO] [parameter_bridge-26]: sending signal 'SIGINT' to process[parameter_bridge-26]
+[INFO] [sensors_node-42]: process has finished cleanly [pid 12770]
+[INFO] [ir_intensity_vector_publisher-34]: process has finished cleanly [pid 12671]
+[INFO] [parameter_bridge-25]: sending signal 'SIGINT' to process[parameter_bridge-25]
+[INFO] [hazards_vector_publisher-33]: process has finished cleanly [pid 12665]
+[INFO] [turtlebot4_ignition_hmi_node-31]: process has finished cleanly [pid 12643]
+[INFO] [parameter_bridge-24]: sending signal 'SIGINT' to process[parameter_bridge-24]
+[INFO] [parameter_bridge-29]: process has finished cleanly [pid 12625]
+[INFO] [parameter_bridge-23]: sending signal 'SIGINT' to process[parameter_bridge-23]
+[INFO] [parameter_bridge-28]: process has finished cleanly [pid 12623]
+[INFO] [parameter_bridge-22]: sending signal 'SIGINT' to process[parameter_bridge-22]
+[INFO] [parameter_bridge-27]: process has finished cleanly [pid 12620]
+[INFO] [parameter_bridge-21]: sending signal 'SIGINT' to process[parameter_bridge-21]
+[INFO] [parameter_bridge-20]: sending signal 'SIGINT' to process[parameter_bridge-20]
+[INFO] [parameter_bridge-26]: process has finished cleanly [pid 12617]
+[INFO] [parameter_bridge-25]: process has finished cleanly [pid 12608]
+[INFO] [parameter_bridge-19]: sending signal 'SIGINT' to process[parameter_bridge-19]
+[INFO] [motion_control-35]: process has finished cleanly [pid 12677]
+[INFO] [turtlebot4_node-30]: process has finished cleanly [pid 12636]
+[INFO] [parameter_bridge-24]: process has finished cleanly [pid 12604]
+[INFO] [parameter_bridge-18]: sending signal 'SIGINT' to process[parameter_bridge-18]
+[INFO] [parameter_bridge-23]: process has finished cleanly [pid 12595]
+[INFO] [parameter_bridge-17]: sending signal 'SIGINT' to process[parameter_bridge-17]
+[INFO] [parameter_bridge-16]: sending signal 'SIGINT' to process[parameter_bridge-16]
+[INFO] [parameter_bridge-22]: process has finished cleanly [pid 12590]
+[INFO] [parameter_bridge-15]: sending signal 'SIGINT' to process[parameter_bridge-15]
+[INFO] [parameter_bridge-21]: process has finished cleanly [pid 12588]
+[INFO] [parameter_bridge-14]: sending signal 'SIGINT' to process[parameter_bridge-14]
+[INFO] [parameter_bridge-20]: process has finished cleanly [pid 12584]
+[INFO] [parameter_bridge-13]: sending signal 'SIGINT' to process[parameter_bridge-13]
+[INFO] [parameter_bridge-12]: sending signal 'SIGINT' to process[parameter_bridge-12]
+[INFO] [parameter_bridge-19]: process has finished cleanly [pid 12582]
+[INFO] [parameter_bridge-18]: process has finished cleanly [pid 12576]
+[INFO] [parameter_bridge-11]: sending signal 'SIGINT' to process[parameter_bridge-11]
+[INFO] [parameter_bridge-17]: process has finished cleanly [pid 12545]
+[INFO] [parameter_bridge-10]: sending signal 'SIGINT' to process[parameter_bridge-10]
+[INFO] [parameter_bridge-16]: process has finished cleanly [pid 12543]
+[INFO] [parameter_bridge-9]: sending signal 'SIGINT' to process[parameter_bridge-9]
+[INFO] [parameter_bridge-15]: process has finished cleanly [pid 12541]
+[INFO] [create-8]: sending signal 'SIGINT' to process[create-8]
+[INFO] [parameter_bridge-14]: process has finished cleanly [pid 12539]
+[INFO] [parameter_bridge-13]: process has finished cleanly [pid 12537]
+[INFO] [static_transform_publisher-6]: sending signal 'SIGINT' to process[static_transform_publisher-6]
+[INFO] [parameter_bridge-12]: process has finished cleanly [pid 12535]
+[INFO] [robot_state_publisher-5]: sending signal 'SIGINT' to process[robot_state_publisher-5]
+[INFO] [joint_state_publisher-4]: sending signal 'SIGINT' to process[joint_state_publisher-4]
+[INFO] [parameter_bridge-11]: process has finished cleanly [pid 12532]
+[INFO] [robot_state_publisher-3]: sending signal 'SIGINT' to process[robot_state_publisher-3]
+[INFO] [parameter_bridge-10]: process has finished cleanly [pid 12529]
+[INFO] [parameter_bridge-2]: sending signal 'SIGINT' to process[parameter_bridge-2]
+[INFO] [parameter_bridge-9]: process has finished cleanly [pid 12525]
+[INFO] [ign gazebo-1]: sending signal 'SIGINT' to process[ign gazebo-1]
+[static_transform_publisher-45] [INFO] [1791730671.983833906] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [static_transform_publisher-6]: process has finished cleanly [pid 12519]
+[INFO] [robot_state_publisher-5]: process has finished cleanly [pid 12517]
+[static_transform_publisher-44] [INFO] [1791730672.018934362] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[interface_buttons_node-43] [INFO] [1791730672.060076278] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[sensors_node-42] [INFO] [1791730672.106479184] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[pose_republisher_node-41] [INFO] [1791730672.148832537] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[ui_mgr-40] [INFO] [1791730672.190081094] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[kidnap_estimator_publisher-39] [INFO] [1791730672.236505150] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state-38] [INFO] [1791730672.275604369] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[mock_publisher-37] [INFO] [1791730672.319159087] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[wheel_status_publisher-36] [INFO] [1791730672.362380182] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[motion_control-35] [INFO] [1791730672.400082017] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[ir_intensity_vector_publisher-34] [INFO] [1791730672.441904232] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[hazards_vector_publisher-33] [INFO] [1791730672.493617857] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[turtlebot4_ignition_hmi_node-31] [INFO] [1791730672.544020579] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[turtlebot4_node-30] [INFO] [1791730672.621138912] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[turtlebot4_node-30] [ERROR] [1791730672.625001070] [turtlebot4_node]: Interrupted while waiting for the service oakd/stop_camera.
+[parameter_bridge-29] [INFO] [1791730672.688451584] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-28] [INFO] [1791730672.736737266] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-27] [INFO] [1791730672.795305111] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-26] [INFO] [1791730672.862671400] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-25] [INFO] [1791730672.905928573] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-24] [INFO] [1791730672.956443395] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-23] [INFO] [1791730673.001495599] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-22] [INFO] [1791730673.037353965] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-21] [INFO] [1791730673.069393000] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-20] [INFO] [1791730673.099806967] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-19] [INFO] [1791730673.137109999] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-18] [INFO] [1791730673.162181460] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-17] [INFO] [1791730673.185494424] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-16] [INFO] [1791730673.209844057] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-15] [INFO] [1791730673.231807197] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-14] [INFO] [1791730673.258700279] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-13] [INFO] [1791730673.290660986] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-12] [INFO] [1791730673.321532345] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-11] [INFO] [1791730673.351966947] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-10] [INFO] [1791730673.381782409] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-9] [INFO] [1791730673.412346197] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[static_transform_publisher-6] [INFO] [1791730673.466272484] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-5] [INFO] [1791730673.488987231] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-3] [INFO] [1791730673.543727117] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-2] [INFO] [1791730673.580720034] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [robot_state_publisher-3]: process has finished cleanly [pid 12513]
+[INFO] [parameter_bridge-2]: process has finished cleanly [pid 12510]
+[INFO] [joint_state_publisher-4]: process has finished cleanly [pid 12515]
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::ir_intensity_right::ir_intensity_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_right/sensor/ir_intensity_right/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::ir_intensity_right::ir_intensity_right[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_right/sensor/ir_intensity_right/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::ir_intensity_side_left::ir_intensity_side_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_side_left/sensor/ir_intensity_side_left/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::ir_intensity_side_left::ir_intensity_side_left[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/ir_intensity_side_left/sensor/ir_intensity_side_left/scan/points[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [Lidar.cc:138] [0m[1;36mLaser scans for [[0m[1;36mturtlebot4::rplidar_link::rplidar[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/rplidar_link/sensor/rplidar/scan[0m[1;36m][0m[1;36m[0m
+[ign gazebo-1] [1;36m[Dbg] [GpuLidarSensor.cc:163] [0m[1;36mLidar points for [[0m[1;36mturtlebot4::rplidar_link::rplidar[0m[1;36m] advertised on [[0m[1;36mworld/maze/model/turtlebot4/link/rplidar_link/sensor/rplidar/scan/points[0m[1;36m][0m[1;36m[0m
+[ERROR] [create-8]: process[create-8] failed to terminate '5' seconds after receiving 'SIGINT', escalating to 'SIGTERM'
+[ERROR] [ign gazebo-1]: process[ign gazebo-1] failed to terminate '5' seconds after receiving 'SIGINT', escalating to 'SIGTERM'
+[INFO] [create-8]: sending signal 'SIGTERM' to process[create-8]
+[INFO] [ign gazebo-1]: sending signal 'SIGTERM' to process[ign gazebo-1]
+[ERROR] [create-8]: process has died [pid 12523, exit code -15, cmd '/opt/ros/humble/lib/ros_ign_gazebo/create -name standard_dock -x 0.157 -y 0.0 -z 0.0 -Y 3.1416 -topic standard_dock_description --ros-args -r __ns:=/'].
+[ERROR] [ign gazebo-1]: process has died [pid 12508, exit code -15, cmd 'ruby /usr/bin/ign gazebo maze.sdf -r -v 4 --gui-config /opt/ros/humble/share/turtlebot4_ignition_bringup/gui/standard/gui.config --force-version 6'].

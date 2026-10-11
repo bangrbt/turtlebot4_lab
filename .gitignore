@@ -1,0 +1,21 @@
+/build/
+/install/
+/log/
+__pycache__/
+*.py[cod]
+*.bag
+*.db3
+*.mcap
+*.mp4
+*.mkv
+*.webm
+*.avi
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+/evidence/*.xwd
+
+# Preserve small real runtime evidence logs.
+!/evidence/*.log

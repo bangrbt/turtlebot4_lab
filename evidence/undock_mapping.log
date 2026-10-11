@@ -1,0 +1,10 @@
+Waiting for an action server to become available...
+Sending goal:
+     {}
+
+Goal accepted with ID: c3883094beb4489783633e61c531ff6d
+
+Result:
+    is_docked: false
+
+Goal finished with status: SUCCEEDED

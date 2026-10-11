@@ -1,0 +1,22 @@
+{
+  "simulation_launch": {
+    "pid": 13902,
+    "tool_session": 86437,
+    "log": "mapping_simulation.log"
+  },
+  "mapping_launch": {
+    "pid": 15025,
+    "tool_session": 72282,
+    "log": "mapping.log"
+  },
+  "teleop": {
+    "pid": 15330,
+    "terminal": "TurtleBot 4 - TELEOP mapping"
+  },
+  "environment": {
+    "ROS_DOMAIN_ID": 64,
+    "ROS_LOCALHOST_ONLY": 1,
+    "IGN_PARTITION": "turtlebot4_lab_64"
+  },
+  "note": "Check /proc/PID/cmdline before using a PID; processes may have exited. Agent left simulation and SLAM running for manual mapping."
+}

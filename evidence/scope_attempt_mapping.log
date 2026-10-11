@@ -1,0 +1,17 @@
+[INFO] [launch]: All log files can be found below /home/anhbang/turtlebot4_lab_ws/log/ros/2026-10-11-21-57-43-979536-legion-13308
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [sync_slam_toolbox_node-1]: process started with pid [13311]
+[INFO] [rviz2-2]: process started with pid [13313]
+[sync_slam_toolbox_node-1] [INFO] [1791730664.353588043] [slam_toolbox]: Node using stack size 40000000
+[sync_slam_toolbox_node-1] [INFO] [1791730664.685671201] [slam_toolbox]: Using solver plugin solver_plugins::CeresSolver
+[sync_slam_toolbox_node-1] [INFO] [1791730664.686880775] [slam_toolbox]: CeresSolver: Using SCHUR_JACOBI preconditioner.
+[rviz2-2] [INFO] [1791730666.178633236] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-2] [INFO] [1791730666.178950558] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[rviz2-2] [INFO] [1791730666.256181656] [rviz2]: Stereo is NOT SUPPORTED
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [rviz2-2]: sending signal 'SIGINT' to process[rviz2-2]
+[INFO] [sync_slam_toolbox_node-1]: sending signal 'SIGINT' to process[sync_slam_toolbox_node-1]
+[rviz2-2] [INFO] [1791730794.430355109] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[sync_slam_toolbox_node-1] [INFO] [1791730794.431614737] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [sync_slam_toolbox_node-1]: process has finished cleanly [pid 13311]
+[ERROR] [rviz2-2]: process has died [pid 13313, exit code -11, cmd '/opt/ros/humble/lib/rviz2/rviz2 -d /home/anhbang/turtlebot4_lab_ws/install/turtlebot4_lab/share/turtlebot4_lab/config/map.rviz --ros-args -r __node:=rviz2 --params-file /tmp/launch_params_h0keh0hb'].

@@ -1,0 +1,20 @@
+[INFO] [launch]: All log files can be found below /home/anhbang/turtlebot4_lab_ws/log/ros/2026-10-11-21-54-55-575357-legion-11351
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [sync_slam_toolbox_node-1]: process started with pid [11874]
+[INFO] [rviz2-2]: process started with pid [11877]
+[sync_slam_toolbox_node-1] [INFO] [1791730496.454638390] [slam_toolbox]: Node using stack size 40000000
+[sync_slam_toolbox_node-1] [INFO] [1791730497.669915571] [slam_toolbox]: Using solver plugin solver_plugins::CeresSolver
+[sync_slam_toolbox_node-1] [INFO] [1791730497.679073042] [slam_toolbox]: CeresSolver: Using SCHUR_JACOBI preconditioner.
+[rviz2-2] [INFO] [1791730498.399339425] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-2] [INFO] [1791730498.399725671] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[rviz2-2] [INFO] [1791730498.506694010] [rviz2]: Stereo is NOT SUPPORTED
+[sync_slam_toolbox_node-1] [WARN] [1791730499.999323378] [slam_toolbox]: minimum laser range setting (0.0 m) exceeds the capabilities of the used Lidar (0.2 m)
+[sync_slam_toolbox_node-1] Registering sensor: [Custom Described Lidar]
+[rviz2-2] [INFO] [1791730502.786211164] [rviz2]: Trying to create a map of size 343 x 332 using 1 swatches
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [rviz2-2]: sending signal 'SIGINT' to process[rviz2-2]
+[INFO] [sync_slam_toolbox_node-1]: sending signal 'SIGINT' to process[sync_slam_toolbox_node-1]
+[rviz2-2] [INFO] [1791730556.673691407] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[sync_slam_toolbox_node-1] [INFO] [1791730556.674955323] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [sync_slam_toolbox_node-1]: process has finished cleanly [pid 11874]
+[ERROR] [rviz2-2]: process has died [pid 11877, exit code -11, cmd '/opt/ros/humble/lib/rviz2/rviz2 -d /home/anhbang/turtlebot4_lab_ws/install/turtlebot4_lab/share/turtlebot4_lab/config/map.rviz --ros-args -r __node:=rviz2 --params-file /tmp/launch_params_olk8qqsz'].

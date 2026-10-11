@@ -1,0 +1,14 @@
+[INFO] [launch]: All log files can be found below /home/anhbang/turtlebot4_lab_ws/log/ros/2026-10-11-21-52-10-468185-legion-10992
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [rviz2-1]: process started with pid [10993]
+[rviz2-1] [INFO] [1791730332.391550406] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-1] [INFO] [1791730332.391951502] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[rviz2-1] [INFO] [1791730332.490375030] [rviz2]: Stereo is NOT SUPPORTED
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [rviz2-1]: sending signal 'SIGINT' to process[rviz2-1]
+[rviz2-1] [INFO] [1791730449.942564780] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[ERROR] [rviz2-1]: process[rviz2-1] failed to terminate '5' seconds after receiving 'SIGINT', escalating to 'SIGTERM'
+[INFO] [rviz2-1]: sending signal 'SIGTERM' to process[rviz2-1]
+[ERROR] [rviz2-1]: process[rviz2-1] failed to terminate '10.0' seconds after receiving 'SIGTERM', escalating to 'SIGKILL'
+[INFO] [rviz2-1]: sending signal 'SIGKILL' to process[rviz2-1]
+[ERROR] [rviz2-1]: process has died [pid 10993, exit code -9, cmd '/opt/ros/humble/lib/rviz2/rviz2 -d /home/anhbang/turtlebot4_lab_ws/install/turtlebot4_lab/share/turtlebot4_lab/config/odom.rviz --ros-args -r __node:=rviz2 --params-file /tmp/launch_params_stqfmrxe'].

@@ -1,0 +1,202 @@
+{
+  "stage": "mapping",
+  "ros_domain_id": "64",
+  "samples": {
+    "clock": {
+      "count": 2561,
+      "first_stamp": 51.945,
+      "last_stamp": 59.637
+    },
+    "odom": {
+      "count": 452,
+      "first_stamp": 52.362,
+      "last_stamp": 59.634,
+      "frame": "odom",
+      "child_frame": "base_link",
+      "position": [
+        -0.3525452205148382,
+        -3.193534806256255e-11
+      ]
+    },
+    "map": {
+      "count": 22,
+      "first_stamp": 52.737,
+      "last_stamp": 59.472,
+      "frame": "map",
+      "width": 341,
+      "height": 340,
+      "known_cells": 28592,
+      "resolution": 0.05000000074505806
+    },
+    "scan": {
+      "count": 409,
+      "first_stamp": 53.091,
+      "last_stamp": 59.619,
+      "frame": "turtlebot4/rplidar_link/rplidar",
+      "rays": 640,
+      "finite_rays": 622
+    }
+  },
+  "tf": {
+    "odom <- base_link": {
+      "translation": [
+        -0.3525452205148382,
+        -3.193534806256255e-11,
+        0.0
+      ],
+      "stamp": 59.634
+    },
+    "base_link <- turtlebot4/rplidar_link/rplidar": {
+      "translation": [
+        -0.04,
+        0.0,
+        0.192915
+      ],
+      "stamp": 0.0
+    },
+    "map <- odom": {
+      "translation": [
+        0.00800907058733452,
+        -0.07035538383008007,
+        0.0
+      ],
+      "stamp": 59.819
+    }
+  },
+  "nodes": [
+    "bumper_contact_bridge",
+    "buttons_msg_bridge",
+    "camera_bridge",
+    "camera_stf",
+    "cliff_front_left_bridge",
+    "cliff_front_right_bridge",
+    "cliff_side_left_bridge",
+    "cliff_side_right_bridge",
+    "clock_bridge",
+    "cmd_vel_bridge",
+    "controller_manager",
+    "diffdrive_controller",
+    "dock_state_publisher",
+    "gz_ros2_control",
+    "hazards_vector_publisher",
+    "hmi_buttons_msg_bridge",
+    "hmi_display_msg_bridge",
+    "hmi_led_msg_bridge",
+    "interface_buttons_node",
+    "ir_intensity_front_center_left_bridge",
+    "ir_intensity_front_center_right_bridge",
+    "ir_intensity_front_left_bridge",
+    "ir_intensity_front_right_bridge",
+    "ir_intensity_left_bridge",
+    "ir_intensity_right_bridge",
+    "ir_intensity_side_left_bridge",
+    "ir_intensity_vector_publisher",
+    "joint_state_broadcaster",
+    "joint_state_publisher",
+    "kidnap_estimator_publisher",
+    "lidar_bridge",
+    "mock_publisher",
+    "motion_control",
+    "odom_base_tf_bridge",
+    "pose_bridge",
+    "pose_republisher_node",
+    "robot_state",
+    "robot_state_publisher",
+    "rplidar_stf",
+    "rviz2",
+    "rviz_navigation_dialog_action_client",
+    "sensors_node",
+    "slam_toolbox",
+    "tf_odom_std_dock_link_publisher",
+    "transform_listener_impl_587d8f558ec0",
+    "transform_listener_impl_64f5ec54f2d0",
+    "turtlebot4_ignition_hmi_node",
+    "turtlebot4_lab_check",
+    "turtlebot4_node",
+    "ui_mgr",
+    "wheel_status_publisher"
+  ],
+  "endpoints": {
+    "/cmd_vel": {
+      "publishers": [
+        {
+          "node": "/cmd_vel_bridge",
+          "type": "geometry_msgs/msg/Twist"
+        }
+      ],
+      "subscribers": [
+        {
+          "node": "/motion_control",
+          "type": "geometry_msgs/msg/Twist"
+        }
+      ]
+    },
+    "/diffdrive_controller/cmd_vel_unstamped": {
+      "publishers": [
+        {
+          "node": "/motion_control",
+          "type": "geometry_msgs/msg/Twist"
+        }
+      ],
+      "subscribers": [
+        {
+          "node": "/cmd_vel_bridge",
+          "type": "geometry_msgs/msg/Twist"
+        },
+        {
+          "node": "/diffdrive_controller",
+          "type": "geometry_msgs/msg/Twist"
+        }
+      ]
+    },
+    "/odom": {
+      "publishers": [
+        {
+          "node": "/diffdrive_controller",
+          "type": "nav_msgs/msg/Odometry"
+        }
+      ],
+      "subscribers": [
+        {
+          "node": "/motion_control",
+          "type": "nav_msgs/msg/Odometry"
+        },
+        {
+          "node": "/robot_state",
+          "type": "nav_msgs/msg/Odometry"
+        },
+        {
+          "node": "/turtlebot4_lab_check",
+          "type": "nav_msgs/msg/Odometry"
+        }
+      ]
+    },
+    "/scan": {
+      "publishers": [
+        {
+          "node": "/lidar_bridge",
+          "type": "sensor_msgs/msg/LaserScan"
+        }
+      ],
+      "subscribers": [
+        {
+          "node": "/turtlebot4_lab_check",
+          "type": "sensor_msgs/msg/LaserScan"
+        },
+        {
+          "node": "/slam_toolbox",
+          "type": "sensor_msgs/msg/LaserScan"
+        },
+        {
+          "node": "/rviz2",
+          "type": "sensor_msgs/msg/LaserScan"
+        }
+      ]
+    }
+  },
+  "lifecycle": {},
+  "navigate_action_ready": null,
+  "errors": [],
+  "passed": true,
+  "scope": "Topic/TF readiness only; GUI visibility, map quality and navigation outcomes require separate observation."
+}

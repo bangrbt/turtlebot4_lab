@@ -1,0 +1,24 @@
+PRETTY_NAME="Ubuntu 22.04.5 LTS"
+NAME="Ubuntu"
+VERSION_ID="22.04"
+VERSION="22.04.5 LTS (Jammy Jellyfish)"
+VERSION_CODENAME=jammy
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=jammy
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p8   83G   45G   34G  58% /
+6.18.0
+ros-humble-navigation2 1.1.20-1jammy.20260326.022229
+ros-humble-slam-toolbox 2.6.10-1jammy.20260326.021358
+ros-humble-teleop-twist-keyboard 2.4.1-1jammy.20260310.165649
+ros-humble-turtlebot4-navigation 1.0.5-1jammy.20260908.022938
+ros-humble-turtlebot4-simulator 1.0.3-1jammy.20260909.015224
+/home/anhbang/turtlebot4_lab_ws/install/turtlebot4_lab:/opt/ros/humble
+64
+1
+turtlebot4_lab_64

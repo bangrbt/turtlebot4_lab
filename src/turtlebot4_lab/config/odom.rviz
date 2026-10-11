@@ -1,0 +1,138 @@
+Panels:
+- Class: rviz_common/Displays
+  Name: Displays
+- Class: nav2_rviz_plugins/Navigation 2
+  Name: Navigation 2
+Visualization Manager:
+  Class: ''
+  Name: root
+  Enabled: true
+  Displays:
+  - Class: rviz_default_plugins/Grid
+    Name: Grid
+    Enabled: true
+    Cell Size: 1
+    Plane Cell Count: 20
+  - Class: rviz_default_plugins/RobotModel
+    Name: Robot
+    Enabled: true
+    Visual Enabled: true
+    Collision Enabled: false
+    Description Source: Topic
+    Description Topic:
+      Value: /robot_description
+      Depth: 5
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Durability Policy: Transient Local
+  - Class: rviz_default_plugins/LaserScan
+    Name: LiDAR /scan
+    Enabled: true
+    Topic:
+      Value: /scan
+      Depth: 5
+      History Policy: Keep Last
+      Reliability Policy: Best Effort
+      Durability Policy: Volatile
+    Size (Pixels): 3
+    Style: Points
+    Color Transformer: FlatColor
+    Color: 255; 50; 50
+  - Class: rviz_default_plugins/TF
+    Name: TF
+    Enabled: false
+    Show Names: true
+  - Class: rviz_default_plugins/Map
+    Name: Map
+    Enabled: false
+    Topic:
+      Value: /map
+      Depth: 5
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Durability Policy: Transient Local
+    Alpha: 0.8
+    Color Scheme: map
+    Draw Behind: true
+    Use Timestamp: false
+  - Class: rviz_default_plugins/PoseWithCovariance
+    Name: AMCL pose
+    Enabled: false
+    Topic:
+      Value: /amcl_pose
+      Depth: 5
+      History Policy: Keep Last
+      Reliability Policy: Best Effort
+      Durability Policy: Volatile
+  - Class: rviz_default_plugins/Map
+    Name: Global Costmap
+    Enabled: false
+    Topic:
+      Value: /global_costmap/costmap
+      Depth: 5
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Durability Policy: Transient Local
+    Alpha: 0.35
+    Color Scheme: costmap
+  - Class: rviz_default_plugins/Map
+    Name: Local Costmap
+    Enabled: false
+    Topic:
+      Value: /local_costmap/costmap
+      Depth: 5
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Durability Policy: Transient Local
+    Alpha: 0.35
+    Color Scheme: costmap
+  - Class: rviz_default_plugins/Path
+    Name: /plan
+    Enabled: false
+    Topic:
+      Value: /plan
+      Depth: 5
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Durability Policy: Volatile
+    Color: 0; 255; 0
+    Line Style: Lines
+    Line Width: 0.04
+  - Class: rviz_default_plugins/Path
+    Name: /local_plan
+    Enabled: false
+    Topic:
+      Value: /local_plan
+      Depth: 5
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Durability Policy: Volatile
+    Color: 0; 100; 255
+    Line Style: Lines
+    Line Width: 0.04
+  Global Options:
+    Fixed Frame: odom
+    Background Color: 48; 48; 48
+    Frame Rate: 20
+  Tools:
+  - Class: rviz_default_plugins/MoveCamera
+  - Class: rviz_default_plugins/Select
+  - Class: rviz_default_plugins/SetInitialPose
+    Topic:
+      Value: /initialpose
+      Depth: 5
+      History Policy: Keep Last
+      Reliability Policy: Reliable
+      Durability Policy: Volatile
+  - Class: nav2_rviz_plugins/GoalTool
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Scale: 45
+      Target Frame: <Fixed Frame>
+      X: 0
+      Y: 0
+      Angle: 0
+Window Geometry:
+  Width: 1150
+  Height: 800

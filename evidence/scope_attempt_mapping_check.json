@@ -1,0 +1,68 @@
+{
+  "stage": "mapping",
+  "ros_domain_id": "64",
+  "samples": {},
+  "tf": {},
+  "nodes": [
+    "controller_manager",
+    "gz_ros2_control",
+    "joint_state_broadcaster",
+    "rviz2",
+    "rviz_navigation_dialog_action_client",
+    "slam_toolbox",
+    "transform_listener_impl_59a878591f20",
+    "transform_listener_impl_5ab90c79e8b0",
+    "turtlebot4_lab_check"
+  ],
+  "endpoints": {
+    "/cmd_vel": {
+      "publishers": [],
+      "subscribers": []
+    },
+    "/diffdrive_controller/cmd_vel_unstamped": {
+      "publishers": [],
+      "subscribers": []
+    },
+    "/odom": {
+      "publishers": [],
+      "subscribers": [
+        {
+          "node": "/turtlebot4_lab_check",
+          "type": "nav_msgs/msg/Odometry"
+        }
+      ]
+    },
+    "/scan": {
+      "publishers": [],
+      "subscribers": [
+        {
+          "node": "/rviz2",
+          "type": "sensor_msgs/msg/LaserScan"
+        },
+        {
+          "node": "/turtlebot4_lab_check",
+          "type": "sensor_msgs/msg/LaserScan"
+        },
+        {
+          "node": "/slam_toolbox",
+          "type": "sensor_msgs/msg/LaserScan"
+        }
+      ]
+    }
+  },
+  "lifecycle": {},
+  "navigate_action_ready": null,
+  "errors": [
+    "clock: missing data or timestamps do not advance; check Play/bridge/QoS",
+    "scan: missing data or timestamps do not advance; check Play/bridge/QoS",
+    "odom: missing data or timestamps do not advance; check Play/bridge/QoS",
+    "scan: no finite returns within sensor range",
+    "map: no observed known cells",
+    "TF odom <- base_link: \"odom\" passed to lookupTransform argument target_frame does not exist. ",
+    "TF base_link <- rplidar_link: \"base_link\" passed to lookupTransform argument target_frame does not exist. ",
+    "TF map <- odom: \"map\" passed to lookupTransform argument target_frame does not exist. ",
+    "/cmd_vel has no subscribers; do not send motion"
+  ],
+  "passed": false,
+  "scope": "Topic/TF readiness only; GUI visibility, map quality and navigation outcomes require separate observation."
+}
