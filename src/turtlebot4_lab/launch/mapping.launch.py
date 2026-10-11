@@ -11,9 +11,12 @@ def generate_launch_description():
     nav = Path(get_package_share_directory('turtlebot4_navigation'))
     lab = Path(get_package_share_directory('turtlebot4_lab'))
     return LaunchDescription([
+        DeclareLaunchArgument('sync', default_value='false', choices=['true', 'false'],
+                              description='Async live mapping avoids a growing sync scan queue'),
         DeclareLaunchArgument('rviz', default_value='true', choices=['true', 'false']),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(str(nav / 'launch/slam.launch.py')),
-            launch_arguments={'use_sim_time': 'true', 'sync': 'true', 'namespace': ''}.items()),
+            launch_arguments={'use_sim_time': 'true', 'sync': LaunchConfiguration('sync'), 'namespace': '',
+                'params': str(lab / 'config/slam_mapping.yaml')}.items()),
         IncludeLaunchDescription(PythonLaunchDescriptionSource(str(lab / 'launch/view.launch.py')),
             launch_arguments={'enabled': LaunchConfiguration('rviz'), 'frame': 'map'}.items()),
     ])

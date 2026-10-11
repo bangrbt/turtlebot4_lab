@@ -163,7 +163,32 @@ Chỉ ghi đạt khi odom cho thấy dịch chuyển và vận tốc cuối gầ
 Gazebo và RViz vào `evidence/` (`01_gazebo.png`, `02_rviz_lidar.png`).
 **Ctrl+C Terminal A** khi kết thúc kiểm tra để chuyển sang phiên mapping sạch.
 
+### Robot bò chậm sau cập nhật NVIDIA
+
+Nếu `nvidia-smi` báo `Driver/library version mismatch`, so sánh với
+`cat /proc/driver/nvidia/version`. Phiên kiểm tra tăng tốc ghi nhận kernel driver
+595.91.07 và thư viện 595.99.02; Gazebo/RViz không tạo được GLX context. Khởi động
+lại máy để nạp driver đã cập nhật, rồi kiểm tra `nvidia-smi` và chạy lại các terminal
+simulation, mapping, hold teleop ở dưới. Nếu vẫn lệch sau reboot, kiểm tra lại cài
+đặt driver trước khi tiếp tục.
+
+Mesa software chỉ là phương án tạm theo từng tiến trình:
+`LIBGL_ALWAYS_SOFTWARE=1 __GLX_VENDOR_LIBRARY_NAME=mesa`; không thêm các biến này
+vào `lab_env.bash`. Phép đo `/clock` trong `evidence/simulation_speed.json` chỉ đạt
+0.092 lần thời gian thực, nên vận tốc lệnh 0.40 m/s vẫn rất chậm theo đồng hồ thực.
+Tăng vận tốc vượt giới hạn controller 0.46 m/s không giải quyết được nguyên nhân này.
+Bản đồ khảo sát chưa được lưu thành YAML/PGM; sau reboot cần chạy SLAM và khảo sát lại.
+
 ## Giai đoạn 2 — SLAM + teleoperation
+
+Mapping mặc định dùng launch SLAM chính thức với `sync:=false` và
+`config/slam_mapping.yaml` dựa trên cấu hình Humble: throttle_scans=4,
+minimum_travel_distance/heading=0.10, map_update_interval=1.0 s. Giữ độ phân giải
+0.05 m và loop closure. Điều chỉnh này xử lý lỗi queue >4000 scans/TF extrapolation
+đã xuất hiện khi sync xử lý không kịp. Có thể chọn `sync:=true` nếu cần, nhưng phải
+quan sát log tránh queue tăng trở lại. 0.40 m/s dành cho hành lang thoáng; giảm bằng
+spinbox khi vào góc hẹp hoặc map/scan bắt đầu lệch.
+
 
 **Terminal A** khởi động lại simulator cùng world, tắt RViz ở wrapper này:
 
@@ -183,7 +208,7 @@ ros2 launch turtlebot4_lab mapping.launch.py \
 
 ```bash
 ros2 action send_goal /undock irobot_create_msgs/action/Undock '{}' --feedback
-ros2 run turtlebot4_lab teleop_hold.py --speed 0.25 --turn 0.6 \
+ros2 run turtlebot4_lab teleop_hold.py --speed 0.40 --turn 0.8 \
   --log "$TB4_LAB_WS/evidence/teleop_hold.jsonl"
 ```
 
@@ -193,7 +218,7 @@ thả phím để dừng; không cần Enter. `W/↑/i` tiến, `S/↓/,` lùi, 
 DỪNG ROBOT dừng ngay. Chuyển focus sang cửa sổ khác cũng dừng. Lệnh phát 20 Hz,
 trạng thái phím được đọc trực tiếp từ X11, không qua bộ gõ Bamboo/IME, mỗi 50 ms;
 release được xử lý sau tối đa khoảng 50 ms (trong điều kiện GUI không bị treo).
-Tốc độ mặc định 0.25 m/s, quay 0.6 rad/s; spinbox giới hạn 0.35 m/s và 1 rad/s.
+Tốc độ mặc định 0.40 m/s, quay 0.8 rad/s; spinbox giới hạn 0.46 m/s và 1 rad/s.
 Script chỉ phát `/cmd_vel` vào Create 3 motion_control, không thay controller/driver;
 không cho chạy khi Nav2 đang hoạt động hoặc simulation clock đứng. Dùng Tkinter
 và Xlib (`python3-tk`, `python3-xlib`, đã có trên máy thực hành). Đóng cửa sổ để dừng teleop trước Nav2.

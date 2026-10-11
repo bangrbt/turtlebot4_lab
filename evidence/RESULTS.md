@@ -84,3 +84,29 @@ Build: build_hold_teleop.txt đạt. Test X11 + ROS thật: giữ W 0.832 s khô
 release và final odom velocity gần 0 (hold_teleop_check.json). Các lần kiểm tra
 chưa đạt được giữ riêng initial_/focus_attempt_ để không lẫn với test cuối.
 Teleop cũ dừng, chỉ giữ cửa sổ HOLD TELEOP mới; map chưa lưu và AMCL/Nav2 chưa chạy.
+
+## Cập nhật tốc độ teleop và tải SLAM
+
+Mặc định teleop mới 0.40 m/s, quay 0.8 rad/s. Giới hạn tiến/lùi 0.46 m/s đã đọc
+trực tiếp từ diffdrive_controller linear.x.max_velocity. Mapping chuyển async
+với config/slam_mapping.yaml dựa cấu hình Humble; throttle_scans=4, scan_queue_size=1,
+minimum_travel_distance/heading=0.10, map_update_interval=1 s. Build đạt trong
+build_speed_update.txt. Chưa suy ra chất lượng toàn bộ map từ kiểm tra readiness.
+
+SLAM/teleop cũ đã tắt khi bắt đầu lượt tăng tốc, chỉ còn Gazebo server orphan;
+không có map YAML/PGM được lưu. Log trước đó có hơn 4000 scan tồn đọng/TF lỗi,
+được giữ trong before_speed_mapping.log. Phiên mới ban đầu lỗi GLX, log riêng
+failed_glx_mapping_simulation.log và failed_glx_mapping.log.
+
+Driver NVIDIA kernel 595.91.07 lệch thư viện 595.99.02: graphics_driver_check.json.
+Phương án Mesa chỉ áp dụng cho tiến trình mới, không sửa hệ thống. RViz khởi động,
+check_runtime stage mapping đạt scan/odom/clock/TF map->odom: mapping_fast_check.json.
+Đo clock/wall RTF ~0.092: simulation_speed.json. Cần reboot để nạp driver mới rồi
+kiểm tra lại tốc độ thực; không tuyên bố vận tốc tăng 1.6 lần theo thời gian thực.
+Bài vẫn chờ người dùng khảo sát map thật, lưu map và các bước AMCL/Nav2/3 goal.
+
+Test X11 thực với bản nhanh: giữ W 4.007 s, 74 lệnh nonzero ở 0.40 m/s,
+đi 0.123 m; thả phím đưa /cmd_vel về zero sau 0.031 s. Test tổng hợp chưa đạt
+vì final odom sau 3 s đồng hồ thực vẫn 0.03465 m/s (speed_teleop_check.json);
+ở RTF ~0.092, cửa sổ chờ này quá ngắn theo thời gian mô phỏng. Bằng chứng kiểm
+tra dừng riêng sau đó ở speed_stop_check.json; không sửa kết quả thất bại gốc.

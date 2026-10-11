@@ -24,12 +24,12 @@ KEYS = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--speed', type=float, default=0.25)
-    parser.add_argument('--turn', type=float, default=0.6)
+    parser.add_argument('--speed', type=float, default=0.40)
+    parser.add_argument('--turn', type=float, default=0.8)
     parser.add_argument('--log', type=Path)
     args = parser.parse_args()
-    if not 0 < args.speed <= 0.35 or not 0 < args.turn <= 1:
-        parser.error('speed must be in (0, 0.35] m/s and turn in (0, 1] rad/s')
+    if not 0 < args.speed <= 0.46 or not 0 < args.turn <= 1:
+        parser.error('speed must be in (0, 0.46] m/s and turn in (0, 1] rad/s')
     rclpy.init()
     node = rclpy.create_node('turtlebot4_lab_hold_teleop')
     publisher = node.create_publisher(Twist, '/cmd_vel', 10)
@@ -162,7 +162,7 @@ def main():
             message.set(graph['reason'] if not graph['ready'] else 'Clock dung/paused — kiem tra Play.')
         else:
             try:
-                linear = min(0.35, max(0.05, float(speed.get())))
+                linear = min(0.46, max(0.05, float(speed.get())))
                 angular = min(1.0, max(0.1, float(turn.get())))
             except (ValueError, tk.TclError):
                 stop('Toc do khong hop le.')
@@ -183,7 +183,7 @@ def main():
     row = ttk.Frame(panel)
     row.pack(pady=10)
     ttk.Label(row, text='Tiến (m/s):').pack(side='left')
-    ttk.Spinbox(row, from_=0.05, to=0.35, increment=0.05, textvariable=speed, width=6).pack(side='left', padx=8)
+    ttk.Spinbox(row, from_=0.05, to=0.46, increment=0.05, textvariable=speed, width=6).pack(side='left', padx=8)
     ttk.Label(row, text='Quay (rad/s):').pack(side='left')
     ttk.Spinbox(row, from_=0.1, to=1.0, increment=0.1, textvariable=turn, width=6).pack(side='left', padx=8)
     ttk.Button(panel, text='DỪNG ROBOT', command=lambda: stop('Da nhan DUNG')).pack(pady=8)
