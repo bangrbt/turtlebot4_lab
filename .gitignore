@@ -19,7 +19,9 @@ __pycache__/
 
 # Ignore evidence, reports, and miscellaneous media/images
 /evidence/
+/report/
 /src/turtlebot4_lab/docs/
 *.png
 *.jpg
 *.jpeg
+*.pdf

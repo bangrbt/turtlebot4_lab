@@ -247,3 +247,4 @@ source install/setup.bash
 | **Không tìm thấy Topic / Node** | Sai ROS Domain hoặc biến môi trường bị phân mảnh | Đảm bảo tất cả các terminal đều chạy `source ~/turtlebot4_lab_ws/lab_env.bash` trước khi chạy lệnh. |
 | **Bản đồ SLAM bị lệch hoặc nhân đôi tường** | Robot di chuyển hoặc xoay góc quá nhanh làm quá tải bộ đệm quét laser | Cấu hình `slam_mapping.yaml` đã được thiết lập `async` với `throttle_scans: 4`. Khi lái hãy giảm tốc độ xoay cua chậm để loop closure xử lý chuẩn. |
 | **Tiến trình Gazebo cũ bị treo ngầm** | Đóng terminal đột ngột khiến daemon `ign gazebo` chưa giải phóng socket | Chạy script dọn dẹp: `ros2 run turtlebot4_lab cleanup_simulation.py --stop`. |
+
