@@ -1,0 +1,29 @@
+{
+  "weights": {
+    "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt",
+    "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1"
+  },
+  "assets": {
+    "person": {
+      "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Standing%20person",
+      "version": 3,
+      "license": "Creative Commons Zero v1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sdf_sha256": "7ce4c8a3197c1002e6f1699b595928c9f7064c55f6100ddb00131190c6ce3224"
+    },
+    "chair": {
+      "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Chair",
+      "version": 3,
+      "license": "Creative Commons Attribution 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by/4.0/",
+      "source_sdf_sha256": "81d55695df13fbc7475bfc2ed48d1632e64faacf80683d41a3e92627c1b3dbc9"
+    },
+    "horse": {
+      "url": "https://fuel.gazebosim.org/1.0/GoogleResearch/models/Breyer_Horse_Of_The_Year_2015",
+      "version": 1,
+      "license": "Creative Commons Attribution 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by/4.0/",
+      "source_sdf_sha256": "214c770cb9327bde2deaf7f529148db979450bf94f51218a7afde6e36f9a4e83"
+    }
+  }
+}

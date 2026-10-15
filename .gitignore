@@ -26,3 +26,21 @@ __pycache__/
 *.jpeg
 *.pdf
 *.zip
+
+# Lab05 Python/GPU caches and downloaded resources
+.venv_yolo/
+.cache_lab05/
+weights/
+*.pt
+*.onnx
+*.engine
+
+.pytest_cache/
+*.egg-info/
+
+# Small Lab05 simulation proof images only
+!/src/turtlebot4_lab05/validation/actual_trajectory.png
+!/src/turtlebot4_lab05/validation/camera_person_horse_chair.png
+!/src/turtlebot4_lab05/validation/rviz_during_navigation.png
+!/src/turtlebot4_lab05/validation/yolo_during_navigation.png
+!/src/turtlebot4_lab05/validation/yolo_before_navigation.png

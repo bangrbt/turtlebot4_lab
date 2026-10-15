@@ -1,0 +1,19 @@
+assets:
+  person:
+    owner: OpenRobotics
+    model: Standing person
+    license: CC0-1.0
+    version: 3
+    source_sdf_sha256: 7ce4c8a3197c1002e6f1699b595928c9f7064c55f6100ddb00131190c6ce3224
+  chair:
+    owner: OpenRobotics
+    model: Chair
+    license: CC-BY-4.0
+    version: 3
+    source_sdf_sha256: 81d55695df13fbc7475bfc2ed48d1632e64faacf80683d41a3e92627c1b3dbc9
+  horse:
+    owner: GoogleResearch
+    model: Breyer_Horse_Of_The_Year_2015
+    version: 1
+    license: CC-BY-4.0
+    source_sdf_sha256: 214c770cb9327bde2deaf7f529148db979450bf94f51218a7afde6e36f9a4e83

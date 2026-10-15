@@ -1,0 +1,61 @@
+validated: true
+world: maze
+objects:
+- name: lab05_person
+  asset: person
+  pose:
+  - -4.2
+  - 0.8
+  - 0.0
+  - 0
+  - 0
+  - 0
+  scale: 0.85
+  collision_size:
+  - 0.5
+  - 0.4
+  - 1.65
+- name: lab05_horse
+  asset: horse
+  pose:
+  - -3.3
+  - -0.45
+  - 0.0
+  - 0
+  - 0
+  - 1.5707963267948966
+  scale: 4.5
+  collision_size:
+  - 1.1
+  - 0.35
+  - 0.75
+- name: lab05_chair_1
+  asset: chair
+  pose:
+  - -3.8
+  - 1.65
+  - 0.0
+  - 0
+  - 0
+  - 1.57
+  scale: 1.0
+  collision_size:
+  - 0.65
+  - 0.65
+  - 0.9
+- name: lab05_chair_2
+  asset: chair
+  pose:
+  - 1.1
+  - -3.8
+  - 0.0
+  - 0
+  - 0
+  - 1.57
+  scale: 1.0
+  collision_size:
+  - 0.65
+  - 0.65
+  - 0.9
+validation_source: Lab04 occupancy map free-space check; mesh bounds measured from
+  downloaded Fuel models; initial runtime collision/visual check required before mission.

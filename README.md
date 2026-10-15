@@ -4,6 +4,8 @@ Repository mã nguồn bài tập mô phỏng **TurtleBot 4** trên hệ điều
 
 Nhánh **`assignments_1`** chứa toàn bộ cấu hình, launch files, bản đồ đã xây dựng và mã nguồn điều khiển hoàn chỉnh cho Bài tập 1.
 
+**Bài thực hành 05:** [AMCL, Nav2 tuần tự và YOLO GPU](src/turtlebot4_lab05/README.md) — nhánh `assignments_2`; [kết quả kiểm chứng](src/turtlebot4_lab05/VALIDATION.md).
+
 ---
 
 ## 1. Mục tiêu bài tập

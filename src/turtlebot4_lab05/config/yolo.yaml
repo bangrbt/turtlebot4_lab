@@ -1,0 +1,22 @@
+lab05_yolo:
+  ros__parameters:
+    use_sim_time: true
+    camera_topic: /oakd/rgb/preview/image_raw
+    weights: yolo11n.pt
+    device: '0'
+    cpu_fallback: true
+    confidence: 0.25
+    image_size: 640
+    inference_rate: 5.0
+    show_window: false
+    camera_timeout: 4.0
+    log_interval: 2.0
+    classes:
+    - person
+    - dog
+    - cat
+    - chair
+    - bottle
+    - backpack
+    - suitcase
+    - horse

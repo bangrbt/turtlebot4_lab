@@ -1,0 +1,14 @@
+2026-10-15 Asia/Ho_Chi_Minh
+colcon build --symlink-install --packages-select turtlebot4_lab05: PASSED
+1 package finished [7.24s]
+Python AST, YAML and package.xml parse: PASSED
+Imports rclpy, cv_bridge, cv2, torch, ultralytics: PASSED
+Original Lab04 map PGM byte equality and no tracked Lab04 map changes: PASSED
+Share: launches, config, maps, scripts, README, VALIDATION and evidence files installed: PASSED
+Executables: capture_waypoints, initialize_pose, sequential_navigation, spawn_demo_objects, yolo_node
+ros2 launch bringup.launch.py --show-args: PASSED
+ros2 launch yolo.launch.py --show-args: PASSED
+ROS_DOMAIN_ID=67 python -m pytest -q src/turtlebot4_lab05/test: 9 passed in 2.75s
+Runtime outcomes are documented separately in VALIDATION.md.
+Native RViz and OpenCV GUI: verified visible during live Nav2 RUNNING Goal_2; see windows_during_navigation.json
+Second autonomous mission with GUI: 3/3 SUCCEEDED, YOLO cuda:0, see gui_demo_summary.json
