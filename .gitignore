@@ -44,3 +44,6 @@ weights/
 !/src/turtlebot4_lab05/validation/rviz_during_navigation.png
 !/src/turtlebot4_lab05/validation/yolo_during_navigation.png
 !/src/turtlebot4_lab05/validation/yolo_before_navigation.png
+!/src/turtlebot4_lab05/validation/scattered_scene_layout.png
+!/src/turtlebot4_lab05/validation/scattered_rviz_during_navigation.png
+!/src/turtlebot4_lab05/validation/scattered_yolo_during_navigation.png

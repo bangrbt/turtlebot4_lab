@@ -24,6 +24,13 @@
       "license": "Creative Commons Attribution 4.0 International",
       "license_url": "http://creativecommons.org/licenses/by/4.0/",
       "source_sdf_sha256": "214c770cb9327bde2deaf7f529148db979450bf94f51218a7afde6e36f9a4e83"
+    },
+    "backpack": {
+      "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Backpack",
+      "version": 3,
+      "license": "Creative Commons Zero v1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sdf_sha256": "9c4fa51c48c7cb51601804b884251963b0bfcfa35b8733d23e8f9097468f20eb"
     }
   }
 }

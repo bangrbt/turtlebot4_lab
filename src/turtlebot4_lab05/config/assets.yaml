@@ -17,3 +17,9 @@ assets:
     version: 1
     license: CC-BY-4.0
     source_sdf_sha256: 214c770cb9327bde2deaf7f529148db979450bf94f51218a7afde6e36f9a4e83
+  backpack:
+    owner: OpenRobotics
+    model: Backpack
+    version: 3
+    license: CC0-1.0
+    source_sdf_sha256: 9c4fa51c48c7cb51601804b884251963b0bfcfa35b8733d23e8f9097468f20eb

@@ -8,6 +8,8 @@ import yaml
 import rclpy
 from rclpy.node import Node
 from ament_index_python.packages import get_package_share_directory
+from .scene_layout import validate_scene
+import time
 
 
 def prepare_sdf(asset_dir, item, output):
@@ -66,15 +68,35 @@ def main(args=None):
     share = Path(get_package_share_directory('turtlebot4_lab05'))
     node.declare_parameter('objects_file', str(share/'config/objects.yaml'))
     node.declare_parameter('world', 'maze')
+    node.declare_parameter('map_file', str(share/'maps/map.yaml'))
+    node.declare_parameter('replace_existing', False)
     node.declare_parameter('cache', os.getenv('TB4_LAB05_CACHE', str(Path.home()/'.cache/turtlebot4_lab05')))
     try:
         config = yaml.safe_load(Path(node.get_parameter('objects_file').value).expanduser().read_text())
         if config.get('validated') is not True:
             raise ValueError('Object positions/scales not yet validated')
+        if config.get('world') != node.get_parameter('world').value or config.get('world') != 'maze':
+            raise ValueError('Layout validated only for the maze world')
         cache = Path(node.get_parameter('cache').value).expanduser().resolve()
+        world_file = Path(get_package_share_directory('turtlebot4_ignition_bringup'))/'worlds/maze.sdf'
+        report = validate_scene(config, node.get_parameter('map_file').value, world_file)
+        cache.mkdir(parents=True, exist_ok=True)
+        (cache/'scene_layout_validation.json').write_text(json.dumps(report, indent=2)+'\n')
+        node.get_logger().info(f'Layout checks passed: {len(report["objects"])} objects, body-wall gap >= {report["minimum_wall_gap_m"]} m')
+        # Prepare every asset before removing anything from the running scene.
+        for item in config['objects']:
+            prepare_sdf(cache/'models'/item['asset'], item, cache/'spawn'/f'{item["name"]}.sdf')
         for item in config['objects']:
             output = cache/'spawn'/f'{item["name"]}.sdf'
-            prepare_sdf(cache/'models'/item['asset'], item, output)
+            if node.get_parameter('replace_existing').value:
+                removal = subprocess.run(['ign', 'service', '-s', '/world/'+node.get_parameter('world').value+'/remove',
+                    '--reqtype', 'ignition.msgs.Entity', '--reptype', 'ignition.msgs.Boolean',
+                    '--timeout', '5000', '--req', f'name: {json.dumps(item["name"])}, type: MODEL'],
+                    capture_output=True, text=True, timeout=8)
+                if removal.returncode:
+                    raise RuntimeError('Cannot contact object removal service: '+item['name'])
+                if 'data: true' in removal.stdout:
+                    time.sleep(0.3)
             x,y,z,roll,pitch,yaw = item['pose']
             # Quaternion uses Gazebo EntityFactory pose and preserves the local asset transforms.
             import math

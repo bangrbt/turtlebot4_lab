@@ -6,7 +6,44 @@ ROS 2 Humble. Không dùng teleop, click goal hoặc cập nhật initial pose t
 lượt mission dưới đây. Node tự gửi ba action liên tiếp. Dữ liệu ground truth
 chỉ được observer subscribe để đối chiếu; Nav2 dùng AMCL/LiDAR/odometry.
 
-## Lượt 2 — kiểm tra đủ ba nội dung với cửa sổ camera
+## Bố trí hiện tại — sáu vật thể rải rác, đã chạy lại
+
+Hướng dẫn quay theo thứ tự terminal và thời điểm Record: [VIDEO_DEMO.md](VIDEO_DEMO.md).
+Bố trí mới giữ nguyên ảnh map và cả ba waypoint. Ghế cũ ở (1.1,-3.8) không đủ
+khoảng hở phần thân với tường; đã chuyển sang phòng rộng phía đông. Thêm một
+người gần đoạn tới Goal_3 và một balô gần Goal_2, tổng 2 người + 1 ngựa + 2 ghế
++ 1 balô. Cấu hình sáu vật thể hiện tại thay cho bố trí bốn vật thể ở các lượt
+lịch sử phía dưới.
+
+[scene_layout.json](validation/scene_layout.json) đối chiếu cả vòng tròn bao
+footprint với map known-free/unknown, box tường SDF thật và khoảng cách các vật
+thể. Yêu cầu hở tường >=0.35 m, giữa các footprint >=0.60 m. Khoảng hở tường
+thật nhỏ nhất hiện tại 0.494 m (balô); hai ghế hở 0.60 m và 1.40 m. Đây là kiểm
+tra hình học bảo thủ, không suy ra bảo đảm an toàn mọi tình huống.
+
+![Bố trí sáu vật thể trên bản đồ cũ](validation/scattered_scene_layout.png)
+
+Lượt kiểm chứng mới: **3/3 SUCCEEDED**, mission_completed=true,
+yolo_interrupted=false. UUID Goal_1 a349bd4177f34f948061a58ff0bd1410, Goal_2
+a3e25217f24c42148486c6935927673c, Goal_3 dae38aef46844f72bc7491de7aa3dae4.
+YOLO có 713 ảnh annotated, 713/713 header khớp ảnh vào, 615 inference khi robot
+chuyển động; model thực ở cuda:0. Max confidence person=0.925, horse=0.953,
+chair=0.895. Không ghi nhận bump/cliff/stall/wheel drop trong lượt chạy.
+
+Balô Fuel CC0 v3 được thêm để đa dạng cảnh; model có lúc gán nhầm suitcase
+(confidence tối đa 0.624), không tính đó là backpack nhận diện đúng. Cũng có
+nhầm dog, không coi là model dog thật. Output giữ nguyên prediction pretrained,
+không thay nhãn. Manifest có URL/version/hash/giấy phép asset mới.
+
+Bằng chứng: [scattered_demo_summary.json](validation/scattered_demo_summary.json),
+[scattered_mission_events.json](validation/scattered_mission_events.json),
+[hai cửa sổ native khi Goal_3 RUNNING](validation/scattered_windows_during_navigation.json).
+12/12 kiểm thử qua, gồm hồi quy ghế cũ dính tường và vật thể chồng nhau
+([scene_tests.txt](validation/scene_tests.txt)). Spawn mới và thay scene đang tồn
+tại bằng replace_existing:=true đều đã chạy; chỉ thay tên model lab05_ được
+cấu hình, không sửa tường/nền/robot. Build cuối thành công.
+
+## Lượt 2 — lịch sử trước khi sắp xếp lại, cửa sổ camera
 
 Lượt chạy lại trên desktop ngày 15/10/2026 hoàn tất **3/3 goal SUCCEEDED**,
 YOLO và RViz mở cùng lúc. Cửa sổ `TurtleBot 4 Lab05 - YOLO RGB` thực sự ở
@@ -80,7 +117,7 @@ model hỗ trợ và đáp ứng nhóm động vật.
 
 ![Camera thật với bbox person, horse và chair](validation/camera_person_horse_chair.png)
 
-Bốn asset cuối: một Standing person CC0, một Breyer Horse và hai Chair CC-BY-4.0.
+Bốn asset trong lượt baseline cũ: một Standing person CC0, một Breyer Horse và hai Chair CC-BY-4.0.
 URL, owner, version và SHA256 trong [resources_manifest.json](config/resources_manifest.json);
 pose/scale/collision box trong [objects.yaml](config/objects.yaml). Các ảnh/mesh
 lớn tải từ Fuel, không đưa vào repository. Không thay tường/nền maze.
@@ -133,7 +170,7 @@ làm treo timeout. Không đổi timestamp ảnh/pose sang wall clock.
 | Timeout/retry/failure/Ctrl+C | Chẩn đoán Nav2 thật + regression tests; chỉ status=4 là thành công |
 | YOLO RGB thật/GPU/header/QoS | latest-frame worker, Best Effort, cv_bridge, CUDA model device, 533 header khớp |
 | Bbox/class/confidence/headless/log/rate | Annotated topic + ảnh thật; RViz; OpenCV tùy chọn; log_interval/inference_rate |
-| Người/động vật/đồ vật, 4–6 asset | 4 model static có collision; person/horse/chair thực sự nhận diện |
+| Người/động vật/đồ vật, 4–6 asset | Bố trí hiện tại 6 model static có collision; xem scene_layout.json và scattered_demo_summary.json |
 | YOLO chạy khi robot chuyển động | 428 inference có robot_moving=true; YOLO không phát cmd_vel/goal |
 | Không va chạm trong lượt demo | Không thấy bump/cliff/stall/wheel drop; quỹ đạo/pose/hazard quan sát được |
 | Dependency/build/install/README | package.xml/setup.py, requirements/lock, script setup/download, README tiếng Việt |

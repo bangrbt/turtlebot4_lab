@@ -7,6 +7,8 @@ chỉ chuyển goal khi status SUCCEEDED=4. Node `yolo_node` nhận camera RGB t
 YOLO11n trên RTX 3060 và xuất bbox/class/confidence. YOLO không phát vận tốc,
 không gửi goal và không thay chức năng tránh vật cản của Nav2.
 
+**Quay video từng bước (terminal nào, lệnh nào, bấm quay lúc nào): [VIDEO_DEMO.md](VIDEO_DEMO.md).**
+
 Kết quả kiểm chứng và đối chiếu đề bài: [VALIDATION.md](VALIDATION.md). Không dùng
 video bên ngoài hoặc kết quả nhận diện hard-code. Link video: **CHỜ người dùng
 quay/upload**. Repository: https://github.com/bangrbt/turtlebot4_lab/tree/assignments_2 .
@@ -74,7 +76,7 @@ sudo apt update
 sudo apt install ros-humble-turtlebot4-simulator ros-humble-turtlebot4-navigation \
   ros-humble-nav2-simple-commander ros-humble-cv-bridge ros-humble-rviz2 \
   python3-colcon-common-extensions python3-yaml python3-requests python3-pil \
-  python3-opencv python3-pytest
+  python3-opencv python3-pytest python3-scipy
 cd ~/turtlebot4_lab_ws
 source /opt/ros/humble/setup.bash
 colcon build --symlink-install --packages-select turtlebot4_lab turtlebot4_lab05
@@ -142,7 +144,16 @@ ros2 run turtlebot4_lab05 spawn_demo_objects
 ```
 
 Chỉ spawn một lần mỗi phiên simulator; tên model cố định, không tự nhân bản.
-World giữ nguyên tường/nền; chỉ thêm bốn asset trong `config/objects.yaml`.
+Để cập nhật scene đang tồn tại (không chạy khi mission active):
+
+```bash
+ros2 run turtlebot4_lab05 spawn_demo_objects --ros-args -p replace_existing:=true
+```
+
+Gate mới
+kiểm tra cả footprint với map/unknown, tường thật và các vật thể khác; xem
+`python src/turtlebot4_lab05/scripts/check_scene.py` và `validation/scene_layout.json`.
+World giữ nguyên tường/nền; chỉ thêm sáu vật thể trong `config/objects.yaml`.
 Undock có thể quay robot gần 180°, vì vậy đặt initial pose SAU undock theo hướng
 thật. RViz Fixed Frame `map`: chọn **2D Pose Estimate**, click vị trí trên map và
 kéo mũi tên đúng hướng robot. Kiểm tra LiDAR khớp tường. TF/lifecycle có dữ liệu
@@ -246,19 +257,23 @@ kiểm tra point thuộc known free, giữ margin và chỉ đánh dấu validat
 
 ## Vật thể và giới hạn nhận diện
 
-Bốn asset static từ Fuel, mesh/texture thật, có collision box bảo thủ đã đối chiếu
-kích thước mesh. Giấy phép/version/source hash ở assets.yaml/resources_manifest.json:
+Sáu vật thể static từ Fuel, mesh/texture thật, có collision box bảo thủ đã đối chiếu
+kích thước mesh. Khi đổi asset/scale, cần đo lại mesh (kể cả đơn vị Collada),
+cập nhật collision_size và footprint_radius rồi kiểm tra scene và chạy lại mission.
+Giấy phép/version/source hash ở assets.yaml/resources_manifest.json:
 
 | Nhóm | Asset | Class COCO | Bố trí |
 |---|---|---|---|
-| Người | OpenRobotics Standing person v3, CC0 | person | phía trước Goal_1 |
+| Người | OpenRobotics Standing person v3 ×2, CC0 | person | vùng trống tây bắc và gần đoạn tới Goal_3 |
 | Động vật | GoogleResearch Breyer_Horse_Of_The_Year_2015 v1, CC-BY-4.0 | horse | cạnh vùng nhìn Goal_1 |
-| Đồ vật | OpenRobotics Chair v3 ×2, CC-BY-4.0 | chair | khu Goal_1 và gần Goal_2 |
+| Đồ vật | OpenRobotics Chair v3 ×2, CC-BY-4.0 | chair | khu tây và phòng rộng phía đông |
+| Đồ vật | OpenRobotics Backpack v3, CC0 | backpack | vùng trống bên cạnh Goal_2 |
 
 Dog của GoogleResearch là thú nhồi bông, đã thử nhưng nhận nhầm; không dùng kết
 quả sai đó để hoàn thành nhóm động vật. Chọn horse sau khi quan sát nhận diện
 thật từ camera. Beer là lon, không dùng để giả class bottle. Không mặc định mọi
-asset Gazebo được pretrained nhận đúng. Trong lúc di chuyển hoặc nhìn vào tường,
+asset Gazebo được pretrained nhận đúng. Balô Fuel mới có thể bị YOLO gán nhầm
+`suitcase` ở một số góc; giữ nguyên output model, không tự đổi nhãn thành backpack. Trong lúc di chuyển hoặc nhìn vào tường,
 không detection là trạng thái bình thường; chỉ báo lớp được model dự đoán.
 
 Camera standard gốc 320×240; model nhỏ YOLO11n với imgsz=640 và tối đa 5 lần/s
@@ -309,7 +324,7 @@ colcon build --symlink-install --packages-select turtlebot4_lab05
 
 Tách unit/static/build với runtime thật trong VALIDATION.md. Test cố ý timeout
 hoặc Ctrl+C là lượt chẩn đoán, không tính vào lượt demo ba goal thành công.
-Khi quay: thấy world maze + bốn vật thể, map/scan/initial pose khớp; mở YOLO
+Khi quay: thấy world maze + sáu vật thể, map/scan/initial pose khớp; mở YOLO
 annotated với bbox/class/confidence và terminal actual_model_device=cuda:0; chạy
 node mission một lần, ghi Goal_1 SUCCEEDED → Goal_2 SUCCEEDED → Goal_3 SUCCEEDED
 và mission_completed. Không teleop/click goal sau khi bắt đầu. Có thể dừng ở mỗi
