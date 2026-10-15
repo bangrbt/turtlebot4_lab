@@ -6,7 +6,27 @@ ROS 2 Humble. Không dùng teleop, click goal hoặc cập nhật initial pose t
 lượt mission dưới đây. Node tự gửi ba action liên tiếp. Dữ liệu ground truth
 chỉ được observer subscribe để đối chiếu; Nav2 dùng AMCL/LiDAR/odometry.
 
-## Bố trí hiện tại — sáu vật thể rải rác, đã chạy lại
+## Cập nhật xe đạp & cây xanh + YOLO11s — chuẩn bị hoàn tất để người dùng tự kiểm tra
+
+Loại bỏ hoàn toàn biển STOP đen cũ (`lab05_stop_sign` đã được đưa vào `retired_object_names`).
+Bổ sung **xe đạp** (`bicycle`) và **cây sồi** (`oak_tree`), phân bố tối ưu tại các khoảng trống rộng nhất của bản đồ trên hành trình di chuyển của robot:
+- `lab05_horse` (-2.6, 0.1) & `lab05_chair_1` (-3.9, 1.3): thẳng trước mặt khi robot rời Dock và tiến vào Goal 1.
+- `lab05_bicycle` (2.10, -2.85): đặt tại sảnh Nam rộng (clearance 0.42m), nằm trực diện camera khi robot tới Goal 2 (góc lệch chỉ 17°, khoảng cách 1.12m).
+- `lab05_oak_tree` (2.50, 3.25): đặt tại hành lang Bắc thoáng (clearance 1.05m), nằm bên hành lang từ Goal 2 sang Goal 3.
+- `lab05_person` (-3.0, 3.3) & `lab05_chair_2` (6.3, -2.1): đặt tại các buồng mở rộng Tây Bắc và Đông Nam.
+
+YOLO mặc định `yolo11s.pt` (mAP 47.0, 9.4M tham số), confidence=0.35, NMS IoU=0.45, `show_window:=true`.
+Nhận diện 5 lớp COCO chuẩn: `person`, `bicycle`, `chair`, `potted plant`, `horse`.
+Xác nhận cùng lớp qua 2 frame liên tiếp (IoU >= 0.25, timeout 1.5s).
+Model/assets mới tải đầy đủ vào cache cục bộ, SDF texture mapping được xử lý tuyệt đối (offline), SHA256 đã pin.
+Đã kiểm tra offline/build/unit test đạt 100%, **tuyệt đối không tự ý chạy simulator/camera inference/demo** theo đúng yêu cầu người dùng để người dùng tự kiểm tra.
+
+Bộ lọc không sửa tên lớp: chỉ giữ prediction hiện tại đã xác nhận, xóa xác nhận
+khi lớp đổi/mất frame/timeout; ảnh và JSON thống nhất. Có thể giảm false positive
+thoáng qua, đổi lại độ trễ/recall khi camera quay nhanh. Camera đầu vào vẫn 320x240.
+Scene geometry hiện tại trong scene_layout.json và sơ đồ đã cập nhật STOP.
+
+## Lịch sử bố trí balô — sáu vật thể rải rác, đã chạy lại
 
 Hướng dẫn quay theo thứ tự terminal và thời điểm Record: [VIDEO_DEMO.md](VIDEO_DEMO.md).
 Bố trí mới giữ nguyên ảnh map và cả ba waypoint. Ghế cũ ở (1.1,-3.8) không đủ

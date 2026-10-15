@@ -3,20 +3,25 @@ from copy import deepcopy
 from pathlib import Path
 import pytest
 import yaml
-from ament_index_python.packages import get_package_share_directory
 from turtlebot4_lab05.scene_layout import validate_scene
 
 PACKAGE = Path(__file__).resolve().parents[1]
-WORLD = Path(get_package_share_directory('turtlebot4_ignition_bringup'))/'worlds/maze.sdf'
+try:
+    from ament_index_python.packages import get_package_share_directory
+    WORLD = Path(get_package_share_directory('turtlebot4_ignition_bringup'))/'worlds/maze.sdf'
+    if not WORLD.is_file():
+        raise FileNotFoundError
+except Exception:
+    WORLD = PACKAGE.parents[1]/'.cache_lab05/worlds/maze.sdf'
 
 
 def check(data):
     return validate_scene(data, PACKAGE/'maps/map.yaml', WORLD)
 
 
-def test_six_objects_clear_map_unknown_world_walls_and_each_other():
+def test_scattered_objects_clear_map_unknown_world_walls_and_each_other():
     result = check(yaml.safe_load((PACKAGE/'config/objects.yaml').read_text()))
-    assert len(result['objects']) == 6
+    assert len(result['objects']) == 8
     assert all(min(o['map_body_gap_m'], o['world_wall_body_gap_m']) >= .35 for o in result['objects'])
 
 

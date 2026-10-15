@@ -17,9 +17,27 @@ assets:
     version: 1
     license: CC-BY-4.0
     source_sdf_sha256: 214c770cb9327bde2deaf7f529148db979450bf94f51218a7afde6e36f9a4e83
-  backpack:
+  stop_sign:
     owner: OpenRobotics
-    model: Backpack
+    model: Stop Sign
     version: 3
     license: CC0-1.0
-    source_sdf_sha256: 9c4fa51c48c7cb51601804b884251963b0bfcfa35b8733d23e8f9097468f20eb
+    source_sdf_sha256: 53e8d9feb81a70e82344f6dcfdd9b963529d3653dc265ca49100cac1d7b24271
+  bicycle:
+    owner: athackst
+    model: bicycle
+    version: 2
+    license: CC-BY-4.0
+    source_sdf_sha256: fd94a45e6df1302a1b9cf6260ca97ead326ecd49f355a11662357bc1513a04a5
+  oak_tree:
+    owner: OpenRobotics
+    model: Oak tree
+    version: 7
+    license: CC0-1.0
+    source_sdf_sha256: d65256d1666b4a5b5beda602f11982ce87855e1570dcf6d11946e47d5dc46941
+  fire_hydrant:
+    owner: OpenRobotics
+    model: Fire hydrant
+    version: 3
+    license: CC0-1.0
+    source_sdf_sha256: f0ce65482ef5199a72615012a63f6dc2602834c4282c3dcc9e6416164c8ec00f

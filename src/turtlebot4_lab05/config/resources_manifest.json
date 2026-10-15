@@ -1,7 +1,8 @@
 {
   "weights": {
-    "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt",
-    "sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1"
+    "filename": "yolo11s.pt",
+    "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11s.pt",
+    "sha256": "85a76fe86dd8afe384648546b56a7a78580c7cb7b404fc595f97969322d502d5"
   },
   "assets": {
     "person": {
@@ -25,12 +26,33 @@
       "license_url": "http://creativecommons.org/licenses/by/4.0/",
       "source_sdf_sha256": "214c770cb9327bde2deaf7f529148db979450bf94f51218a7afde6e36f9a4e83"
     },
-    "backpack": {
-      "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Backpack",
+    "stop_sign": {
+      "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Stop%20Sign",
       "version": 3,
       "license": "Creative Commons Zero v1.0 Universal",
       "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "source_sdf_sha256": "9c4fa51c48c7cb51601804b884251963b0bfcfa35b8733d23e8f9097468f20eb"
+      "source_sdf_sha256": "53e8d9feb81a70e82344f6dcfdd9b963529d3653dc265ca49100cac1d7b24271"
+    },
+    "bicycle": {
+      "url": "https://fuel.gazebosim.org/1.0/athackst/models/bicycle",
+      "version": 2,
+      "license": "Creative Commons Attribution 4.0 International",
+      "license_url": "http://creativecommons.org/licenses/by/4.0/",
+      "source_sdf_sha256": "fd94a45e6df1302a1b9cf6260ca97ead326ecd49f355a11662357bc1513a04a5"
+    },
+    "oak_tree": {
+      "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Oak%20tree",
+      "version": 7,
+      "license": "Creative Commons Zero v1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sdf_sha256": "d65256d1666b4a5b5beda602f11982ce87855e1570dcf6d11946e47d5dc46941"
+    },
+    "fire_hydrant": {
+      "url": "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Fire%20hydrant",
+      "version": 3,
+      "license": "Creative Commons Zero v1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "source_sdf_sha256": "f0ce65482ef5199a72615012a63f6dc2602834c4282c3dcc9e6416164c8ec00f"
     }
   }
 }

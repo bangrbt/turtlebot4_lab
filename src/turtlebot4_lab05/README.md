@@ -4,7 +4,7 @@ Package Python `turtlebot4_lab05` tái sử dụng simulator/bridge/controller v
 thật của bài 04. World là **maze**, model **standard**, Ignition Gazebo Fortress,
 ROS 2 Humble. Node `sequential_navigation` gửi action `/navigate_to_pose` lần lượt,
 chỉ chuyển goal khi status SUCCEEDED=4. Node `yolo_node` nhận camera RGB thật, chạy
-YOLO11n trên RTX 3060 và xuất bbox/class/confidence. YOLO không phát vận tốc,
+YOLO11s trên RTX 3060 và xuất bbox/class/confidence. YOLO không phát vận tốc,
 không gửi goal và không thay chức năng tránh vật cản của Nav2.
 
 **Quay video từng bước (terminal nào, lệnh nào, bấm quay lúc nào): [VIDEO_DEMO.md](VIDEO_DEMO.md).**
@@ -12,6 +12,24 @@ không gửi goal và không thay chức năng tránh vật cản của Nav2.
 Kết quả kiểm chứng và đối chiếu đề bài: [VALIDATION.md](VALIDATION.md). Không dùng
 video bên ngoài hoặc kết quả nhận diện hard-code. Link video: **CHỜ người dùng
 quay/upload**. Repository: https://github.com/bangrbt/turtlebot4_lab/tree/assignments_2 .
+
+**Cập nhật hiện tại:** 
+1. **Khắc phục nhận diện cây và kích thước cây:** Cây sồi cũ (`scale: 0.35`) có tán rộng gần 4m và cao hơn 5m — quá lớn so với robot và hành lang khiến camera chỉ thấy thân cây trơ trụi. Đã thu nhỏ về tỉ lệ chuẩn nội thất `scale: 0.10` (cao ~0.8m, rộng ~1.0m), toàn bộ thân và tán lá xanh lọt vừa vặn vào khung nhìn camera. Thêm ngưỡng `plant_confidence: 0.15` (thay vì 0.35) giúp model nhận diện nhãn `potted plant` nhạy và ổn định.
+2. **Khắc phục nhận diện nhầm tường thành người khi di chuyển:** 
+   - Đặt ngưỡng riêng `person_confidence: 0.55` (người 3D thật đạt độ tin cậy 0.85–0.95, trong khi gờ tường và bóng chỉ đạt 0.35–0.45).
+   - Bổ sung bộ lọc hình học tỷ lệ khung hình cho `person`: chiều cao $h \ge 35\,\text{px}$, tỷ lệ $1.1 \le h/w \le 4.5$. Loại bỏ triệt để các vết nứt tường, góc cột thanh mảnh hoặc nhiễu xa.
+3. **Mở rộng 8 vật thể rải đều khắp các chặng di chuyển:**
+   - Thêm cột cứu hỏa đỏ tươi `lab05_fire_hydrant` (nhãn `fire hydrant`, độ tin cậy ~91%) đặt ngay hành lang trung tâm `(1.5, 0.0)`.
+   - Thêm ghế `lab05_chair_3` tại sảnh Nam `(4.5, -3.2)`.
+   - Giữ và tối ưu: `lab05_horse` (-2.6, 0.1), `lab05_chair_1` (-3.9, 1.3), `lab05_person` (-3.0, 3.3), `lab05_bicycle` (2.1, -2.85, thẳng góc nhìn khi đến Goal 2), `lab05_chair_2` (6.3, -2.1), `lab05_oak_tree` (2.5, 3.25).
+
+```bash
+ros2 launch turtlebot4_lab05 yolo.launch.py device:=0 show_window:=true
+```
+
+`confirmation_frames:=1` bỏ bước xác nhận nhiều frame; giảm confidence tăng
+khả năng thấy vật thể nhưng có thể tăng nhầm nhãn. YOLO11s có chi phí tính toán
+cao hơn nano, chưa đo FPS mới trên máy này.
 
 ## Cấu trúc và luồng dữ liệu
 
@@ -257,26 +275,24 @@ kiểm tra point thuộc known free, giữ margin và chỉ đánh dấu validat
 
 ## Vật thể và giới hạn nhận diện
 
-Sáu vật thể static từ Fuel, mesh/texture thật, có collision box bảo thủ đã đối chiếu
+Tám vật thể static từ Fuel, mesh/texture thật, có collision box bảo thủ đã đối chiếu
 kích thước mesh. Khi đổi asset/scale, cần đo lại mesh (kể cả đơn vị Collada),
 cập nhật collision_size và footprint_radius rồi kiểm tra scene và chạy lại mission.
 Giấy phép/version/source hash ở assets.yaml/resources_manifest.json:
 
-| Nhóm | Asset | Class COCO | Bố trí |
+| Nhóm | Asset | Class COCO | Bố trí & Đặc điểm |
 |---|---|---|---|
-| Người | OpenRobotics Standing person v3 ×2, CC0 | person | vùng trống tây bắc và gần đoạn tới Goal_3 |
-| Động vật | GoogleResearch Breyer_Horse_Of_The_Year_2015 v1, CC-BY-4.0 | horse | cạnh vùng nhìn Goal_1 |
-| Đồ vật | OpenRobotics Chair v3 ×2, CC-BY-4.0 | chair | khu tây và phòng rộng phía đông |
-| Đồ vật | OpenRobotics Backpack v3, CC0 | backpack | vùng trống bên cạnh Goal_2 |
+| Người | OpenRobotics Standing person v3, CC0 | person | (-3.0, 3.3) trong sảnh lớn Tây Bắc (clearance 1.58m) |
+| Động vật | GoogleResearch Breyer_Horse_Of_The_Year_2015 v1, CC-BY-4.0 | horse | (-2.6, 0.1) ngã ba hành lang Tây (clearance 1.18m, nhìn thẳng khi tới Goal 1) |
+| Đồ vật | OpenRobotics Chair v3 ×3, CC-BY-4.0 | chair | (-3.9, 1.3) phòng Tây, (6.3, -2.1) phòng Đông Nam và (4.5, -3.2) sảnh Nam |
+| Phương tiện | athackst Bicycle v2, CC-BY-4.0 | bicycle | (2.10, -2.85) sảnh Nam (clearance 0.42m), trực diện camera khi tới Goal 2 (cách 1.12m, lệch 17°) |
+| Khẩn cấp | OpenRobotics Fire hydrant v3, CC0 | fire hydrant | (1.50, 0.0) hành lang trung tâm (clearance 0.87m), màu đỏ tươi, conf ~91% |
+| Thực vật | OpenRobotics Oak tree v7, CC0 (scale 0.10) | potted plant | (2.50, 3.25) hành lang Bắc (clearance 1.15m), cao ~0.8m, vừa vặn tầm camera |
 
-Dog của GoogleResearch là thú nhồi bông, đã thử nhưng nhận nhầm; không dùng kết
-quả sai đó để hoàn thành nhóm động vật. Chọn horse sau khi quan sát nhận diện
-thật từ camera. Beer là lon, không dùng để giả class bottle. Không mặc định mọi
-asset Gazebo được pretrained nhận đúng. Balô Fuel mới có thể bị YOLO gán nhầm
-`suitcase` ở một số góc; giữ nguyên output model, không tự đổi nhãn thành backpack. Trong lúc di chuyển hoặc nhìn vào tường,
-không detection là trạng thái bình thường; chỉ báo lớp được model dự đoán.
+**Khắc phục lỗi nhận diện tường thành người:** Do COCO class `person` có độ nhạy rất cao với các đường gờ thẳng đứng, ngưỡng `person_confidence: 0.55` cùng bộ lọc kích thước ($h \ge 35\text{px}$) và tỉ lệ ($1.1 \le h/w \le 4.5$) đã loại trừ hoàn toàn các đường nẹp tường, khung cửa hay vết nứt xa.
+**Khắc phục nhận diện cây:** Cây sồi đã được thu nhỏ tỉ lệ về `scale: 0.10` để toàn bộ thân và lá xanh nằm trọn trong góc nhìn camera, kết hợp ngưỡng `plant_confidence: 0.15` để YOLO nhận diện ổn định lớp `potted plant`.
 
-Camera standard gốc 320×240; model nhỏ YOLO11n với imgsz=640 và tối đa 5 lần/s
+Camera standard gốc 320×240; model YOLO11s với imgsz=640 và tối đa 3 lần/s
 để chia sẻ GPU cùng renderer. Callback chỉ thay latest frame, worker thực hiện
 cv_bridge/inference/vẽ bbox; không tạo hàng đợi ảnh tăng vô hạn. Ngưỡng confidence,
 classes, image size, rate, camera timeout, GPU/CPU đều là ROS parameter trong

@@ -17,7 +17,7 @@ source lab_env.bash
 ros2 run turtlebot4_lab cleanup_simulation.py --stop
 ```
 
-Build/tải tài nguyên **một lần, trước khi quay**, nhất là asset balô mới:
+Build/tải tài nguyên **một lần, trước khi quay**, nhất là asset STOP và weights YOLO11s mới:
 
 ```bash
 cd ~/turtlebot4_lab_ws
@@ -31,7 +31,7 @@ python src/turtlebot4_lab05/scripts/check_scene.py
 
 `check_scene.py` phải passed=true: kiểm tra cả thân vật thể với tường thật,
 map/unknown, khoảng cách giữa các vật thể. Không chỉ kiểm tra tâm. Bố trí hiện tại
-có 2 người, 1 ngựa, 2 ghế, 1 balô. Bản đồ gốc và ba waypoint giữ nguyên.
+có 2 người, 1 ngựa, 2 ghế, 1 biển STOP. Bản đồ gốc và ba waypoint giữ nguyên.
 
 Mở các terminal A, B, C, D, E, F. **Đầu mỗi terminal**, chạy ba dòng sau:
 
@@ -62,7 +62,7 @@ ros2 run turtlebot4_lab05 spawn_demo_objects
 ros2 action send_goal /undock irobot_create_msgs/action/Undock '{}' --feedback
 ```
 
-Chờ undock **SUCCEEDED**. Quan sát Gazebo: sáu vật thể đứng riêng, hai ghế không
+Chờ undock **SUCCEEDED**. Quan sát Gazebo: tám vật thể đứng riêng, ba ghế không
 chạm tường. Chỉ spawn một lần cho world mới. Nếu đang cập nhật một scene đã có
 vật thể, dùng lệnh dưới **thay cho** lệnh spawn thường:
 
@@ -70,7 +70,7 @@ vật thể, dùng lệnh dưới **thay cho** lệnh spawn thường:
 ros2 run turtlebot4_lab05 spawn_demo_objects --ros-args -p replace_existing:=true
 ```
 
-Lệnh replace chỉ thay các model `lab05_` trong objects.yaml, giữ nguyên robot,
+Lệnh replace gỡ cả `lab05_backpack` cũ, rồi thay các model `lab05_` trong objects.yaml, giữ nguyên robot,
 tường và nền. Không chạy trong lúc đang thực hiện mission.
 
 ## 3. BẮT ĐẦU QUAY, rồi Terminal B — nạp map cũ
@@ -132,9 +132,7 @@ ros2 topic echo /yolo/status --once --qos-durability transient_local --full-leng
 
 Cần state=ready và actual_model_device=cuda:0. Khi có vật thể trong tầm nhìn,
 YOLO hiện bbox, nhãn, confidence. Khi nhìn tường hoặc không thấy vật thể,
-không có bbox là bình thường; ảnh vẫn phải cập nhật. Model có class backpack; trong lượt thử balô này có lúc bị gán nhầm suitcase.
-Đó là output thực, không tự sửa nhãn để giả nhận diện đúng. Người, ngựa và ghế
-đã nhận diện được; không hứa mọi asset luôn được nhận đúng ở mọi góc.
+không có bbox là bình thường; ảnh vẫn phải cập nhật. Bản hiện tại dùng YOLO11s với 8 vật thể rải đều (xe đạp, cây sồi thu nhỏ, cột cứu hỏa đỏ, ngựa, 3 ghế, người). Đã kích hoạt bộ lọc hình học + ngưỡng `person_confidence: 0.55` để triệt tiêu việc nhận nhầm tường/góc thành người, và hạ `plant_confidence: 0.15` để nhận diện cây ổn định.
 Không nhấn q/Esc hoặc đóng cửa sổ camera trong đoạn mission cần quay.
 
 ## 6. Terminal E — ghi bằng chứng tự động (khuyên dùng)
@@ -195,7 +193,7 @@ PY
 Quay thêm 5–10 giây thấy ba SUCCEEDED, completed=3, RViz/camera vẫn mở rồi **Stop
 Recording**. Không chỉ quay bảng cuối: phần robot thực sự đi qua cả ba goal và
 camera chạy đồng thời phải có trong video. Có thể cho xem thêm person, horse,
-chair/backpack đã nhận diện trong các khung hình thật; không ghép ảnh tĩnh thành
+chair/stop sign đã nhận diện trong các khung hình thật; không ghép ảnh tĩnh thành
 camera giả. Thời gian chạy phụ thuộc tải máy, không cắt lượt chỉ vì chạy chậm.
 
 Sau khi đã dừng quay: Ctrl+C D (YOLO), B (Nav2), A (simulator); E tự xong hoặc

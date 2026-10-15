@@ -42,22 +42,40 @@
       "world_wall_body_gap_m": 1.4
     },
     {
-      "name": "lab05_backpack",
-      "asset": "backpack",
-      "x": 1.8,
-      "y": -3.15,
-      "radius": 0.32,
-      "map_body_gap_m": 0.5005067993718572,
-      "world_wall_body_gap_m": 0.4939410298049854
+      "name": "lab05_bicycle",
+      "asset": "bicycle",
+      "x": 2.1,
+      "y": -2.85,
+      "radius": 0.6800735254367722,
+      "map_body_gap_m": 0.3845711355039005,
+      "world_wall_body_gap_m": 0.41992647456322785
     },
     {
-      "name": "lab05_person_north",
-      "asset": "person",
-      "x": 2.1,
-      "y": 3.9,
-      "radius": 0.42,
-      "map_body_gap_m": 0.5446446609406727,
-      "world_wall_body_gap_m": 0.6800000000000002
+      "name": "lab05_fire_hydrant",
+      "asset": "fire_hydrant",
+      "x": 1.5,
+      "y": 0.0,
+      "radius": 0.25,
+      "map_body_gap_m": 0.7658344630221047,
+      "world_wall_body_gap_m": 0.8680339887498949
+    },
+    {
+      "name": "lab05_oak_tree",
+      "asset": "oak_tree",
+      "x": 2.5,
+      "y": 3.25,
+      "radius": 0.3535533905932738,
+      "map_body_gap_m": 1.011091270347399,
+      "world_wall_body_gap_m": 1.1464466094067263
+    },
+    {
+      "name": "lab05_chair_3",
+      "asset": "chair",
+      "x": 4.5,
+      "y": -3.2,
+      "radius": 0.5,
+      "map_body_gap_m": 0.4708752508155782,
+      "world_wall_body_gap_m": 0.44339811320566025
     }
   ],
   "scope": "Conservative enclosing XY disks; known-free map including unknown and actual maze wall boxes; not a navigation/collision guarantee."

@@ -13,17 +13,21 @@ from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from cv_bridge import CvBridge
+from .detection_filter import DetectionConfirmation
 
 
 class YoloNode(Node):
     def __init__(self):
         super().__init__('lab05_yolo')
         defaults = dict(camera_topic='/oakd/rgb/preview/image_raw',
-                        annotated_topic='/yolo/annotated_image', weights='yolo11n.pt',
-                        device='0', cpu_fallback=True, confidence=0.25, image_size=640,
-                        inference_rate=5.0, show_window=False, camera_timeout=4.0,
-                        log_interval=2.0, classes=['person', 'dog', 'cat', 'chair', 'bottle', 'backpack', 'suitcase'],
-                        log_file='', torch_threads=1)
+                        annotated_topic='/yolo/annotated_image', weights='yolo11s.pt',
+                        device='0', cpu_fallback=True, confidence=0.30, image_size=640,
+                        inference_rate=3.0, show_window=True, camera_timeout=4.0,
+                        log_interval=2.0, classes=['person', 'bicycle', 'chair', 'potted plant', 'horse', 'fire hydrant'],
+                        person_confidence=0.55, plant_confidence=0.15, min_box_height=35,
+                        person_aspect_min=1.1, person_aspect_max=4.5,
+                        log_file='', torch_threads=1, nms_iou=0.45, confirmation_frames=2,
+                        confirmation_iou=0.25, confirmation_timeout=1.5)
         for key, value in defaults.items():
             self.declare_parameter(key, value)
         self.params = {key: self.get_parameter(key).value for key in defaults}
@@ -33,7 +37,10 @@ class YoloNode(Node):
             raise ValueError('Invalid image_size or camera_timeout')
         weights = Path(os.path.expandvars(self.params['weights'])).expanduser()
         if not weights.is_absolute():
-            weights = Path(os.getenv('TB4_LAB05_CACHE', str(Path.home()/'.cache/turtlebot4_lab05')))/weights
+            cache_dir = Path(os.getenv('TB4_LAB05_CACHE')) if os.getenv('TB4_LAB05_CACHE') else None
+            if not cache_dir:
+                cache_dir = Path.cwd()/'.cache_lab05' if (Path.cwd()/'.cache_lab05').is_dir() else Path.home()/'.cache/turtlebot4_lab05'
+            weights = cache_dir/weights
         if not weights.is_file():
             raise FileNotFoundError(f'Weights missing: {weights}. Run download_resources.py first; no download during demo.')
         import torch
@@ -53,6 +60,10 @@ class YoloNode(Node):
             self.get_logger().warning('CUDA unavailable: explicit configured CPU fallback')
         else:
             raise RuntimeError('CUDA unavailable and cpu_fallback=false')
+        if not 0 < self.params['nms_iou'] <= 1:
+            raise ValueError('nms_iou in (0,1] required')
+        self.confirmation = DetectionConfirmation(self.params['confirmation_frames'],
+            self.params['confirmation_iou'], self.params['confirmation_timeout'])
         self.model = YOLO(str(weights))
         self.class_ids = [index for index, name in self.model.names.items() if name in self.params['classes']]
         missing = set(self.params['classes'])-set(self.model.names.values())
@@ -135,27 +146,55 @@ class YoloNode(Node):
             began = time.monotonic()
             try:
                 image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+                predict_conf = min(self.params['confidence'], self.params.get('plant_confidence', 0.15))
                 result = self.model.predict(source=image, device=self.device, imgsz=self.params['image_size'],
-                                            conf=self.params['confidence'], classes=self.class_ids,
+                                            conf=predict_conf, iou=self.params['nms_iou'], classes=self.class_ids,
                                             verbose=False)[0]
                 if self.device != 'cpu':
                     self.torch.cuda.synchronize()
                 elapsed_ms = (time.monotonic()-began)*1000
                 self.actual_device = str(next(self.model.model.parameters()).device)
                 detections = []
+                keep_raw_indices = []
                 if result.boxes is not None:
-                    for box in result.boxes:
+                    for raw_idx, box in enumerate(result.boxes):
                         index = int(box.cls.item())
-                        detections.append(dict(class_id=index, label=self.model.names[index],
-                                               confidence=float(box.conf.item()),
-                                               xyxy=[float(v) for v in box.xyxy[0].tolist()]))
-                annotated = result.plot()
+                        label = self.model.names[index]
+                        conf = float(box.conf.item())
+                        xyxy = [float(v) for v in box.xyxy[0].tolist()]
+                        w = max(0.0, xyxy[2] - xyxy[0])
+                        h = max(0.0, xyxy[3] - xyxy[1])
+                        # Filter false-positive person detections on walls, corners, or distant noise
+                        if label == 'person':
+                            if conf < self.params.get('person_confidence', 0.55):
+                                continue
+                            if h < self.params.get('min_box_height', 35):
+                                continue
+                            aspect = h / max(w, 1.0)
+                            if aspect < self.params.get('person_aspect_min', 1.1) or aspect > self.params.get('person_aspect_max', 4.5):
+                                continue
+                        elif label == 'potted plant':
+                            if conf < self.params.get('plant_confidence', 0.15):
+                                continue
+                        else:
+                            if conf < self.params['confidence']:
+                                continue
+                        detections.append(dict(class_id=index, label=label,
+                                               confidence=conf, xyxy=xyxy))
+                        keep_raw_indices.append(raw_idx)
+                raw_detection_count = len(detections)
+                stamp = msg.header.stamp.sec+msg.header.stamp.nanosec/1e9
+                keep = self.confirmation.update(detections, stamp, time.monotonic())
+                detections = [detections[i] for i in keep]
+                annotated_indices = [keep_raw_indices[i] for i in keep]
+                annotated = result[annotated_indices].plot() if annotated_indices else image.copy()
                 message = self.bridge.cv2_to_imgmsg(annotated, encoding='bgr8')
                 message.header = msg.header
                 self.image_publisher.publish(message)
                 payload = dict(stamp=dict(sec=msg.header.stamp.sec, nanosec=msg.header.stamp.nanosec),
                                frame_id=msg.header.frame_id, detections=detections, device=self.device,
-                               inference_ms=elapsed_ms, input_sequence=sequence, actual_model_device=self.actual_device)
+                               inference_ms=elapsed_ms, input_sequence=sequence, actual_model_device=self.actual_device,
+                               raw_detection_count=raw_detection_count, confirmation_frames=self.params['confirmation_frames'])
                 self.detection_publisher.publish(String(data=json.dumps(payload)))
                 with self.lock:
                     self.preview = annotated if self.params['show_window'] else None
@@ -169,6 +208,7 @@ class YoloNode(Node):
                     self.last_log = time.monotonic()
                     self.log('inference', **payload, no_detection=not detections)
             except Exception as exc:
+                self.confirmation.reset()
                 errors += 1
                 self.error = str(exc)
                 self.log('inference_error', error=str(exc), consecutive_errors=errors)

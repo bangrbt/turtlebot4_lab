@@ -4,7 +4,6 @@ import argparse
 import json
 from pathlib import Path
 import yaml
-from ament_index_python.packages import get_package_share_directory
 from turtlebot4_lab05.scene_layout import validate_scene
 
 
@@ -15,7 +14,13 @@ def main():
     parser.add_argument('--plot', type=Path)
     args = parser.parse_args()
     config = yaml.safe_load((share/'config/objects.yaml').read_text())
-    world = Path(get_package_share_directory('turtlebot4_ignition_bringup'))/'worlds/maze.sdf'
+    try:
+        from ament_index_python.packages import get_package_share_directory
+        world = Path(get_package_share_directory('turtlebot4_ignition_bringup'))/'worlds/maze.sdf'
+        if not world.is_file():
+            raise FileNotFoundError
+    except Exception:
+        world = share.parents[1]/'.cache_lab05/worlds/maze.sdf'
     report = validate_scene(config, share/'maps/map.yaml', world)
     print(json.dumps(report, indent=2))
     if args.output:
@@ -32,12 +37,12 @@ def main():
         x, y, angle = meta['origin']
         if angle:
             raise ValueError('Plot only supports this zero-yaw maze map')
-        colors = dict(person='#2ca02c', horse='#ff7f0e', chair='#1f77b4', backpack='#9467bd')
+        colors = dict(person='#2ca02c', horse='#ff7f0e', chair='#1f77b4', bicycle='#9467bd', oak_tree='#2ca02c', fire_hydrant='#d62728', stop_sign='#7f7f7f')
         fig, ax = plt.subplots(figsize=(11, 8))
         ax.imshow(image, cmap='gray', vmin=0, vmax=255, origin='upper',
                   extent=(x,x+image.width*meta['resolution'],y,y+image.height*meta['resolution']))
         for o in report['objects']:
-            color = colors[o['asset']]
+            color = colors.get(o['asset'], '#17becf')
             ax.add_patch(Circle((o['x'],o['y']),o['radius'],color=color,alpha=.3))
             ax.scatter(o['x'],o['y'],color=color,s=30)
             ax.annotate(o['name'].replace('lab05_',''),(o['x'],o['y']),xytext=(6,7),textcoords='offset points',fontsize=9)

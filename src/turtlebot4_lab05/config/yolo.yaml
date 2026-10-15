@@ -2,21 +2,25 @@ lab05_yolo:
   ros__parameters:
     use_sim_time: true
     camera_topic: /oakd/rgb/preview/image_raw
-    weights: yolo11n.pt
+    weights: yolo11s.pt
     device: '0'
     cpu_fallback: true
-    confidence: 0.25
+    confidence: 0.30
+    person_confidence: 0.55
+    plant_confidence: 0.15
     image_size: 640
-    inference_rate: 5.0
-    show_window: false
+    inference_rate: 3.0
+    show_window: true
     camera_timeout: 4.0
     log_interval: 2.0
     classes:
     - person
-    - dog
-    - cat
+    - bicycle
     - chair
-    - bottle
-    - backpack
-    - suitcase
+    - potted plant
     - horse
+    - fire hydrant
+    nms_iou: 0.45
+    confirmation_frames: 2
+    confirmation_iou: 0.25
+    confirmation_timeout: 1.5

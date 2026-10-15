@@ -19,8 +19,11 @@ def main():
     args = parser.parse_args()
     cache = args.cache.expanduser().resolve()
     cache.mkdir(parents=True, exist_ok=True)
-    weights = cache/'yolo11n.pt'
-    weights_url = 'https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11n.pt'
+    lock_file = args.assets.parent/'resources_manifest.json'
+    expected = json.loads(lock_file.read_text()) if lock_file.is_file() else {}
+    spec = expected.get('weights', {})
+    weights_url = spec.get('url', 'https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11s.pt')
+    weights = cache/spec.get('filename', weights_url.rsplit('/', 1)[-1])
     if not weights.is_file():
         temporary = weights.with_suffix('.part')
         with requests.get(weights_url, timeout=(15, 120), stream=True) as response:
@@ -29,12 +32,10 @@ def main():
                 for block in response.iter_content(1024*1024):
                     out.write(block)
         temporary.replace(weights)
-    lock_file = args.assets.parent/'resources_manifest.json'
-    expected = json.loads(lock_file.read_text()) if lock_file.is_file() else {}
     digest = hashlib.sha256(weights.read_bytes()).hexdigest()
     if expected.get('weights', {}).get('sha256') not in (None, digest):
         raise RuntimeError('Weights SHA256 mismatch; refusing demo')
-    manifest = dict(weights=dict(url=weights_url, sha256=hashlib.sha256(weights.read_bytes()).hexdigest()), assets={})
+    manifest = dict(weights=dict(filename=weights.name, url=weights_url, sha256=hashlib.sha256(weights.read_bytes()).hexdigest()), assets={})
     config = yaml.safe_load(args.assets.read_text())
     for key, asset in config['assets'].items():
         url = 'https://fuel.gazebosim.org/1.0/'+asset['owner']+'/models/'+quote(asset['model'])
