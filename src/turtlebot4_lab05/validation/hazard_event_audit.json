@@ -1,0 +1,270 @@
+{
+  "method": "Every hazard_change callback in original demo_trace, including changes between periodic samples",
+  "changes": [
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048914.5835469,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048915.5563624,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        },
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048915.6053424,
+      "detections": []
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048915.650966,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048916.0720139,
+      "detections": []
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048916.3141353,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        },
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048916.4444442,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048916.8110194,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        },
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048916.8349001,
+      "detections": []
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048916.8638163,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048917.474236,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        },
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048917.4960291,
+      "detections": []
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048917.515808,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048917.8282406,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        },
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048917.845092,
+      "detections": []
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048917.8787737,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048917.9670532,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        },
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048917.9825485,
+      "detections": []
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048918.0252776,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048918.2817929,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        },
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048918.3048608,
+      "detections": []
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048918.3389654,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048920.295677,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        },
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048920.3252444,
+      "detections": []
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048920.352511,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048920.512993,
+      "detections": [
+        {
+          "type": 0,
+          "frame": "base_link"
+        },
+        {
+          "type": 0,
+          "frame": "base_link"
+        }
+      ]
+    },
+    {
+      "event": "hazard_change",
+      "wall_time_unix": 1792048920.546353,
+      "detections": []
+    }
+  ],
+  "types_observed": [
+    0
+  ],
+  "bump_cliff_stall_wheel_drop_observed": false
+}

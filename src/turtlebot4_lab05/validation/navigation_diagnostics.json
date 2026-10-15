@@ -1,0 +1,12 @@
+{
+  "unconfirmed_blocked": true,
+  "timeout_retry": {
+    "sent": 2,
+    "cancel_statuses": [
+      5,
+      5
+    ],
+    "mission_failed": true,
+    "false_completion": false
+  }
+}

@@ -4,6 +4,8 @@ Repository mã nguồn bài tập mô phỏng **TurtleBot 4** trên hệ điều
 
 Nhánh **`assignments_1`** chứa toàn bộ cấu hình, launch files, bản đồ đã xây dựng và mã nguồn điều khiển hoàn chỉnh cho Bài tập 1.
 
+**Bài thực hành 05:** [AMCL, Nav2 tuần tự và YOLO GPU](src/turtlebot4_lab05/README.md) — nhánh `assignments_2`; [kết quả kiểm chứng](src/turtlebot4_lab05/VALIDATION.md).
+
 ---
 
 ## 1. Mục tiêu bài tập
@@ -247,3 +249,4 @@ source install/setup.bash
 | **Không tìm thấy Topic / Node** | Sai ROS Domain hoặc biến môi trường bị phân mảnh | Đảm bảo tất cả các terminal đều chạy `source ~/turtlebot4_lab_ws/lab_env.bash` trước khi chạy lệnh. |
 | **Bản đồ SLAM bị lệch hoặc nhân đôi tường** | Robot di chuyển hoặc xoay góc quá nhanh làm quá tải bộ đệm quét laser | Cấu hình `slam_mapping.yaml` đã được thiết lập `async` với `throttle_scans: 4`. Khi lái hãy giảm tốc độ xoay cua chậm để loop closure xử lý chuẩn. |
 | **Tiến trình Gazebo cũ bị treo ngầm** | Đóng terminal đột ngột khiến daemon `ign gazebo` chưa giải phóng socket | Chạy script dọn dẹp: `ros2 run turtlebot4_lab cleanup_simulation.py --stop`. |
+

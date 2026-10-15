@@ -1,0 +1,34 @@
+{
+  "yolo_status": {
+    "state": "ready",
+    "device": "cuda:0",
+    "cuda": true,
+    "actual_model_device": "cuda:0",
+    "frames": 497,
+    "camera_topic": "/oakd/rgb/preview/image_raw",
+    "camera_age_wall_s": 0.015483659999972588,
+    "last_success_age_wall_s": 0.13923817500017321,
+    "inference_ms": 71.01039999997738,
+    "average_fps": 3.205538222333718,
+    "error": null
+  },
+  "image_counts": {
+    "raw_distinct": 106,
+    "annotated": 14,
+    "headers_matched": 14,
+    "source_header_not_observed": 0
+  },
+  "observer_method": "Wait for 5 source RGB headers before subscribing annotated output; depth=100 Best Effort; compare after callbacks. Unobserved source headers are not proof of altered headers.",
+  "cmd_vel_publishers": [
+    "cmd_vel_bridge",
+    "behavior_server",
+    "behavior_server",
+    "behavior_server",
+    "behavior_server",
+    "behavior_server",
+    "velocity_smoother"
+  ],
+  "teleop_nodes": [],
+  "sequential_mission_still_running": false,
+  "passed": true
+}

@@ -1,0 +1,239 @@
+{
+  "source_file": "evidence/navigation_20261011_232532/goals_summary.json",
+  "source_workspace_baseline": "8a06a31",
+  "measurements": {
+    "successful_goals": [
+      {
+        "trace_goal_index": 1,
+        "goal_uuid": "c5c0d1b2b15b5f542f7be056856bfff4",
+        "terminal_status": 4,
+        "target_from_plan": {
+          "x": -1.1121399402618408,
+          "y": 0.31541872024536133,
+          "yaw": 3.128184615974512
+        },
+        "result": {
+          "event": "action_result",
+          "goal_uuid": "c5c0d1b2b15b5f542f7be056856bfff4",
+          "response": {
+            "status": 4,
+            "result": {
+              "result": {}
+            }
+          },
+          "wall_time_unix": 1791736928.9487987,
+          "sim_time_ns": 377520000000
+        },
+        "duration_wall_s": 71.9588737487793,
+        "duration_sim_s": 28.38,
+        "final_amcl_map_base": {
+          "x": -0.9204090610198021,
+          "y": 0.18677453242411368,
+          "yaw": 2.8805020833980253
+        },
+        "final_gazebo_ground_truth": {
+          "x": -0.9432352720217151,
+          "y": 0.2771943181775587,
+          "yaw": 2.874418058153698
+        },
+        "amcl_distance_to_target_m": 0.23088970768553904,
+        "gazebo_distance_to_target_m": 0.1731758986312702,
+        "actual_traveled_m": 6.261417998354252,
+        "first_global_plan_length_m": 6.378800589220233,
+        "hazard_types_observed": [],
+        "bump_cliff_stall_wheel_drop_observed": false,
+        "final_velocity": {
+          "linear_x": -5.782286431362327e-19,
+          "angular_z": 1.7154346939726446e-15
+        },
+        "scope": "Target precision from /plan; compare navigator log. Laser-frame forward clearance in raw trace is not base-forward clearance."
+      },
+      {
+        "trace_goal_index": 2,
+        "goal_uuid": "19745ac8a283b74717d12f00fd990ec4",
+        "terminal_status": 4,
+        "target_from_plan": {
+          "x": 3.174917459487915,
+          "y": -3.194671392440796,
+          "yaw": 3.128184717680322
+        },
+        "result": {
+          "event": "action_result",
+          "goal_uuid": "19745ac8a283b74717d12f00fd990ec4",
+          "response": {
+            "status": 4,
+            "result": {
+              "result": {}
+            }
+          },
+          "wall_time_unix": 1791737049.490939,
+          "sim_time_ns": 424467000000
+        },
+        "duration_wall_s": 72.07319903373718,
+        "duration_sim_s": 27.48,
+        "final_amcl_map_base": {
+          "x": 3.0790186333757026,
+          "y": -3.0055322650024716,
+          "yaw": -2.9053054979370168
+        },
+        "final_gazebo_ground_truth": {
+          "x": 3.14716189260515,
+          "y": -2.8984012673316983,
+          "yaw": -2.8658834565301126
+        },
+        "amcl_distance_to_target_m": 0.21206177019404285,
+        "gazebo_distance_to_target_m": 0.2975674016506915,
+        "actual_traveled_m": 5.407974327792739,
+        "first_global_plan_length_m": 5.332935843742936,
+        "hazard_types_observed": [],
+        "bump_cliff_stall_wheel_drop_observed": false,
+        "final_velocity": {
+          "linear_x": 4.703630166313473e-16,
+          "angular_z": 2.6214368949589276e-15
+        },
+        "scope": "Target precision from /plan; compare navigator log. Laser-frame forward clearance in raw trace is not base-forward clearance."
+      },
+      {
+        "trace_goal_index": 5,
+        "goal_uuid": "4708934f3ab0fd436000c0d282d5625d",
+        "terminal_status": 4,
+        "target_from_plan": {
+          "x": 3.498193271458149,
+          "y": 5.63032179325819,
+          "yaw": 0.0
+        },
+        "result": {
+          "event": "action_result",
+          "goal_uuid": "4708934f3ab0fd436000c0d282d5625d",
+          "response": {
+            "status": 4,
+            "result": {
+              "result": {}
+            }
+          },
+          "wall_time_unix": 1791737515.1405694,
+          "sim_time_ns": 599841000000
+        },
+        "duration_wall_s": 31.98842215538025,
+        "duration_sim_s": 12.903,
+        "final_amcl_map_base": {
+          "x": 3.615193822926026,
+          "y": 5.427634985033652,
+          "yaw": 0.25813537564075917
+        },
+        "final_gazebo_ground_truth": {
+          "x": 3.547869100171172,
+          "y": 5.562519081650652,
+          "yaw": 0.3335509007450504
+        },
+        "amcl_distance_to_target_m": 0.23403220135707387,
+        "gazebo_distance_to_target_m": 0.0840529336767056,
+        "actual_traveled_m": 1.959384243781299,
+        "first_global_plan_length_m": 2.4412497842200804,
+        "hazard_types_observed": [],
+        "bump_cliff_stall_wheel_drop_observed": false,
+        "final_velocity": {
+          "linear_x": 2.1415167500215683e-16,
+          "angular_z": 7.614920270550238e-16
+        },
+        "scope": "Target precision from /plan; compare navigator log. Laser-frame forward clearance in raw trace is not base-forward clearance."
+      }
+    ],
+    "other_attempts": [
+      {
+        "trace_goal_index": 3,
+        "goal_uuid": "c8dc82c98c2252de3e2b4c2864268e0c",
+        "terminal_status": 5,
+        "target_from_plan": {
+          "x": 5.827425770461559,
+          "y": 5.047986518591642,
+          "yaw": 3.1331845819994406
+        },
+        "result": {
+          "event": "action_result",
+          "goal_uuid": "c8dc82c98c2252de3e2b4c2864268e0c",
+          "response": {
+            "status": 5,
+            "result": {
+              "result": {}
+            }
+          },
+          "wall_time_unix": 1791737185.8793,
+          "sim_time_ns": 476997000000
+        },
+        "duration_wall_s": 110.51411557197571,
+        "duration_sim_s": 42.843,
+        "final_amcl_map_base": {
+          "x": 5.693364404281772,
+          "y": 5.277838775582021,
+          "yaw": -1.3967270825304938
+        },
+        "final_gazebo_ground_truth": {
+          "x": 5.625985819182522,
+          "y": 5.421540289839212,
+          "yaw": -1.3258917759931208
+        },
+        "amcl_distance_to_target_m": 0.26609116848471676,
+        "gazebo_distance_to_target_m": 0.4244060249155081,
+        "actual_traveled_m": 10.244239705755911,
+        "first_global_plan_length_m": 10.53686098151545,
+        "hazard_types_observed": [],
+        "bump_cliff_stall_wheel_drop_observed": false,
+        "final_velocity": {
+          "linear_x": 1.136735367000415e-15,
+          "angular_z": 1.9121235347702633e-15
+        },
+        "scope": "Target precision from /plan; compare navigator log. Laser-frame forward clearance in raw trace is not base-forward clearance."
+      },
+      {
+        "trace_goal_index": 4,
+        "goal_uuid": "14814e3781664fd61d7b7cc4d4daa49c",
+        "terminal_status": 5,
+        "target_from_plan": {
+          "x": -6.0,
+          "y": 3.0,
+          "yaw": 0.0
+        },
+        "result": {
+          "event": "action_result",
+          "goal_uuid": "14814e3781664fd61d7b7cc4d4daa49c",
+          "response": {
+            "status": 5,
+            "result": {
+              "result": {}
+            }
+          },
+          "wall_time_unix": 1791737436.638017,
+          "sim_time_ns": 570039000000
+        },
+        "duration_wall_s": 187.7805244922638,
+        "duration_sim_s": 70.662,
+        "final_amcl_map_base": {
+          "x": 5.493509324753631,
+          "y": 5.0611017804623435,
+          "yaw": -2.6080703616566927
+        },
+        "final_gazebo_ground_truth": {
+          "x": 5.438241954169416,
+          "y": 5.213087642407288,
+          "yaw": -2.5912321801514864
+        },
+        "amcl_distance_to_target_m": 11.676853049842826,
+        "gazebo_distance_to_target_m": 11.650370634237232,
+        "actual_traveled_m": 0.25353301192440275,
+        "first_global_plan_length_m": 15.0795042201665,
+        "hazard_types_observed": [],
+        "bump_cliff_stall_wheel_drop_observed": false,
+        "final_velocity": {
+          "linear_x": 1.4145730496968026e-15,
+          "angular_z": -4.328006945529348e-16
+        },
+        "scope": "Target precision from /plan; compare navigator log. Laser-frame forward clearance in raw trace is not base-forward clearance."
+      }
+    ],
+    "failed_initial_goal_uuid": "306378899aa3ca32c7f0d578e1660256",
+    "teleop_after_goal": false,
+    "localization_resets": "After terminal ABORTED/CANCELED only, from simulated ground truth; no robot motion commanded by those helpers. No reset during each successful goal.",
+    "observation_limit": "Observed static maze obstacles, path/pose, action result and simulation hazard topic. This is not a hardware or general dynamic-obstacle safety test."
+  }
+}
