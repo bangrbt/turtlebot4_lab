@@ -50,7 +50,7 @@ def main():
         for i,g in enumerate(goals,1):
             ax.scatter(g['x'],g['y'],marker='*',s=130,c='red')
             ax.annotate('Goal '+str(i),(g['x'],g['y']),xytext=(6,-12),textcoords='offset points',weight='bold')
-        ax.set(xlim=(-5.5,8.7),ylim=(-5,7),xlabel='map/world x (m)',ylabel='map/world y (m)',title='Six scattered demo objects; circles enclose body footprints')
+        ax.set(xlim=(-5.5,8.7),ylim=(-5,7),xlabel='map/world x (m)',ylabel='map/world y (m)',title=f'{len(report["objects"])} scattered demo objects; circles enclose body footprints')
         ax.set_aspect('equal');ax.grid(alpha=.12);fig.tight_layout()
         args.plot.parent.mkdir(parents=True,exist_ok=True)
         fig.savefig(args.plot,dpi=150);plt.close(fig)

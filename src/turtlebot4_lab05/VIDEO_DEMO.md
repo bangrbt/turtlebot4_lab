@@ -3,7 +3,7 @@
 Mục tiêu video: thấy **nạp map cũ + AMCL trên RViz**, **code tự chạy 3 goal liên
 tiếp**, **cửa sổ camera YOLO cập nhật trong lúc robot di chuyển**. Quay màn hình
 thật; không cần quay quá trình cài thư viện/build. Không cần upload video trong
-các lệnh dưới đây. Khi quay xong mới tự đưa link Drive vào README.
+các lệnh dưới đây. Video đã cung cấp: [Video demo](https://drive.google.com/file/d/1L9oFTGC_8RS8bYuAewitxUT4dYWiAlEM/view).
 
 ## 0. Chuẩn bị trước khi bấm quay
 
@@ -17,7 +17,7 @@ source lab_env.bash
 ros2 run turtlebot4_lab cleanup_simulation.py --stop
 ```
 
-Build/tải tài nguyên **một lần, trước khi quay**, nhất là asset STOP và weights YOLO11s mới:
+Build/tải tài nguyên **một lần, trước khi quay**, nhất là asset xe đạp/trụ cứu hỏa và weights YOLO11s:
 
 ```bash
 cd ~/turtlebot4_lab_ws
@@ -31,7 +31,7 @@ python src/turtlebot4_lab05/scripts/check_scene.py
 
 `check_scene.py` phải passed=true: kiểm tra cả thân vật thể với tường thật,
 map/unknown, khoảng cách giữa các vật thể. Không chỉ kiểm tra tâm. Bố trí hiện tại
-có 2 người, 1 ngựa, 2 ghế, 1 biển STOP. Bản đồ gốc và ba waypoint giữ nguyên.
+có 1 người, 1 ngựa, 3 ghế, 1 xe đạp, 1 trụ cứu hỏa và 1 cây sồi (8 vật thể). Bản đồ gốc và ba waypoint giữ nguyên.
 
 Mở các terminal A, B, C, D, E, F. **Đầu mỗi terminal**, chạy ba dòng sau:
 
@@ -85,7 +85,7 @@ ros2 launch turtlebot4_lab05 bringup.launch.py start_yolo:=false start_navigatio
 
 Đợi RViz hiện map. Chỉ rõ bản đồ từ tuần trước đang được map_server nạp; Fixed
 Frame là map, AMCL chạy localization, không phải SLAM quét map mới. Chưa chạy F.
-Có thể chuyển qua Gazebo vài giây để giới thiệu sáu vật thể rồi trở lại RViz.
+Có thể chuyển qua Gazebo vài giây để giới thiệu tám vật thể rồi trở lại RViz.
 
 ## 4. Terminal C/RViz — thực hiện localization, tiếp tục quay
 
@@ -132,7 +132,7 @@ ros2 topic echo /yolo/status --once --qos-durability transient_local --full-leng
 
 Cần state=ready và actual_model_device=cuda:0. Khi có vật thể trong tầm nhìn,
 YOLO hiện bbox, nhãn, confidence. Khi nhìn tường hoặc không thấy vật thể,
-không có bbox là bình thường; ảnh vẫn phải cập nhật. Bản hiện tại dùng YOLO11s với 8 vật thể rải đều (xe đạp, cây sồi thu nhỏ, cột cứu hỏa đỏ, ngựa, 3 ghế, người). Đã kích hoạt bộ lọc hình học + ngưỡng `person_confidence: 0.55` để triệt tiêu việc nhận nhầm tường/góc thành người, và hạ `plant_confidence: 0.15` để nhận diện cây ổn định.
+không có bbox là bình thường; ảnh vẫn phải cập nhật. Bản hiện tại dùng YOLO11s với 8 vật thể rải đều (xe đạp, cây sồi thu nhỏ, cột cứu hỏa đỏ, ngựa, 3 ghế, người). Đã kích hoạt bộ lọc hình học + ngưỡng `person_confidence: 0.55` để giảm nhiễu nhận nhầm tường/góc thành người; `plant_confidence: 0.15` tăng độ nhạy với cây nhưng có thể tăng false positive.
 Không nhấn q/Esc hoặc đóng cửa sổ camera trong đoạn mission cần quay.
 
 ## 6. Terminal E — ghi bằng chứng tự động (khuyên dùng)
@@ -193,9 +193,9 @@ PY
 Quay thêm 5–10 giây thấy ba SUCCEEDED, completed=3, RViz/camera vẫn mở rồi **Stop
 Recording**. Không chỉ quay bảng cuối: phần robot thực sự đi qua cả ba goal và
 camera chạy đồng thời phải có trong video. Có thể cho xem thêm person, horse,
-chair/stop sign đã nhận diện trong các khung hình thật; không ghép ảnh tĩnh thành
+chair/bicycle/fire hydrant đã nhận diện trong các khung hình thật; không ghép ảnh tĩnh thành
 camera giả. Thời gian chạy phụ thuộc tải máy, không cắt lượt chỉ vì chạy chậm.
 
 Sau khi đã dừng quay: Ctrl+C D (YOLO), B (Nav2), A (simulator); E tự xong hoặc
 Ctrl+C khi cần. Không dừng Nav2/simulator khi F còn active. Lưu video, kiểm tra
-âm thanh/hình ảnh và tự bổ sung link Drive vào README.
+âm thanh/hình ảnh và đối chiếu link Drive trong README nếu thay video.

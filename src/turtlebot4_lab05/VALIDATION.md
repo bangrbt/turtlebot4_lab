@@ -6,25 +6,35 @@ ROS 2 Humble. Không dùng teleop, click goal hoặc cập nhật initial pose t
 lượt mission dưới đây. Node tự gửi ba action liên tiếp. Dữ liệu ground truth
 chỉ được observer subscribe để đối chiếu; Nav2 dùng AMCL/LiDAR/odometry.
 
-## Cập nhật xe đạp & cây xanh + YOLO11s — chuẩn bị hoàn tất để người dùng tự kiểm tra
+## Cấu hình hiện tại và rà soát 20/10/2026
 
-Loại bỏ hoàn toàn biển STOP đen cũ (`lab05_stop_sign` đã được đưa vào `retired_object_names`).
-Bổ sung **xe đạp** (`bicycle`) và **cây sồi** (`oak_tree`), phân bố tối ưu tại các khoảng trống rộng nhất của bản đồ trên hành trình di chuyển của robot:
-- `lab05_horse` (-2.6, 0.1) & `lab05_chair_1` (-3.9, 1.3): thẳng trước mặt khi robot rời Dock và tiến vào Goal 1.
-- `lab05_bicycle` (2.10, -2.85): đặt tại sảnh Nam rộng (clearance 0.42m), nằm trực diện camera khi robot tới Goal 2 (góc lệch chỉ 17°, khoảng cách 1.12m).
-- `lab05_oak_tree` (2.50, 3.25): đặt tại hành lang Bắc thoáng (clearance 1.05m), nằm bên hành lang từ Goal 2 sang Goal 3.
-- `lab05_person` (-3.0, 3.3) & `lab05_chair_2` (6.3, -2.1): đặt tại các buồng mở rộng Tây Bắc và Đông Nam.
+Cấu hình mới gồm **8 vật thể**: 1 người, 1 ngựa, 3 ghế, 1 xe đạp,
+1 trụ cứu hỏa và 1 cây sồi. Balô/STOP cũ đã được retire. Tọa độ, scale,
+collision box nằm trong `config/objects.yaml`; hình và số đo hiện tại:
+[scene_layout.json](validation/scene_layout.json).
 
-YOLO mặc định `yolo11s.pt` (mAP 47.0, 9.4M tham số), confidence=0.35, NMS IoU=0.45, `show_window:=true`.
-Nhận diện 5 lớp COCO chuẩn: `person`, `bicycle`, `chair`, `potted plant`, `horse`.
-Xác nhận cùng lớp qua 2 frame liên tiếp (IoU >= 0.25, timeout 1.5s).
-Model/assets mới tải đầy đủ vào cache cục bộ, SDF texture mapping được xử lý tuyệt đối (offline), SHA256 đã pin.
-Đã kiểm tra offline/build/unit test đạt 100%, **tuyệt đối không tự ý chạy simulator/camera inference/demo** theo đúng yêu cầu người dùng để người dùng tự kiểm tra.
+![Bố trí hiện tại: 8 vật thể và 3 goal](validation/scattered_scene_layout.png)
 
-Bộ lọc không sửa tên lớp: chỉ giữ prediction hiện tại đã xác nhận, xóa xác nhận
-khi lớp đổi/mất frame/timeout; ảnh và JSON thống nhất. Có thể giảm false positive
-thoáng qua, đổi lại độ trễ/recall khi camera quay nhanh. Camera đầu vào vẫn 320x240.
-Scene geometry hiện tại trong scene_layout.json và sơ đồ đã cập nhật STOP.
+YOLO11s: confidence chung **0.30**, person **0.55**, potted plant **0.15**;
+NMS IoU **0.45**; xác nhận **2 frame**, IoU ≥0.25, timeout **1.5 s**.
+Person có bộ lọc hình học h≥35 pixel và 1.1≤h/w≤4.5. Bộ lọc nhằm giảm nhầm
+thoáng qua, có thể giảm recall; chưa có benchmark đa góc/accuracy của bản mới.
+Cây sồi không phải ground truth lớp COCO `potted plant` chỉ vì tên nhãn nằm trong filter.
+
+Rà soát hiện tại:
+- **20/20 pytest qua**, gồm cấu hình, bbox confirmation, scene geometry,
+  ROS steady timer/shutdown; ROS tests dùng domain 67, không gửi goal.
+- `colcon build --symlink-install --packages-select turtlebot4_lab05`: thành công.
+- Hai launch `--show-args` và 5 executable: hợp lệ.
+- 8 vật thể đạt validator map/unknown + box tường SDF + khoảng hở giữa từng cặp.
+  Ngưỡng hở tường 0.35 m, giữa vật thể 0.60 m. Min map-body gap **0.385 m**,
+  min actual-wall-body gap **0.420 m** (xe đạp).
+- **Không chạy lại simulator/mission/inference trong lần rà soát này.** Ảnh và
+  số liệu 3-goal/YOLO tự động bên dưới thuộc các phiên bản lịch sử 15/10/2026.
+  Không gán số liệu đó cho YOLO11s/scene 8 vật thể.
+
+[Video demo](https://drive.google.com/file/d/1L9oFTGC_8RS8bYuAewitxUT4dYWiAlEM/view) · [Báo cáo PDF](report/report.pdf). Báo cáo có ảnh trích video hiện có
+của người thực hiện, kèm timestamp và phân biệt với bảng số liệu lịch sử.
 
 ## Lịch sử bố trí balô — sáu vật thể rải rác, đã chạy lại
 
@@ -32,16 +42,14 @@ Hướng dẫn quay theo thứ tự terminal và thời điểm Record: [VIDEO_D
 Bố trí mới giữ nguyên ảnh map và cả ba waypoint. Ghế cũ ở (1.1,-3.8) không đủ
 khoảng hở phần thân với tường; đã chuyển sang phòng rộng phía đông. Thêm một
 người gần đoạn tới Goal_3 và một balô gần Goal_2, tổng 2 người + 1 ngựa + 2 ghế
-+ 1 balô. Cấu hình sáu vật thể hiện tại thay cho bố trí bốn vật thể ở các lượt
-lịch sử phía dưới.
++ 1 balô. Lượt sáu vật thể này thay cho bố trí bốn vật thể ở các lượt
+lịch sử phía dưới, và đã được thay tiếp bởi scene tám vật thể hiện tại.
 
-[scene_layout.json](validation/scene_layout.json) đối chiếu cả vòng tròn bao
+Validator scene đối chiếu cả vòng tròn bao
 footprint với map known-free/unknown, box tường SDF thật và khoảng cách các vật
 thể. Yêu cầu hở tường >=0.35 m, giữa các footprint >=0.60 m. Khoảng hở tường
-thật nhỏ nhất hiện tại 0.494 m (balô); hai ghế hở 0.60 m và 1.40 m. Đây là kiểm
+thật nhỏ nhất trong scene sáu vật thể cũ 0.494 m (balô); hai ghế hở 0.60 m và 1.40 m. Đây là kiểm
 tra hình học bảo thủ, không suy ra bảo đảm an toàn mọi tình huống.
-
-![Bố trí sáu vật thể trên bản đồ cũ](validation/scattered_scene_layout.png)
 
 Lượt kiểm chứng mới: **3/3 SUCCEEDED**, mission_completed=true,
 yolo_interrupted=false. UUID Goal_1 a349bd4177f34f948061a58ff0bd1410, Goal_2
@@ -157,7 +165,7 @@ sửa. Waypoint có provenance từ lượt bài 04 SUCCEEDED ([snapshot phép �
 known-free disk trước khi gửi action. Goal_3 dùng **pose AMCL cuối đã đo** của
 lượt bài 04 thay vì endpoint cũ sát vùng unknown; không phỏng đoán tọa độ.
 
-## Phân biệt static, build và runtime
+## Các kiểm tra static/build/runtime của những lượt lịch sử
 
 | Loại | Kiểm tra | Kết quả/bằng chứng |
 |---|---|---|
@@ -190,7 +198,7 @@ làm treo timeout. Không đổi timestamp ảnh/pose sang wall clock.
 | Timeout/retry/failure/Ctrl+C | Chẩn đoán Nav2 thật + regression tests; chỉ status=4 là thành công |
 | YOLO RGB thật/GPU/header/QoS | latest-frame worker, Best Effort, cv_bridge, CUDA model device, 533 header khớp |
 | Bbox/class/confidence/headless/log/rate | Annotated topic + ảnh thật; RViz; OpenCV tùy chọn; log_interval/inference_rate |
-| Người/động vật/đồ vật, 4–6 asset | Bố trí hiện tại 6 model static có collision; xem scene_layout.json và scattered_demo_summary.json |
+| Người/động vật/đồ vật | Hiện tại 8 model static; geometry trong scene_layout.json; runtime sáu vật thể cũ trong scattered_demo_summary.json |
 | YOLO chạy khi robot chuyển động | 428 inference có robot_moving=true; YOLO không phát cmd_vel/goal |
 | Không va chạm trong lượt demo | Không thấy bump/cliff/stall/wheel drop; quỹ đạo/pose/hazard quan sát được |
 | Dependency/build/install/README | package.xml/setup.py, requirements/lock, script setup/download, README tiếng Việt |
@@ -198,7 +206,7 @@ làm treo timeout. Không đổi timestamp ảnh/pose sang wall clock.
 
 ## Giới hạn và phần người dùng bổ sung
 
-- Chưa quay hoặc upload video Google Drive; bổ sung link video vào README.
+- Video người thực hiện đã cung cấp: [Video demo](https://drive.google.com/file/d/1L9oFTGC_8RS8bYuAewitxUT4dYWiAlEM/view); không tự suy ra metrics mới từ bảng số liệu cũ.
 - Đã mở cửa sổ OpenCV và RViz trên desktop hiện tại (`DISPLAY=:1`), chụp native
   window khi Nav2 đang RUNNING; chưa kiểm tra trên mọi display/driver khác.
 - CPU startup/mất camera đã kiểm tra; chưa ép CUDA lỗi/OOM để kiểm thử nhánh
