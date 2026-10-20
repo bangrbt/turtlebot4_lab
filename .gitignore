@@ -48,8 +48,5 @@ weights/
 !/src/turtlebot4_lab05/validation/scattered_rviz_during_navigation.png
 !/src/turtlebot4_lab05/validation/scattered_yolo_during_navigation.png
 
-# Lab05 report: selected source figures and final PDF only
-!/src/turtlebot4_lab05/report/figures/*.png
-!/src/turtlebot4_lab05/report/figures/*.jpg
-!/src/turtlebot4_lab05/report/figures/*.pdf
-!/src/turtlebot4_lab05/report/report.pdf
+# Keep the Lab05 report local; submit source code separately.
+/src/turtlebot4_lab05/report/

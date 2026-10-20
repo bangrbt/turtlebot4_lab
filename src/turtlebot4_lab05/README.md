@@ -10,7 +10,6 @@ không gửi goal và không thay chức năng tránh vật cản của Nav2.
 **Quay video từng bước (terminal nào, lệnh nào, bấm quay lúc nào): [VIDEO_DEMO.md](VIDEO_DEMO.md).**
 
 Kết quả kiểm chứng: [VALIDATION.md](VALIDATION.md). [Video demo](https://drive.google.com/file/d/1L9oFTGC_8RS8bYuAewitxUT4dYWiAlEM/view) · [Mã nguồn GitHub](https://github.com/bangrbt/turtlebot4_lab/tree/assignments_2/src/turtlebot4_lab05).
-Báo cáo: [PDF](report/report.pdf) · [LaTeX](report/report.tex) · [cách biên dịch và nguồn hình](report/README.md).
 
 **Cấu hình hiện tại (8 vật thể):**
 - YOLO11s; confidence chung 0.30, riêng `person` 0.55 và `potted plant` 0.15;
@@ -24,7 +23,7 @@ Báo cáo: [PDF](report/report.pdf) · [LaTeX](report/report.tex) · [cách biê
   Balô/biển STOP cũ đã được retire; thay scene trước khi chạy mission.
 - Rà soát 20/10/2026: **20/20 unit test**, build, launch arguments và geometry
   đạt. Không chạy lại simulator/mission; số liệu runtime trong `validation/`
-  chủ yếu thuộc các lượt 15/10/2026 với YOLO/scene cũ, được phân biệt trong báo cáo.
+  chủ yếu thuộc các lượt 15/10/2026 với YOLO/scene cũ, được phân biệt trong `VALIDATION.md`.
 
 ```bash
 ros2 launch turtlebot4_lab05 yolo.launch.py device:=0 show_window:=true

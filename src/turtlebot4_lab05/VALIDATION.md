@@ -33,8 +33,8 @@ Rà soát hiện tại:
   số liệu 3-goal/YOLO tự động bên dưới thuộc các phiên bản lịch sử 15/10/2026.
   Không gán số liệu đó cho YOLO11s/scene 8 vật thể.
 
-[Video demo](https://drive.google.com/file/d/1L9oFTGC_8RS8bYuAewitxUT4dYWiAlEM/view) · [Báo cáo PDF](report/report.pdf). Báo cáo có ảnh trích video hiện có
-của người thực hiện, kèm timestamp và phân biệt với bảng số liệu lịch sử.
+[Video demo](https://drive.google.com/file/d/1L9oFTGC_8RS8bYuAewitxUT4dYWiAlEM/view).
+Các bảng số liệu bên dưới thuộc những lượt lịch sử có log tương ứng.
 
 ## Lịch sử bố trí balô — sáu vật thể rải rác, đã chạy lại
 
