@@ -44,15 +44,15 @@ def main():
         node.create_subscription(Odometry, '/odom', odom, qos_profile_sensor_data),
         node.create_subscription(Twist, '/cmd_vel', lambda m: commands.append((m.linear.x, m.angular.z)), 10)]
 
-    def pump(label='None', duration=.1, until=None, reason='synthetic_simulation_test'):
+    def pump(label='None', duration=.1, until=None, reason='synthetic_simulation_test', confidence=.99):
         nonlocal sequence, last_publish
         end = time.monotonic()+duration
         while time.monotonic() < end:
             now = time.monotonic()
             if label is not None and now-last_publish >= .05:
                 sequence += 1
-                obs = Observation(label=label, confidence=.99,
-                    raw_label='Open_Palm' if label == 'Wave' else label, raw_confidence=.99,
+                obs = Observation(label=label, confidence=confidence,
+                    raw_label='Open_Palm' if label == 'Wave' else label, raw_confidence=confidence,
                     hand_visible=label != 'None', stable=label != 'None', valid_control=label != 'None',
                     session_id=session, sequence=sequence, captured_unix=time.time(), reason=reason)
                 publisher.publish(String(data=obs.dumps()))
@@ -67,6 +67,13 @@ def main():
         assert value.get('state') == state, value
         if reason:
             assert value.get('reason') == reason, value
+
+    def wait_stopped():
+        # Gazebo may run below real time while webcam inference is active.
+        # Check measured braking completion, not a fixed wall-time sleep.
+        stopped = pump('None', 5., lambda: abs(data.get('speed',(1.,1.))[0]) < .02 and
+                       abs(data.get('speed',(1.,1.))[1]) < .03)
+        assert stopped, ('Robot did not finish braking', data.get('speed'))
 
     def start_circle():
         pump('Victory', .7)
@@ -98,13 +105,13 @@ def main():
         result['checks']['lowering_hand_keeps_motion'] = True
         pump('Open_Palm', .7)
         expect('IDLE', 'open_palm_stop')
-        assert abs(data['speed'][0]) < .02
+        wait_stopped()
         result['checks']['open_palm_stops_running'] = True
 
         start_circle()
         pump(None, 1.5)
         expect('IDLE', 'camera_signal_lost')
-        assert abs(data['speed'][0]) < .02
+        wait_stopped()
         result['checks']['missing_camera_messages_stops'] = True
         pump('Thumb_Up', .7)
         expect('IDLE')
@@ -119,29 +126,47 @@ def main():
         pump('Pointing_Up', 1.1)
         expect('SELECTED')
         assert data['status']['selected'] == 'back_and_forth'
-        assert abs(data['speed'][0]) < .02
+        wait_stopped()
         result['checks']['new_selector_interrupts_and_waits_for_confirmation'] = True
         pump('Closed_Fist', .2)
         expect('IDLE', 'closed_fist_cancel')
 
         start_circle()
-        pump('Wave', .15)
+        pump('Wave', .15, reason='wave_landmarks', confidence=0.)
         expect('RUNNING')
         assert data['status']['selected'] == 'greeting'
         result['checks']['wave_preempts_without_thumb_up'] = True
-        pump('Closed_Fist', .3)
+        pump('Open_Palm', .15, reason='palm_motion')
+        expect('RUNNING')
+        result['checks']['moving_palm_does_not_cancel_greeting'] = True
+        pump('Closed_Fist', .3, confidence=.54)
         expect('IDLE', 'closed_fist_cancel')
         result['checks']['closed_fist_cancels_running'] = True
 
         for label, kind in [('Wave', 'greeting'), ('Pointing_Up', 'back_and_forth'), ('Victory', 'circle')]:
             pump('None', .5)
             baseline = data['status']['completions']
+            if kind == 'greeting':
+                pump(label, .15, reason='wave_landmarks', confidence=0.)
+            else:
+                pump(label, .7)
+                pump('Thumb_Up', .65)
+            expect('RUNNING')
+            commands.clear()
+            pump('Closed_Fist', .5, confidence=.54)
+            expect('IDLE', 'closed_fist_cancel')
+            assert data['status']['selected'] is None
+            assert any(v == 0. and w == 0. for v,w in commands)
+            wait_stopped()
+            pump('None', .4)
+            expect('IDLE')
+            result['checks']['low_confidence_fist_cancels_' + kind] = True
             start = data['pose']
             path.clear()
             commands.clear()
             began = time.monotonic()
             if kind == 'greeting':
-                pump(label, .15)
+                pump(label, .15, reason='wave_landmarks', confidence=0.)
                 expect('RUNNING')
                 assert data['status']['selected'] == 'greeting'
             else:

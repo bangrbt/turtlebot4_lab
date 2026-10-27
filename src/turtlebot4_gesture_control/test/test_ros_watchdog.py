@@ -57,3 +57,27 @@ def test_frozen_clock_packets_do_not_refresh_clock_watchdog(robot):
     robot.on_clock(message);first=robot.clock_seen
     robot.on_clock(message)
     assert robot.clock_seen==first
+
+
+@pytest.mark.parametrize('confidence',[.50,.55,.64])
+def test_fist_callback_disarms_and_publishes_zero_before_any_timer(robot,confidence):
+    seq=arm(robot)
+    robot.publish_velocity.reset_mock()
+    o=Observation('Closed_Fist',confidence,'Closed_Fist',confidence,True,False,True,
+                  'isolated-test',seq+1,time.time(),'cancel_priority')
+    robot.on_gesture(String(data=o.dumps()))
+    assert robot.machine.state=='IDLE' and robot.machine.selected is None and robot.machine.executor is None
+    assert robot.machine.reason=='closed_fist_cancel'
+    robot.publish_velocity.assert_called_once_with(0.,0.)
+
+
+
+def test_landmark_fist_callback_with_no_class_probability_cancels_immediately(robot):
+    seq=arm(robot)
+    robot.publish_velocity.reset_mock()
+    o=Observation('Closed_Fist',0.,'None',.91,True,True,True,
+                  'isolated-test',seq+1,time.time(),'fist_landmarks_cancel')
+    robot.on_gesture(String(data=o.dumps()))
+    assert robot.machine.state=='IDLE' and robot.machine.executor is None
+    assert robot.machine.reason=='closed_fist_cancel'
+    robot.publish_velocity.assert_called_once_with(0.,0.)

@@ -7,6 +7,7 @@ robot_behavior_node:
     max_behavior_wall_seconds: 180.0
     confidence: 0.55
     confirmation_confidence: 0.60
+    fist_confidence: 0.50
     linear_speed: 0.30
     angular_speed: 1.10
     leg_distance: 0.12

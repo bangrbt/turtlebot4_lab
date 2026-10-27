@@ -5,11 +5,13 @@ gesture_recognition_node:
     width: 640
     height: 480
     camera_fps: 15
+    max_hands: 1
     show_window: true
     mirror: true
     inference_enabled: true
     confidence: 0.55
     confirmation_confidence: 0.60
+    fist_confidence: 0.50
     class_margin: 0.08
     stable_frames: 3
     stable_seconds: 0.20

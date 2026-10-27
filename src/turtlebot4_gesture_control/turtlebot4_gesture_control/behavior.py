@@ -12,11 +12,13 @@ class BehaviorConfig:
     max_behavior_wall_seconds: float = 180.
     confidence: float = .55
     confirmation_confidence: float = .60
+    fist_confidence: float = .50
 
     def __post_init__(self):
         if not all(math.isfinite(v) and v > 0 for v in self.__dict__.values()):
             raise ValueError('Invalid behavior parameter')
-        if not .2 <= self.signal_timeout <= 1 or not self.confidence <= self.confirmation_confidence <= 1:
+        if (not .2 <= self.signal_timeout <= 1 or not self.confidence <= self.confirmation_confidence <= 1
+                or not 0 < self.fist_confidence <= 1):
             raise ValueError('Invalid watchdog/confidence')
 
 
@@ -77,8 +79,15 @@ class BehaviorMachine:
         else:
             self.hand_absent_since = None
 
+        # Accepted CANCEL always wins, including landmark fallback / low raw score.
+        if ((obs.label == 'Closed_Fist' and obs.valid_control) or
+                (obs.raw_label == 'Closed_Fist' and obs.raw_confidence >= self.config.fist_confidence)):
+            self.wave_latched = False
+            self.stop('closed_fist_cancel')
+            return True
+
         wave = (obs.label == 'Wave' and obs.stable and obs.valid_control and
-                obs.hand_visible and obs.confidence >= self.config.confidence)
+                obs.hand_visible and (obs.confidence >= self.config.confidence or obs.reason == 'wave_landmarks'))
         if wave:
             self.gate.reset()
             self.confirm_gate.reset()
@@ -91,13 +100,14 @@ class BehaviorMachine:
                 return True
             return False
 
-        # A stationary palm is STOP; a recognized temporal Wave was handled above.
+        # A wave can contain a low-score / imperfect Open Palm frame. Do not
+        # interrupt its greeting until a genuinely stationary palm is observed.
+        palm_pending = obs.reason in {'palm_motion', 'palm_pose_uncertain'}
         if obs.raw_label == 'Open_Palm' and obs.raw_confidence >= .55:
-            self.stop('open_palm_stop')
-            return True
-        if obs.raw_label == 'Closed_Fist' and obs.raw_confidence >= .65:
+            if self.state == 'RUNNING' and self.selected == 'greeting' and palm_pending:
+                return False
             self.wave_latched = False
-            self.stop('closed_fist_cancel')
+            self.stop('open_palm_stop')
             return True
 
         threshold = self.config.confirmation_confidence if obs.label == 'Thumb_Up' else self.config.confidence

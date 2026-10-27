@@ -23,7 +23,7 @@ class RobotBehaviorNode(Node):
     def __init__(self):
         super().__init__('robot_behavior_node')
         defaults=dict(enable_motion=True, signal_timeout=.80, selection_timeout=12., max_behavior_wall_seconds=180.,
-                      confidence=.55, confirmation_confidence=.60, linear_speed=.30, angular_speed=1.10,
+                      confidence=.55, confirmation_confidence=.60, fist_confidence=.50, linear_speed=.30, angular_speed=1.10,
                       leg_distance=.12, cycles=4, circle_radius=.85, greeting_angle=.55, settle_seconds=.10,
                       scan_timeout=1., odometry_timeout=.75, clock_timeout=.75, hazard_timeout=1.5,
                       min_clearance=.45, start_clearance=2.2, require_arena_ready=True,
@@ -45,7 +45,7 @@ class RobotBehaviorNode(Node):
         tl=QoSProfile(depth=1,durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.status=self.create_publisher(String,'/gesture/behavior_status',tl)
         self.inputs=[
-            self.create_subscription(String,self.p['gesture_topic'],self.on_gesture,10),
+            self.create_subscription(String,self.p['gesture_topic'],self.on_gesture,1),
             self.create_subscription(Odometry,'/odom',self.on_odom,qos_profile_sensor_data),
             self.create_subscription(LaserScan,'/scan',self.on_scan,qos_profile_sensor_data),
             self.create_subscription(ClockMsg,'/clock',self.on_clock,qos_profile_sensor_data),

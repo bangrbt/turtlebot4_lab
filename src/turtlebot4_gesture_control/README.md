@@ -9,6 +9,7 @@ Robot tự hoàn thành hành vi rồi dừng. **Vẫy tay để robot chào nga
 
 ## 1. Khởi chạy trên máy hiện tại
 
+Nếu đang chạy bản cũ, nhấn **Ctrl+C** ở terminal launch và đợi webcam/Gazebo đóng.
 Mở **một terminal mới**, chạy lần lượt:
 
 ```bash
@@ -43,7 +44,7 @@ Giữ cử chỉ chọn/xác nhận khoảng nửa giây tới khi cửa sổ đ
 | **Giơ ngón cái** — `Thumb_Up` | Xác nhận lựa chọn; sau khi hiện `RUNNING` có thể hạ tay |
 | **Vẫy bàn tay trái–phải** — `Wave` | **Chào ngay** bằng động tác xoay trái–phải nhanh; không cần ngón cái |
 | **Xòe bàn tay đứng yên** — `Open_Palm` | Dừng và xóa lựa chọn |
-| **Nắm tay** — `Closed_Fist` | Hủy hành vi, trở về chờ |
+| **Nắm tay** — `Closed_Fist` | **Hủy ngay cả khi đang di chuyển**, xóa hành vi/lựa chọn, về `IDLE` |
 
 **Ví dụ tiến–lùi:** giơ 1 ngón → thấy `SELECTED [back_and_forth]` → giơ ngón cái
 → thấy `RUNNING` → hạ tay. Robot thực hiện **4 lượt tiến và 4 lượt lùi**, rồi
@@ -55,7 +56,10 @@ Robot đi một vòng rồi dừng.
 **Ví dụ chào:** vẫy tay ngang rõ một nhịp qua–lại; khi hiện `RUNNING [greeting]`,
 hạ tay để robot hoàn thành. Wave cần vài frame chuyển động để phân biệt với
 Open Palm đứng yên; sau khi nhận ra Wave, robot bắt đầu ngay, không chờ giữ
-cử chỉ hay xác nhận lần nữa. Nếu giữ bàn tay xòe đứng yên sau đó, robot hiểu là dừng.
+cử chỉ hay xác nhận lần nữa. Có thể vẫy bằng cổ tay; bộ lọc theo dõi cả đầu ngón
+tay, chịu được vài frame nhãn AI chập chờn. Nếu giữ bàn tay xòe đứng yên sau đó,
+robot hiểu là dừng. Khi đang chào, bàn tay đang chuyển động không tự hủy chào;
+Open Palm đứng yên khoảng 0.25 s được phân biệt thành lệnh dừng.
 
 ### Khi robot đang chạy
 
@@ -151,8 +155,18 @@ ros2 topic echo /detected_gesture
 Không thể cam kết AI đúng ở mọi ánh sáng/góc tay. Bộ lọc vẫn kiểm tra landmark,
 confidence và độ ổn định trước khi chọn/xác nhận. Ngưỡng hiện tại giữ theo cấu hình
 webcam đã dùng: chọn 0.55, xác nhận 0.60, 3 frame và 0.20 s; controller lọc thêm
-cử chỉ chọn/xác nhận. Stop/Cancel được ưu tiên. Wave được suy ra từ chuyển động
-tâm bàn tay qua thời gian, không phải một lớp Wave có sẵn trong model Google.
+cử chỉ chọn/xác nhận. **Cancel không chờ bộ lọc ổn định và không cần xác nhận:**
+Closed Fist từ 0.50 được đưa thẳng tới lệnh hủy ở cả hai node, không có ngưỡng
+0.65 khác ở phía điều khiển. Khi AI mất nhãn nhưng landmark cho thấy bốn ngón
+khép và ngón cái gập sát lòng bàn tay, hai frame rõ liên tiếp cũng phát Cancel.
+Điều kiện ngón cái giúp phân biệt với Thumb Up; fallback này không giả lập
+confidence AI. Cửa sổ ghi `[landmarks]` nếu dùng đường nhận diện này.
+
+Wave dùng chuyển động ngang của cả đầu ngón và tâm bàn tay qua thời gian,
+không đòi mọi frame đều có nhãn AI Open Palm. Một nhịp qua–lại rõ được chấp nhận
+sau ít nhất 4 frame / 0.18 s; không có nghĩa mọi webcam đều đạt độ trễ 0.18 s.
+Mặc định chỉ theo dõi một tay (`max_hands: 1`) và chỉ giữ message mới nhất để
+giảm chờ xử lý. Không có lớp Wave pretrained trong model Google.
 
 ## 5. Cài đặt lần đầu trên máy khác
 
@@ -204,9 +218,13 @@ Các topic chính: `/detected_gesture` và `/gesture/behavior_status`
 Observation chứa session, sequence và thời điểm chụp để từ chối ảnh cũ/message lặp.
 Không publish chuỗi trần `Victory` vào topic để thay thế schema.
 
-Bản hiện tại đã đạt **75 test** và **12 kiểm tra tích hợp** trên Gazebo bằng
+Bản hiện tại đã đạt **110 test** và **16 kiểm tra tích hợp** trên Gazebo bằng
 cử chỉ tổng hợp; chào, đủ 4 chu kỳ tiến–lùi và vòng tròn đều hoàn thành khi hạ tay.
+Các test mới tái hiện Fist score 0.50–0.64, Cancel bằng landmark khi nhãn None,
+Wave bằng cổ tay, mất nhãn từng frame và frame Open Palm không được tự ngắt chào.
 Đây là kiểm chứng điều khiển, không phải phép đo độ chính xác từ tay người.
+Webcam thực cũng đã nhận được Wave và Closed Fist trong lượt kiểm tra có người dùng;
+không coi số frame nhận được là accuracy hoặc ma trận nhầm lẫn.
 
 Chạy kiểm thử trong domain riêng sau khi source môi trường:
 
@@ -225,7 +243,19 @@ python src/turtlebot4_gesture_control/scripts/validate_behavior.py \
   --output log/gesture_behavior_validation.json
 ```
 
-Script kiểm tra hạ tay vẫn chạy, Wave không cần xác nhận, đổi lựa chọn, Stop/Cancel,
+Kiểm tra perception với MediaPipe thật trên ảnh mẫu xoay và video chuyển động
+nhân tạo (cần ảnh mẫu cache từ `validate_model_samples.py`):
+
+```bash
+python src/turtlebot4_gesture_control/scripts/validate_priority_perception.py \
+  --output log/gesture_priority_perception.json
+```
+
+Script này kiểm tra Fist ở các góc xoay, không nhầm Thumb Up thành hủy, đường
+landmark khi mất nhãn và phát hiện Wave trên chuỗi ảnh tổng hợp. Không thay thế
+kiểm thử webcam/tay người.
+
+Script hành vi kiểm tra hạ tay vẫn chạy, Wave không cần xác nhận, đổi lựa chọn, Stop/Cancel,
 mất camera và hoàn thành từng quỹ đạo đúng một lượt. Kết quả sinh vào `log/`, không
 đưa artifact kiểm thử lên Git. `scripts/check_recognition.py` chỉ đọc topic để
 đếm nhãn cho từng cử chỉ do người dùng thực sự giữ trước webcam.

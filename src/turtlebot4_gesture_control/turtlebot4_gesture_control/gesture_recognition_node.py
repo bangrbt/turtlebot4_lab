@@ -25,11 +25,11 @@ class GestureRecognitionNode(Node):
         defaults=dict(camera_index=0,width=640,height=480,camera_fps=15,show_window=True,mirror=True,
                       inference_enabled=True,model_path=str(cache/'gesture_recognizer.task'),model_sha256=MODEL_SHA256,
                       confidence=.55,confirmation_confidence=.60,class_margin=.08,stable_frames=3,stable_seconds=.20,
-                      camera_timeout=.45,gesture_topic='/detected_gesture')
+                      fist_confidence=.50,max_hands=1,camera_timeout=.45,gesture_topic='/detected_gesture')
         for k,v in defaults.items():self.declare_parameter(k,v)
         self.p={k:self.get_parameter(k).value for k in defaults}
-        self.policy=RecognitionPolicy(self.p['confidence'],self.p['class_margin'],self.p['confirmation_confidence'],self.p['stable_frames'],self.p['stable_seconds'])
-        self.publisher=self.create_publisher(String,self.p['gesture_topic'],10)
+        self.policy=RecognitionPolicy(self.p['confidence'],self.p['class_margin'],self.p['confirmation_confidence'],self.p['stable_frames'],self.p['stable_seconds'],self.p['fist_confidence'])
+        self.publisher=self.create_publisher(String,self.p['gesture_topic'],1)
         self.status_publisher=self.create_publisher(String,'/gesture/recognizer_status',10)
         self.session=uuid.uuid4().hex;self.sequence=0;self.last_frame=-1;self.last_publish=0.;self.last_ms=-1
         self.behavior={};self.frames=0;self.started=time.monotonic();self.mp=None;self.recognizer=None
@@ -44,8 +44,8 @@ class GestureRecognitionNode(Node):
             from mediapipe.tasks.python import vision
             self.mp=mp
             options=vision.GestureRecognizerOptions(base_options=python.BaseOptions(model_asset_path=str(path),delegate=python.BaseOptions.Delegate.CPU),
-                running_mode=vision.RunningMode.VIDEO,num_hands=2,min_hand_detection_confidence=.65,
-                min_hand_presence_confidence=.65,min_tracking_confidence=.65,
+                running_mode=vision.RunningMode.VIDEO,num_hands=self.p['max_hands'],min_hand_detection_confidence=.55,
+                min_hand_presence_confidence=.50,min_tracking_confidence=.50,
                 canned_gesture_classifier_options=python.components.processors.ClassifierOptions(max_results=-1,score_threshold=0.))
             self.recognizer=vision.GestureRecognizer.create_from_options(options)
         if self.p['show_window'] and not os.getenv('DISPLAY'):self.p['show_window']=False
@@ -92,9 +92,10 @@ class GestureRecognitionNode(Node):
             self.policy.reset();decision=self.policy.unknown('inference_stale')
         obs=self.publish(decision,captured_unix);self.frames+=1
         elapsed=(time.monotonic()-began)*1000
-        if self.frames%15==1:
+        if obs.label in {'Wave','Closed_Fist'} or self.frames%15==1:
             self.status_publisher.publish(String(data=json.dumps(dict(frames=self.frames,label=obs.label,
-                confidence=obs.confidence,stable=obs.stable,valid_control=obs.valid_control,inference_ms=elapsed,
+                confidence=obs.confidence,raw_label=obs.raw_label,raw_confidence=obs.raw_confidence,
+                stable=obs.stable,valid_control=obs.valid_control,inference_ms=elapsed,
                 average_fps=self.frames/max(.001,time.monotonic()-self.started),reason=obs.reason))))
         if self.p['show_window']:self.show(frame,hands,obs,elapsed)
 
@@ -104,7 +105,7 @@ class GestureRecognitionNode(Node):
             for a,b in CONNECTIONS:cv2.line(frame,(int(points[a][0]*w),int(points[a][1]*h)),(int(points[b][0]*w),int(points[b][1]*h)),(90,220,80),2)
             for x,y,_ in points:cv2.circle(frame,(int(x*w),int(y*h)),3,(80,190,255),-1)
         cv2.rectangle(frame,(0,0),(w,110),(25,25,25),-1)
-        label=obs.label+(' (temporal)' if obs.label=='Wave' else '')
+        accepted = obs.label + (' [landmarks]' if obs.reason in {'fist_landmarks_cancel','wave_landmarks'} else '')
         cur_state = self.behavior.get("state","IDLE")
         cur_sel = self.behavior.get("selected") or "-"
         if cur_state == "SELECTED":
@@ -113,7 +114,7 @@ class GestureRecognitionNode(Node):
             state_text = f"STATE: RUNNING [{cur_sel}] | HANDS FREE - finishes one round"
         else:
             state_text = f"STATE: IDLE | Selected: {cur_sel} | {'STABLE' if obs.stable else obs.reason}"
-        lines=[f'Detected: {label if obs.label=="Wave" else obs.raw_label} {obs.raw_confidence:.2f} | accepted: {obs.label}',
+        lines=[f'Detected: {obs.raw_label} {obs.raw_confidence:.2f} | accepted: {accepted}',
                state_text,
                self.behavior.get('reason','Wave to greet; select 1/2 fingers then Thumb Up'),
                f'Open Palm: STOP | Fist: CANCEL | inference {elapsed:.0f} ms']
