@@ -1,0 +1,24 @@
+robot_behavior_node:
+  ros__parameters:
+    use_sim_time: true
+    enable_motion: true
+    signal_timeout: 0.80
+    selection_timeout: 12.0
+    max_behavior_wall_seconds: 180.0
+    confidence: 0.55
+    confirmation_confidence: 0.60
+    fist_confidence: 0.50
+    linear_speed: 0.30
+    angular_speed: 1.10
+    leg_distance: 0.12
+    cycles: 4
+    circle_radius: 0.85
+    greeting_angle: 0.55
+    settle_seconds: 0.10
+    scan_timeout: 1.0
+    odometry_timeout: 0.75
+    clock_timeout: 0.75
+    hazard_timeout: 1.5
+    min_clearance: 0.45
+    start_clearance: 2.2
+    require_arena_ready: true

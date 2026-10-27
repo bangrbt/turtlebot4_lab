@@ -1,0 +1,44 @@
+{
+  "windows": [
+    {
+      "name": "rviz",
+      "title": "/home/anhbang/turtlebot4_lab_ws/install/turtlebot4_lab05/share/turtlebot4_lab05/config/lab05.rviz* - RViz",
+      "window_id": 65011974,
+      "map_state": 2,
+      "bounds": [
+        70,
+        134,
+        1490,
+        1214
+      ],
+      "image": "scattered_rviz_during_navigation.png",
+      "wall_time_unix": 1792078753.2368133
+    },
+    {
+      "name": "yolo",
+      "title": "TurtleBot 4 Lab05 - YOLO RGB",
+      "window_id": 58720262,
+      "map_state": 2,
+      "bounds": [
+        1530,
+        80,
+        2330,
+        680
+      ],
+      "image": "scattered_yolo_during_navigation.png",
+      "wall_time_unix": 1792078753.405549
+    }
+  ],
+  "navigation_at_capture": {
+    "event": "progress",
+    "wall_time_unix": 1792078751.6254842,
+    "sim_time_ns": 89694000000,
+    "state": "RUNNING",
+    "goal_index": 3,
+    "total": 3,
+    "name": "Goal_3",
+    "distance_remaining": 2.6672558784484863,
+    "recoveries": 0
+  },
+  "note": "Native application windows only; original screenshots, no compositing."
+}

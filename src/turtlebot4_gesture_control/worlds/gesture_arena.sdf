@@ -1,0 +1,393 @@
+<?xml version='1.0' encoding='utf-8'?>
+<sdf version="1.8">
+  <world name="gesture_arena">
+    <physics name="gesture_physics" type="ignored">
+      <max_step_size>.003</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+    <plugin name="ignition::gazebo::systems::Physics" filename="ignition-gazebo-physics-system" />
+    <plugin name="ignition::gazebo::systems::UserCommands" filename="ignition-gazebo-user-commands-system" />
+    <plugin name="ignition::gazebo::systems::SceneBroadcaster" filename="ignition-gazebo-scene-broadcaster-system" />
+    <plugin name="ignition::gazebo::systems::Contact" filename="ignition-gazebo-contact-system" />
+    <plugin name="ignition::gazebo::systems::Imu" filename="ignition-gazebo-imu-system" />
+    <gravity>0 0 -9.8</gravity>
+    <scene>
+      <ambient>.6 .6 .6 1</ambient>
+      <background>.7 .78 .85 1</background>
+    </scene>
+    <light name="sun" type="directional">
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>.9 .9 .9 1</diffuse>
+      <specular>.2 .2 .2 1</specular>
+      <direction>-.4 .2 -.9</direction>
+      <cast_shadows>true</cast_shadows>
+    </light>
+    <model name="ground">
+      <static>true</static>
+      <pose>0 0 -.05 0 0 0</pose>
+      <link name="body">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>12 12 .1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>12 12 .1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>.87 .88 .90 1</ambient>
+            <diffuse>.87 .88 .90 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="north">
+      <static>true</static>
+      <pose>0 6 .5 0 0 0</pose>
+      <link name="body">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>12 .12 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>12 .12 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>.15 .35 .45 1</ambient>
+            <diffuse>.15 .35 .45 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="south">
+      <static>true</static>
+      <pose>0 -6 .5 0 0 0</pose>
+      <link name="body">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>12 .12 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>12 .12 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>.15 .35 .45 1</ambient>
+            <diffuse>.15 .35 .45 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="east">
+      <static>true</static>
+      <pose>6 0 .5 0 0 0</pose>
+      <link name="body">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>.12 12 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>.12 12 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>.15 .35 .45 1</ambient>
+            <diffuse>.15 .35 .45 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="west">
+      <static>true</static>
+      <pose>-6 0 .5 0 0 0</pose>
+      <link name="body">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>.12 12 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>.12 12 1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>.15 .35 .45 1</ambient>
+            <diffuse>.15 .35 .45 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="floor_grid">
+      <static>true</static>
+      <link name="grid">
+        <visual name="line_0_-5">
+          <pose>-5 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_-4">
+          <pose>-4 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_-3">
+          <pose>-3 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_-2">
+          <pose>-2 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_-1">
+          <pose>-1 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_0">
+          <pose>0 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_1">
+          <pose>1 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_2">
+          <pose>2 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_3">
+          <pose>3 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_4">
+          <pose>4 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_0_5">
+          <pose>5 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>.01 11 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_-5">
+          <pose>0 -5 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_-4">
+          <pose>0 -4 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_-3">
+          <pose>0 -3 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_-2">
+          <pose>0 -2 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_-1">
+          <pose>0 -1 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_0">
+          <pose>0 0 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_1">
+          <pose>0 1 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_2">
+          <pose>0 2 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_3">
+          <pose>0 3 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_4">
+          <pose>0 4 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+        <visual name="line_1_5">
+          <pose>0 5 .003 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>11 .01 .002</size>
+            </box>
+          </geometry>
+          <material>
+            <diffuse>.65 .67 .70 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>

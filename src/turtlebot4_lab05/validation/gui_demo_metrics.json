@@ -1,0 +1,7 @@
+{
+  "wall_duration_seconds": 167.46866250038147,
+  "simulation_duration_seconds": 82.173,
+  "inference_count": 555,
+  "median_inference_ms": 110.7222630000706,
+  "observer_header_comparison": "554/555 annotated headers matched RGB received before callback; one unpaired output is not evidence of changed headers. The earlier baseline matched all 533/533. Node copies header directly."
+}
