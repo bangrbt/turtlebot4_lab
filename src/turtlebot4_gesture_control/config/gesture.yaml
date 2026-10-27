@@ -1,0 +1,16 @@
+gesture_recognition_node:
+  ros__parameters:
+    use_sim_time: false
+    camera_index: 0
+    width: 640
+    height: 480
+    camera_fps: 15
+    show_window: true
+    mirror: true
+    inference_enabled: true
+    confidence: 0.55
+    confirmation_confidence: 0.60
+    class_margin: 0.08
+    stable_frames: 3
+    stable_seconds: 0.20
+    camera_timeout: 0.45

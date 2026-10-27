@@ -50,3 +50,11 @@ weights/
 
 # Keep the Lab05 report local; submit source code separately.
 /src/turtlebot4_lab05/report/
+
+# Gesture assignment environment, downloaded model and local artifacts
+.venv_gesture/
+.cache_gesture/
+*.task
+
+# Keep reports from all assignments local.
+**/report/

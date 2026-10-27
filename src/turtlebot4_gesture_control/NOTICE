@@ -1,0 +1,3 @@
+TurtleBot 4 gesture control assignment.
+The minimal Gazebo GUI configuration is adapted from Clearpath Robotics turtlebot4_simulator (Apache-2.0).
+ROS 2, OpenCV and MediaPipe remain separately licensed dependencies; downloaded models/images are not redistributed here.

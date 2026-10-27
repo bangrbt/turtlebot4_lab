@@ -6,6 +6,8 @@ Nhánh **`assignments_1`** chứa toàn bộ cấu hình, launch files, bản đ
 
 **Bài thực hành 05:** [AMCL, Nav2 tuần tự và YOLO GPU](src/turtlebot4_lab05/README.md) — nhánh `assignments_2`; [kết quả kiểm chứng](src/turtlebot4_lab05/VALIDATION.md).
 
+**Bài tập 3:** [Điều khiển TurtleBot 4 bằng cử chỉ tay](src/turtlebot4_gesture_control/README.md) — nhánh `assignments_3`; xác nhận một lần, Wave chào ngay.
+
 ---
 
 ## 1. Mục tiêu bài tập
