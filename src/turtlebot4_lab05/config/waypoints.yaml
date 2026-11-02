@@ -1,0 +1,20 @@
+validated: true
+frame_id: map
+map_image_sha256: 3703cf26d1c6d7b7e6e65b40dc2d4e54419bf533e4fd401e12f88c8037153d37
+goals:
+- name: Goal_1
+  x: -1.1121399402618408
+  y: 0.31541872024536133
+  yaw: 3.128184615974512
+  source: Lab04 NavigateToPose SUCCEEDED UUID c5c0d1b2b15b5f542f7be056856bfff4; evidence/navigation_20261011_232532/goals_summary.json
+- name: Goal_2
+  x: 3.174917459487915
+  y: -3.194671392440796
+  yaw: 3.128184717680322
+  source: Lab04 NavigateToPose SUCCEEDED UUID 19745ac8a283b74717d12f00fd990ec4; evidence/navigation_20261011_232532/goals_summary.json
+- name: Goal_3
+  x: 3.615193822926026
+  y: 5.427634985033652
+  yaw: 0.25813537564075917
+  source: Lab04 final AMCL map pose after SUCCEEDED UUID 4708934f3ab0fd436000c0d282d5625d;
+    original planner endpoint lacked 0.25 m clearance with unknown preserved

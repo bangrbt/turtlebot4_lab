@@ -1,0 +1,59 @@
+{
+  "test": "Isolated ROS_DOMAIN_ID=66, CPU selected, no image publisher; never substitutes demo camera",
+  "status_samples": [
+    {
+      "state": "waiting_camera",
+      "device": "cpu",
+      "cuda": false,
+      "actual_model_device": "not_inferred",
+      "frames": 0,
+      "camera_topic": "/lab05/nonexistent_camera",
+      "camera_age_wall_s": null,
+      "last_success_age_wall_s": null,
+      "inference_ms": null,
+      "average_fps": 0.0,
+      "error": null
+    },
+    {
+      "state": "waiting_camera",
+      "device": "cpu",
+      "cuda": false,
+      "actual_model_device": "not_inferred",
+      "frames": 0,
+      "camera_topic": "/lab05/nonexistent_camera",
+      "camera_age_wall_s": null,
+      "last_success_age_wall_s": null,
+      "inference_ms": null,
+      "average_fps": 0.0,
+      "error": null
+    },
+    {
+      "state": "waiting_camera",
+      "device": "cpu",
+      "cuda": false,
+      "actual_model_device": "not_inferred",
+      "frames": 0,
+      "camera_topic": "/lab05/nonexistent_camera",
+      "camera_age_wall_s": null,
+      "last_success_age_wall_s": null,
+      "inference_ms": null,
+      "average_fps": 0.0,
+      "error": null
+    },
+    {
+      "state": "waiting_camera",
+      "device": "cpu",
+      "cuda": false,
+      "actual_model_device": "not_inferred",
+      "frames": 0,
+      "camera_topic": "/lab05/nonexistent_camera",
+      "camera_age_wall_s": null,
+      "last_success_age_wall_s": null,
+      "inference_ms": null,
+      "average_fps": 0.0,
+      "error": null
+    }
+  ],
+  "exit_code": 0,
+  "passed": true
+}

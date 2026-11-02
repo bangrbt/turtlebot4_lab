@@ -1,0 +1,9 @@
+{
+  "test": "Live Nav2 accepted goal then SIGINT, no manual cmd_vel",
+  "accepted": true,
+  "return_code": 130,
+  "terminal_statuses": [
+    5
+  ],
+  "passed": true
+}
