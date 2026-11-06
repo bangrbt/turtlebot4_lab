@@ -1,0 +1,168 @@
+A:
+  id: A
+  code: ZONE_A
+  name: Khu vực A (Phòng học)
+  english_name: Classroom (Zone A)
+  aliases:
+  - a
+  - khu a
+  - khu vực a
+  - phòng a
+  - phòng học
+  - lớp học
+  - phong hoc
+  - lop hoc
+  - zone a
+  - area a
+  - room a
+  - classroom
+  description: Phòng học lý thuyết và thuyết trình, góc Tây Bắc của toà nhà.
+  target_pose:
+    x: -3.0
+    y: 2.0
+    yaw: 0.0
+  polygon:
+  - - -5.9
+    - 0.6
+  - - -0.1
+    - 0.6
+  - - -0.1
+    - 4.4
+  - - -5.9
+    - 4.4
+  color_rgb:
+  - 0
+  - 220
+  - 100
+  marker_z: 1.0
+B:
+  id: B
+  code: ZONE_B
+  name: Khu vực B (Phòng thí nghiệm)
+  english_name: Laboratory (Zone B)
+  aliases:
+  - b
+  - khu b
+  - khu vực b
+  - phòng b
+  - phòng thí nghiệm
+  - phòng lab
+  - phong thi nghiem
+  - lab
+  - zone b
+  - area b
+  - room b
+  - laboratory
+  - research lab
+  description: Phòng thí nghiệm nghiên cứu robotics và cảm biến, góc Đông Bắc toà
+    nhà.
+  target_pose:
+    x: 2.8
+    y: 2.0
+    yaw: 1.5708
+  polygon:
+  - - 0.1
+    - 0.6
+  - - 5.9
+    - 0.6
+  - - 5.9
+    - 4.4
+  - - 0.1
+    - 4.4
+  color_rgb:
+  - 0
+  - 180
+  - 255
+  marker_z: 1.0
+C:
+  id: C
+  code: ZONE_C
+  name: Khu vực C (Văn phòng)
+  english_name: Office (Zone C)
+  aliases:
+  - c
+  - khu c
+  - khu vực c
+  - phòng c
+  - văn phòng
+  - phòng làm việc
+  - van phong
+  - phong lam viec
+  - zone c
+  - area c
+  - room c
+  - office
+  - study
+  description: Văn phòng làm việc giảng viên và nghiên cứu sinh, góc Đông Nam toà
+    nhà.
+  target_pose:
+    x: 2.8
+    y: -2.0
+    yaw: -1.5708
+  polygon:
+  - - 0.1
+    - -4.4
+  - - 5.9
+    - -4.4
+  - - 5.9
+    - -0.6
+  - - 0.1
+    - -0.6
+  color_rgb:
+  - 220
+  - 80
+  - 220
+  marker_z: 1.0
+D:
+  id: D
+  code: ZONE_D
+  name: Khu vực D (Hành lang & Sảnh)
+  english_name: Corridor & Lobby (Zone D)
+  aliases:
+  - d
+  - khu d
+  - khu vực d
+  - hành lang
+  - sảnh
+  - sảnh chính
+  - khu tiếp đón
+  - hanh lang
+  - sanh
+  - hành lang d
+  - hành lang c
+  - hanh lang d
+  - hanh lang c
+  - sảnh d
+  - sanh d
+  - zone d
+  - area d
+  - corridor
+  - hallway
+  - lobby
+  - reception
+  description: Hành lang trung tâm kết nối các phòng và sảnh chờ tiếp đón phía Tây
+    Nam.
+  target_pose:
+    x: -3.0
+    y: -1.8
+    yaw: 0.0
+  polygon:
+  - - -5.9
+    - -4.4
+  - - -0.1
+    - -4.4
+  - - -0.1
+    - 0.5
+  - - 5.9
+    - 0.5
+  - - 5.9
+    - -0.5
+  - - -0.1
+    - -0.5
+  - - -5.9
+    - -0.5
+  color_rgb:
+  - 255
+  - 160
+  - 40
+  marker_z: 1.0

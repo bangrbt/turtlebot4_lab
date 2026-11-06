@@ -1,0 +1,37 @@
+[
+  {
+    "filename": "01_di_den_khu_vuc_a.wav",
+    "text": "Đi đến khu vực A",
+    "sample_rate": 16000,
+    "channels": 1,
+    "format": "PCM 16-bit"
+  },
+  {
+    "filename": "02_di_tu_a_den_b.wav",
+    "text": "Di chuyển từ khu vực A đến khu vực B",
+    "sample_rate": 16000,
+    "channels": 1,
+    "format": "PCM 16-bit"
+  },
+  {
+    "filename": "03_di_den_phong_thi_nghiem.wav",
+    "text": "Đi đến phòng thí nghiệm",
+    "sample_rate": 16000,
+    "channels": 1,
+    "format": "PCM 16-bit"
+  },
+  {
+    "filename": "04_khu_vuc_khong_ton_tai.wav",
+    "text": "Đi đến nhà ăn",
+    "sample_rate": 16000,
+    "channels": 1,
+    "format": "PCM 16-bit"
+  },
+  {
+    "filename": "05_multi_waypoints.wav",
+    "text": "Đi từ phòng A qua hành lang D rồi đến phòng B",
+    "sample_rate": 16000,
+    "channels": 1,
+    "format": "PCM 16-bit"
+  }
+]
