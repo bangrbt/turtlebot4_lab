@@ -1168,12 +1168,17 @@ class VoiceNavigationMainWindow(QMainWindow):
 
     def _on_status_received(self, status_json: str):
         try:
+            if not status_json or not status_json.strip():
+                return
             data = json.loads(status_json)
-            st = data.get("state", data.get("status", "UNKNOWN"))
+            st = data.get("state", data.get("status", "IDLE"))
             msg = data.get("feedback", data.get("message", ""))
             cur_zone = data.get("current_zone", "")
             route = data.get("active_route", [])
             wp_idx = data.get("waypoint_index", 0)
+
+            if not msg and st == "IDLE":
+                msg = "Hệ thống sẵn sàng"
 
             badge_styles = {
                 "IDLE": "background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;",
@@ -1188,7 +1193,8 @@ class VoiceNavigationMainWindow(QMainWindow):
             }
 
             style = badge_styles.get(st, "background-color: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1;")
-            self.lbl_nav_badge.setText(f"{st} • {msg[:30]}")
+            badge_text = f"{st} • {msg[:36]}" if msg else st
+            self.lbl_nav_badge.setText(badge_text)
             self.lbl_nav_badge.setStyleSheet(f"{style} border-radius: 5px; padding: 6px 8px; font-size: 11px; font-weight: 700;")
 
             if cur_zone and cur_zone != "Chưa xác định":
@@ -1204,7 +1210,8 @@ class VoiceNavigationMainWindow(QMainWindow):
                     self.map_widget.target_y = None
                     self.map_widget.active_route.clear()
 
-            self.log(f"[{st}]: {msg}")
+            if msg:
+                self.log(f"[{st}]: {msg}")
         except Exception:
             pass
 

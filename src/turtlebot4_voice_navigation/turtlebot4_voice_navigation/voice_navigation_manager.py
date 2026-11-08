@@ -9,6 +9,8 @@ import time
 
 import rclpy
 from rclpy.action import ActionClient
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, DurabilityPolicy, qos_profile_sensor_data
 from geometry_msgs.msg import PoseStamped, Twist, PoseWithCovarianceStamped
@@ -28,10 +30,13 @@ class VoiceNavigationManager(Node):
     def __init__(self):
         super().__init__('voice_navigation_manager')
 
+        self.cb_group = ReentrantCallbackGroup()
+
         self.declare_parameter('zones_file', '')
         self.declare_parameter('navigate_to_pose_action', '/navigate_to_pose')
         self.declare_parameter('navigate_through_poses_action', '/navigate_through_poses')
         self.declare_parameter('recognized_topic', '/voice/recognized_text')
+        self.declare_parameter('command_topic', '/voice/command_text')
         self.declare_parameter('status_topic', '/voice/navigation_status')
         self.declare_parameter('cmd_vel_topic', '/cmd_vel')
         self.declare_parameter('waypoint_dwell_seconds', 2.0)
@@ -48,25 +53,45 @@ class VoiceNavigationManager(Node):
         self.parser = CommandParser(self.semantic_map)
 
         # Nav2 Action Clients
-        self.nav_to_pose_client = ActionClient(self, NavigateToPose, self.get_parameter('navigate_to_pose_action').value)
-        self.nav_through_poses_client = ActionClient(self, NavigateThroughPoses, self.get_parameter('navigate_through_poses_action').value)
+        self.nav_to_pose_client = ActionClient(
+            self,
+            NavigateToPose,
+            self.get_parameter('navigate_to_pose_action').value,
+            callback_group=self.cb_group
+        )
+        self.nav_through_poses_client = ActionClient(
+            self,
+            NavigateThroughPoses,
+            self.get_parameter('navigate_through_poses_action').value,
+            callback_group=self.cb_group
+        )
 
         # Publishers & Subscriptions
         tl_qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.status_pub = self.create_publisher(String, self.get_parameter('status_topic').value, tl_qos)
         self.cmd_vel_pub = self.create_publisher(Twist, self.get_parameter('cmd_vel_topic').value, 10)
 
+        # Listen to both microphone transcripts (/voice/recognized_text) AND direct GUI / terminal commands (/voice/command_text)
         self.text_sub = self.create_subscription(
             String,
             self.get_parameter('recognized_topic').value,
             self.on_recognized_text,
-            10
+            10,
+            callback_group=self.cb_group
+        )
+        self.cmd_sub = self.create_subscription(
+            String,
+            self.get_parameter('command_topic').value,
+            self.on_command_text,
+            10,
+            callback_group=self.cb_group
         )
         self.amcl_sub = self.create_subscription(
             PoseWithCovarianceStamped,
             '/amcl_pose',
             self.on_amcl_pose,
-            qos_profile_sensor_data
+            qos_profile_sensor_data,
+            callback_group=self.cb_group
         )
 
         # TF Buffer for continuous robot localization
@@ -82,8 +107,15 @@ class VoiceNavigationManager(Node):
         self.active_waypoint_idx = 0
         self.state = "IDLE"
 
+        # Timers & Deduplication
+        self._dwell_timer = None
+        self._retry_timer = None
+        self._goal_retry_count = 0
+        self._last_processed_cmd = ""
+        self._last_cmd_time = 0.0
+
         # Periodic timer for status publishing and TF check
-        self.timer = self.create_timer(0.5, self.on_timer)
+        self.timer = self.create_timer(0.5, self.on_timer, callback_group=self.cb_group)
 
         self.publish_status("IDLE", "Hệ thống điều hướng bằng giọng nói đã sẵn sàng.")
         self.get_logger().info("Voice Navigation Manager ready.")
@@ -138,12 +170,24 @@ class VoiceNavigationManager(Node):
         """Periodic status heartbeat."""
         self.get_robot_pose()
 
+    def on_command_text(self, msg: String):
+        self._process_command_text(msg.data.strip(), source="COMMAND")
+
     def on_recognized_text(self, msg: String):
-        text = msg.data.strip()
+        self._process_command_text(msg.data.strip(), source="RECOGNIZED")
+
+    def _process_command_text(self, text: str, source: str = ""):
         if not text:
             return
 
-        self.get_logger().info(f"Parsing recognized command: '{text}'")
+        now = time.time()
+        # Deduplicate same command received from multiple topics within 0.8s window
+        if text == self._last_processed_cmd and (now - self._last_cmd_time) < 0.8:
+            return
+        self._last_processed_cmd = text
+        self._last_cmd_time = now
+
+        self.get_logger().info(f"[{source}] Parsing command: '{text}'")
         intent = self.parser.parse(text)
 
         # 1. Handle Invalid Zone
@@ -181,8 +225,38 @@ class VoiceNavigationManager(Node):
         # 5. Handle Navigation Intents
         self.execute_navigation_intent(intent)
 
+    def _cleanup_pending_timers(self):
+        """Safely destroy any running dwell or retry timers."""
+        if self._dwell_timer is not None:
+            try:
+                self.destroy_timer(self._dwell_timer)
+            except Exception:
+                pass
+            self._dwell_timer = None
+
+        if self._retry_timer is not None:
+            try:
+                self.destroy_timer(self._retry_timer)
+            except Exception:
+                pass
+            self._retry_timer = None
+
     def execute_navigation_intent(self, intent: VoiceIntent):
-        """Builds waypoint sequence and dispatches Nav2 action goal."""
+        """Builds waypoint sequence and dispatches Nav2 action goal.
+        Preempts any active navigation cleanly so the robot immediately responds to new commands.
+        """
+        # If currently navigating, dwelling, or waiting, cleanly preempt previous task
+        if self.is_navigating or self.current_goal_handle is not None or self._dwell_timer or self._retry_timer:
+            self.get_logger().info("Preempting ongoing navigation for new voice command...")
+            self._cleanup_pending_timers()
+            if self.current_goal_handle is not None:
+                try:
+                    self.current_goal_handle.cancel_goal_async()
+                except Exception as ex:
+                    self.get_logger().warn(f"Goal cancel error on preemption: {ex}")
+                self.current_goal_handle = None
+            self.is_navigating = False
+
         self.active_intent = intent
         cur_zone = self.get_current_zone()
 
@@ -199,18 +273,22 @@ class VoiceNavigationManager(Node):
                 self.get_logger().info(f"Robot already at {orig.name}, navigating directly to {dest.name}.")
                 waypoints = [dest]
             else:
-                self.get_logger().info(f"Robot not at {orig.name} (currently at {cur_zone.name if cur_zone else 'outside'}). Routing via {orig.name} then {dest.name}.")
+                self.get_logger().info(
+                    f"Robot not at {orig.name} (currently at {cur_zone.name if cur_zone else 'outside'}). "
+                    f"Routing via {orig.name} then {dest.name}."
+                )
                 waypoints = [orig, dest]
 
         elif intent.intent_type == IntentType.NAVIGATE_WAYPOINTS:
-            # Multi-hop route
+            # Multi-hop sequential route
             waypoints = intent.waypoint_zones.copy()
-            # If robot is already at the first waypoint, can skip it
+            # If robot is already at the first waypoint, can advance past it
             if cur_zone and len(waypoints) > 1 and cur_zone.id == waypoints[0].id:
                 waypoints = waypoints[1:]
 
         self.active_waypoints = waypoints
         self.active_waypoint_idx = 0
+        self._goal_retry_count = 0
 
         route_str = " -> ".join([z.name for z in waypoints])
         feedback = f"Bắt đầu điều hướng theo lộ trình: {route_str}."
@@ -223,11 +301,11 @@ class VoiceNavigationManager(Node):
         pose = PoseStamped()
         pose.header.frame_id = 'map'
         pose.header.stamp = self.get_clock().now().to_msg()
-        pose.pose.position.x = target.target_pose.x
-        pose.pose.position.y = target.target_pose.y
+        pose.pose.position.x = float(target.target_pose.x)
+        pose.pose.position.y = float(target.target_pose.y)
         pose.pose.position.z = 0.0
 
-        yaw = target.target_pose.yaw
+        yaw = float(target.target_pose.yaw)
         pose.pose.orientation.z = math.sin(yaw / 2.0)
         pose.pose.orientation.w = math.cos(yaw / 2.0)
         return pose
@@ -236,6 +314,9 @@ class VoiceNavigationManager(Node):
         """Sends the next waypoint in the queue to Nav2."""
         if self.active_waypoint_idx >= len(self.active_waypoints):
             self.is_navigating = False
+            self.current_goal_handle = None
+            self.active_waypoints.clear()
+            self.active_waypoint_idx = 0
             self.publish_status("COMPLETED", "Đã hoàn thành toàn bộ lộ trình điều hướng thành công!")
             return
 
@@ -243,10 +324,13 @@ class VoiceNavigationManager(Node):
         total = len(self.active_waypoints)
         step = self.active_waypoint_idx + 1
 
-        self.get_logger().info(f"Waiting for Nav2 action server: {self.get_parameter('navigate_to_pose_action').value}")
-        if not self.nav_to_pose_client.wait_for_server(timeout_sec=3.0):
-            self.publish_status("FAILED", "Nav2 NavigateToPose action server chưa sẵn sàng.")
-            return
+        if not self.nav_to_pose_client.server_is_ready():
+            self.get_logger().info(f"Waiting for Nav2 action server: {self.get_parameter('navigate_to_pose_action').value}")
+            if not self.nav_to_pose_client.wait_for_server(timeout_sec=1.5):
+                self.publish_status("FAILED", "Nav2 NavigateToPose action server chưa sẵn sàng.")
+                self.is_navigating = False
+                self.current_goal_handle = None
+                return
 
         goal_msg = NavigateToPose.Goal()
         goal_msg.pose = self.make_pose_stamped(target_zone)
@@ -262,21 +346,31 @@ class VoiceNavigationManager(Node):
         send_future.add_done_callback(self.on_goal_response)
 
     def on_nav_feedback(self, feedback_msg):
-        # Can monitor distance_remaining if available in Nav2 feedback
         pass
 
     def on_goal_response(self, future):
-        goal_handle = future.result()
+        try:
+            goal_handle = future.result()
+        except Exception as ex:
+            self.get_logger().error(f"Failed to get goal handle: {ex}")
+            self.publish_status("FAILED", f"Lỗi gửi mục tiêu tới Nav2: {ex}")
+            self.is_navigating = False
+            self.current_goal_handle = None
+            return
+
         if not goal_handle.accepted:
-            retries = getattr(self, '_goal_retry_count', 0)
-            if retries < 3:
-                self._goal_retry_count = retries + 1
-                self.get_logger().warn(f"Nav2 rejected goal (costmap/TF warming up). Retrying in 1.5s (attempt {self._goal_retry_count}/3)...")
-                self._retry_timer = self.create_timer(1.5, self._retry_send_waypoint)
+            if self._goal_retry_count < 2:
+                self._goal_retry_count += 1
+                self.get_logger().warn(f"Nav2 rejected goal (warming up). Retrying in 1.5s (attempt {self._goal_retry_count}/2)...")
+                self._cleanup_pending_timers()
+                self._retry_timer = self.create_timer(1.5, self._retry_send_waypoint, callback_group=self.cb_group)
                 return
             self._goal_retry_count = 0
-            self.publish_status("FAILED", "Mục tiêu điều hướng bị Nav2 từ chối. Hãy đảm bảo Nav2 và bản đồ đã hoàn tất khởi động.")
+            self.publish_status("FAILED", "Mục tiêu điều hướng bị Nav2 từ chối. Sẵn sàng nhận lệnh mới.")
             self.is_navigating = False
+            self.current_goal_handle = None
+            self.active_waypoints.clear()
+            self.active_waypoint_idx = 0
             return
 
         self._goal_retry_count = 0
@@ -285,59 +379,79 @@ class VoiceNavigationManager(Node):
         result_future.add_done_callback(self.on_nav_result)
 
     def _retry_send_waypoint(self):
-        if hasattr(self, '_retry_timer') and self._retry_timer:
-            self._retry_timer.cancel()
-            self._retry_timer = None
+        self._cleanup_pending_timers()
         self.send_next_waypoint()
 
     def on_nav_result(self, future):
-        result = future.result()
-        status = result.status
+        try:
+            result = future.result()
+            status = result.status
+        except Exception as ex:
+            self.get_logger().error(f"Failed to get nav result: {ex}")
+            self.is_navigating = False
+            self.current_goal_handle = None
+            self.publish_status("FAILED", f"Lỗi nhận phản hồi từ Nav2: {ex}")
+            return
+
+        self.current_goal_handle = None
 
         # Status 4 = STATUS_SUCCEEDED in action_msgs/GoalStatus
         if status == 4:
-            reached_zone = self.active_waypoints[self.active_waypoint_idx]
-            self.active_waypoint_idx += 1
             if self.active_waypoint_idx < len(self.active_waypoints):
-                dwell = float(self.get_parameter('waypoint_dwell_seconds').value)
-                next_zone = self.active_waypoints[self.active_waypoint_idx]
-                self.publish_status(
-                    "WAYPOINT_REACHED",
-                    f"Đã đến {reached_zone.name}. Tạm dừng {dwell:.1f}s trước khi chuyển sang chặng tiếp theo ({next_zone.name})."
-                )
-                if hasattr(self, '_dwell_timer') and self._dwell_timer:
-                    self._dwell_timer.cancel()
-                self._dwell_timer = self.create_timer(dwell, self._on_dwell_finished)
+                reached_zone = self.active_waypoints[self.active_waypoint_idx]
+                self.active_waypoint_idx += 1
+                if self.active_waypoint_idx < len(self.active_waypoints):
+                    dwell = float(self.get_parameter('waypoint_dwell_seconds').value)
+                    next_zone = self.active_waypoints[self.active_waypoint_idx]
+                    self.publish_status(
+                        "WAYPOINT_REACHED",
+                        f"Đã đến {reached_zone.name}. Tạm dừng {dwell:.1f}s trước khi chuyển sang chặng tiếp theo ({next_zone.name})."
+                    )
+                    self._cleanup_pending_timers()
+                    self._dwell_timer = self.create_timer(dwell, self._on_dwell_finished, callback_group=self.cb_group)
+                else:
+                    self.is_navigating = False
+                    self.publish_status("COMPLETED", f"Đã hoàn thành điều hướng và đến đích: {reached_zone.name}.")
+                    self.active_waypoints.clear()
+                    self.active_waypoint_idx = 0
             else:
                 self.is_navigating = False
-                self.publish_status("COMPLETED", f"Đã hoàn thành điều hướng và đến đích: {reached_zone.name}.")
-        else:
+                self.publish_status("COMPLETED", "Đã hoàn thành lộ trình!")
+                self.active_waypoints.clear()
+                self.active_waypoint_idx = 0
+        elif status == 5:
+            # STATUS_CANCELED
             self.is_navigating = False
-            self.publish_status("FAILED", f"Điều hướng không thành công (Nav2 Goal Status: {status}).")
+            self.publish_status("CANCELED", "Mục tiêu điều hướng đã bị hủy.")
+            self.active_waypoints.clear()
+            self.active_waypoint_idx = 0
+        else:
+            # STATUS_ABORTED (6) or other failure
+            self.is_navigating = False
+            self.publish_status("FAILED", f"Điều hướng không thành công (Nav2 Goal Status: {status}). Sẵn sàng nhận lệnh mới.")
+            self.active_waypoints.clear()
+            self.active_waypoint_idx = 0
 
     def _on_dwell_finished(self):
-        if hasattr(self, '_dwell_timer') and self._dwell_timer:
-            self._dwell_timer.cancel()
-            self._dwell_timer = None
+        self._cleanup_pending_timers()
         self.send_next_waypoint()
 
     def cancel_active_navigation(self, reason: str = ""):
-        """Cancels current Nav2 action goal and stops wheels."""
-        if hasattr(self, '_dwell_timer') and self._dwell_timer:
-            self._dwell_timer.cancel()
-            self._dwell_timer = None
-        if hasattr(self, '_retry_timer') and self._retry_timer:
-            self._retry_timer.cancel()
-            self._retry_timer = None
+        """Cancels current Nav2 action goal, cleans up timers, and stops wheels."""
+        self._cleanup_pending_timers()
 
         if self.current_goal_handle is not None and self.is_navigating:
             self.get_logger().info("Cancelling active Nav2 goal...")
-            self.current_goal_handle.cancel_goal_async()
+            try:
+                self.current_goal_handle.cancel_goal_async()
+            except Exception as ex:
+                self.get_logger().warn(f"Goal cancel error: {ex}")
 
         # Send zero velocity immediately
         stop_cmd = Twist()
         self.cmd_vel_pub.publish(stop_cmd)
         self.is_navigating = False
+        self.current_goal_handle = None
         self.active_waypoints.clear()
         self.active_waypoint_idx = 0
         self.publish_status("CANCELED", reason or "Đã hủy mục tiêu điều hướng.")
@@ -346,8 +460,10 @@ class VoiceNavigationManager(Node):
 def main(args=None):
     rclpy.init(args=args)
     manager = VoiceNavigationManager()
+    executor = MultiThreadedExecutor()
+    executor.add_node(manager)
     try:
-        rclpy.spin(manager)
+        executor.spin()
     except KeyboardInterrupt:
         pass
     finally:

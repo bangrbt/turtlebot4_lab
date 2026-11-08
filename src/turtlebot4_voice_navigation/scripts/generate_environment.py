@@ -127,7 +127,7 @@ def generate_environment():
         {
             "name": "zone_a_backpack",
             "asset": "backpack",
-            "pose": (-2.0, 2.0, 0.0, 0, 0, 0),
+            "pose": (-4.8, 3.6, 0.0, 0, 0, 0),
             "mesh_scale": (0.8, 0.8, 0.8),
             "collision_type": "box",
             "collision_size": (0.35, 0.35, 0.45)
@@ -195,7 +195,7 @@ def generate_environment():
         {
             "name": "zone_c_backpack",
             "asset": "backpack",
-            "pose": (2.0, -2.0, 0.0, 0, 0, 0),
+            "pose": (5.0, -3.6, 0.0, 0, 0, 0),
             "mesh_scale": (0.8, 0.8, 0.8),
             "collision_type": "box",
             "collision_size": (0.35, 0.35, 0.45)
@@ -354,7 +354,7 @@ def generate_environment():
                 "color_hex": "#F5D28C",
                 "bounds": [-5.8, -0.15, 0.8, 4.4],   # [x_min, x_max, y_min, y_max]
                 "center": [-3.2, 2.6],
-                "waypoint": [-3.2, 2.6, 0.0],       # [x, y, yaw]
+                "waypoint": [-2.2, 2.0, 0.0],       # [x, y, yaw]
                 "description": "Khu vực giảng dạy, phòng học trang bị bàn ghế và bảng giảng viên.",
                 "aliases": ["khu vuc a", "khu a", "phong hoc", "lop hoc", "classroom", "room a", "a"]
             },
@@ -366,7 +366,7 @@ def generate_environment():
                 "color_hex": "#8CCDDE",
                 "bounds": [0.15, 5.8, 0.8, 4.4],
                 "center": [3.2, 2.6],
-                "waypoint": [3.2, 2.6, 0.0],
+                "waypoint": [2.2, 2.0, 0.0],
                 "description": "Phòng thực hành robot, thiết bị đo kiểm và hệ thống an toàn.",
                 "aliases": ["khu vuc b", "khu b", "phong thi nghiem", "phong lab", "lab", "thi nghiem", "laboratory", "room b", "b"]
             },
@@ -378,7 +378,7 @@ def generate_environment():
                 "color_hex": "#E6A0D7",
                 "bounds": [0.15, 5.8, -4.4, -0.8],
                 "center": [3.2, -2.6],
-                "waypoint": [3.2, -2.6, 0.0],
+                "waypoint": [2.2, -2.0, 0.0],
                 "description": "Khu vực bàn làm việc quản lý, máy tính văn phòng và tài liệu hành chính.",
                 "aliases": ["khu vuc c", "khu c", "van phong", "phong lam viec", "office", "room c", "c"]
             },
@@ -390,7 +390,7 @@ def generate_environment():
                 "color_hex": "#AAD5A0",
                 "bounds": [-5.8, -0.15, -4.4, -0.8],
                 "center": [-3.2, -2.6],
-                "waypoint": [-3.2, -2.6, 0.0],
+                "waypoint": [-2.2, -2.0, 0.0],
                 "description": "Không gian yên tĩnh đọc sách, cây xanh trang trí và bàn đọc cá nhân.",
                 "aliases": ["khu vuc d", "khu d", "thu vien", "phong doc", "library", "reading room", "room d", "d"]
             },

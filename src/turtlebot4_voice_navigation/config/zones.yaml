@@ -26,8 +26,8 @@ zones:
   - -3.2
   - 2.6
   waypoint:
-  - -3.2
-  - 2.6
+  - -2.2
+  - 2.0
   - 0.0
   description: Khu vực giảng dạy, phòng học trang bị bàn ghế và bảng giảng viên.
   aliases:
@@ -55,8 +55,8 @@ zones:
   - 3.2
   - 2.6
   waypoint:
-  - 3.2
-  - 2.6
+  - 2.2
+  - 2.0
   - 0.0
   description: Phòng thực hành robot, thiết bị đo kiểm và hệ thống an toàn.
   aliases:
@@ -86,8 +86,8 @@ zones:
   - 3.2
   - -2.6
   waypoint:
-  - 3.2
-  - -2.6
+  - 2.2
+  - -2.0
   - 0.0
   description: Khu vực bàn làm việc quản lý, máy tính văn phòng và tài liệu hành chính.
   aliases:
@@ -115,8 +115,8 @@ zones:
   - -3.2
   - -2.6
   waypoint:
-  - -3.2
-  - -2.6
+  - -2.2
+  - -2.0
   - 0.0
   description: Không gian yên tĩnh đọc sách, cây xanh trang trí và bàn đọc cá nhân.
   aliases:
