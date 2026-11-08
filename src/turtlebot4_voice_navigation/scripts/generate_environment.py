@@ -244,6 +244,51 @@ def generate_environment():
             "collision_type": "cylinder",
             "collision_size": (0.2, 0.8)
         },
+
+        # --- SMALL PASSAGEWAY OBSTACLES: CORRIDOR & ROOM ENTRANCES ---
+        # Carefully positioned along corridor and doorway thresholds to test dynamic navigation and obstacle avoidance
+        {
+            "name": "obs_wet_floor_sign_corridor",
+            "asset": "wet_floor_sign",
+            "pose": (-1.2, 0.35, 0.0, 0, 0, 0),
+            "collision_type": "box",
+            "collision_size": (0.28, 0.20, 0.48)
+        },
+        {
+            "name": "obs_caution_cone_corridor",
+            "asset": "caution_cone",
+            "pose": (1.2, -0.35, 0.0, 0, 0, 0),
+            "collision_type": "cylinder",
+            "collision_size": (0.15, 0.45)
+        },
+        {
+            "name": "obs_recycling_bin_door_a",
+            "asset": "trash_bin",
+            "pose": (-2.6, 1.25, 0.0, 0, 0, 0),
+            "collision_type": "cylinder",
+            "collision_size": (0.16, 0.58)
+        },
+        {
+            "name": "obs_parcel_box_door_b",
+            "asset": "parcel_box",
+            "pose": (2.6, 1.25, 0.0, 0, 0, 0.2),
+            "collision_type": "box",
+            "collision_size": (0.32, 0.28, 0.24)
+        },
+        {
+            "name": "obs_caution_cone_door_c",
+            "asset": "caution_cone",
+            "pose": (2.6, -1.25, 0.0, 0, 0, 0),
+            "collision_type": "cylinder",
+            "collision_size": (0.15, 0.45)
+        },
+        {
+            "name": "obs_supply_box_door_d",
+            "asset": "parcel_box",
+            "pose": (-2.6, -1.25, 0.0, 0, 0, -0.2),
+            "collision_type": "box",
+            "collision_size": (0.32, 0.28, 0.24)
+        },
     ]
 
     # Draw obstacles onto Occupancy Grid matching exact collision footprint at LiDAR height
@@ -650,6 +695,63 @@ def generate_environment():
                 f'              <scale>{scale[0]} {scale[1]} {scale[2]}</scale>',
                 '            </mesh>',
                 '          </geometry>',
+                '        </visual>'
+            ]
+        elif asset == "wet_floor_sign":
+            sdf_lines += [
+                '        <visual name="sign_board">',
+                '          <pose>0 0 0.24 0 0 0</pose>',
+                '          <geometry><box><size>0.28 0.16 0.48</size></box></geometry>',
+                '          <material><ambient>0.98 0.80 0.08 1</ambient><diffuse>0.98 0.80 0.08 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="sign_stripe">',
+                '          <pose>0 0 0.24 0 0 0</pose>',
+                '          <geometry><box><size>0.29 0.17 0.12</size></box></geometry>',
+                '          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>',
+                '        </visual>'
+            ]
+        elif asset == "caution_cone":
+            sdf_lines += [
+                '        <visual name="cone_base">',
+                '          <pose>0 0 0.02 0 0 0</pose>',
+                '          <geometry><box><size>0.28 0.28 0.04</size></box></geometry>',
+                '          <material><ambient>0.96 0.45 0.08 1</ambient><diffuse>0.96 0.45 0.08 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="cone_body">',
+                '          <pose>0 0 0.23 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.12</radius><length>0.42</length></cylinder></geometry>',
+                '          <material><ambient>0.96 0.45 0.08 1</ambient><diffuse>0.96 0.45 0.08 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="cone_stripe">',
+                '          <pose>0 0 0.25 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.13</radius><length>0.10</length></cylinder></geometry>',
+                '          <material><ambient>0.95 0.95 0.95 1</ambient><diffuse>0.95 0.95 0.95 1</diffuse></material>',
+                '        </visual>'
+            ]
+        elif asset == "trash_bin":
+            sdf_lines += [
+                '        <visual name="bin_body">',
+                '          <pose>0 0 0.28 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.16</radius><length>0.56</length></cylinder></geometry>',
+                '          <material><ambient>0.15 0.35 0.55 1</ambient><diffuse>0.15 0.35 0.55 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="bin_lid">',
+                '          <pose>0 0 0.57 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.17</radius><length>0.03</length></cylinder></geometry>',
+                '          <material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material>',
+                '        </visual>'
+            ]
+        elif asset == "parcel_box":
+            sdf_lines += [
+                '        <visual name="box_body">',
+                '          <pose>0 0 0.12 0 0 0</pose>',
+                '          <geometry><box><size>0.32 0.28 0.24</size></box></geometry>',
+                '          <material><ambient>0.75 0.50 0.25 1</ambient><diffuse>0.75 0.50 0.25 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="box_tape">',
+                '          <pose>0 0 0.12 0 0 0</pose>',
+                '          <geometry><box><size>0.33 0.06 0.245</size></box></geometry>',
+                '          <material><ambient>0.88 0.70 0.35 1</ambient><diffuse>0.88 0.70 0.35 1</diffuse></material>',
                 '        </visual>'
             ]
 
