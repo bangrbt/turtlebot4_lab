@@ -79,7 +79,7 @@ def geometry_matches(label, points):
     if label == 'Closed_Fist':
         return not any(straight) and all(distance(points[0], points[i+3]) < 1.3*distance(points[0], points[i+1]) for i in (5,9,13,17))
     if label == 'Thumb_Up':
-        thumb_extended = joint_angle(points[2], points[3], points[4]) > 115
+        thumb_extended = joint_angle(points[2], points[3], points[4]) > 100
         thumb_upward = points[4][1] < points[2][1] and (points[4][1] < points[3][1] or points[4][1] < points[5][1])
         other_folded = not any(straight[1:]) and (not straight[0] or points[8][1] > points[4][1])
         return thumb_extended and thumb_upward and other_folded
@@ -280,8 +280,9 @@ class RecognitionPolicy:
             return self.unknown_with_raw('palm_pose_uncertain', raw, score)
         threshold = self.confirm_confidence if label == 'Thumb_Up' else self.confidence
         runner = categories[1][1] if len(categories) > 1 else 0.
+        margin = min(self.margin, 0.04) if label == 'Thumb_Up' else self.margin
         valid = (label in LABELS-{'None','Wave','Closed_Fist'} and score >= threshold and
-                 score-runner >= self.margin and geometry_matches(label, points))
+                 score-runner >= margin and geometry_matches(label, points))
         if not valid:
             self.stability.reset()
             return self.unknown_with_raw('uncertain_or_geometry', raw, score)

@@ -110,13 +110,23 @@ class GestureRecognitionNode(Node):
         cur_sel = self.behavior.get("selected") or "-"
         if cur_state == "SELECTED":
             state_text = f"STATE: SELECTED [{cur_sel}] -> THUMB UP ONCE TO START"
+            hint = "Show THUMB UP to confirm & start robot motion"
         elif cur_state == "RUNNING":
-            state_text = f"STATE: RUNNING [{cur_sel}] | HANDS FREE - finishes one round"
+            state_text = f"STATE: RUNNING [{cur_sel}] | HANDS FREE - executing"
+            hint = "Robot executing motion... Open Palm: STOP | Fist: CANCEL"
         else:
             state_text = f"STATE: IDLE | Selected: {cur_sel} | {'STABLE' if obs.stable else obs.reason}"
+            if obs.label == 'Thumb_Up' or obs.raw_label == 'Thumb_Up':
+                hint = "MUST SELECT FIRST: 1 finger (Back-Forth) or 2 fingers (Circle)"
+            elif self.behavior.get('reason') == 'open_palm_stop':
+                hint = "STOPPED by Open Palm. Raise 1 or 2 fingers to start again."
+            elif self.behavior.get('reason') == 'closed_fist_cancel':
+                hint = "CANCELLED by Fist. Raise 1 or 2 fingers to start again."
+            else:
+                hint = self.behavior.get('reason', 'Wave: Greet | 1 finger: Back-Forth | 2: Circle')
         lines=[f'Detected: {obs.raw_label} {obs.raw_confidence:.2f} | accepted: {accepted}',
                state_text,
-               self.behavior.get('reason','Wave to greet; select 1/2 fingers then Thumb Up'),
+               hint,
                f'Open Palm: STOP | Fist: CANCEL | inference {elapsed:.0f} ms']
         for i,line in enumerate(lines):cv2.putText(frame,line,(10,23+25*i),cv2.FONT_HERSHEY_SIMPLEX,.49,(240,240,240),1,cv2.LINE_AA)
         if not self.window_created:
