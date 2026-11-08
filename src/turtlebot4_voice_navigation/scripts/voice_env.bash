@@ -19,12 +19,11 @@ export ROS_DOMAIN_ID=77
 export ROS_LOCALHOST_ONLY=1
 export IGN_PARTITION=turtlebot4_voice_77
 
-# 4. Cache and model directories
+# 4. Cache directory
 export TB4_VOICE_CACHE="$TB4_VOICE_WS/.cache_voice"
-export IGN_GAZEBO_RESOURCE_PATH="$TB4_VOICE_WS/src/turtlebot4_voice_navigation/models:${IGN_GAZEBO_RESOURCE_PATH:-}"
 mkdir -p "$TB4_VOICE_CACHE"
 
-# 5. Activate Python environment (reusing .venv_gesture which contains OpenCV, NumPy, Sounddevice)
+# 5. Activate Python environment
 if [[ -x "$TB4_VOICE_WS/.venv_gesture/bin/python" ]]; then
     source "$TB4_VOICE_WS/.venv_gesture/bin/activate"
     _py_site="$(python -c 'import sysconfig; print(sysconfig.get_path("purelib"))')"

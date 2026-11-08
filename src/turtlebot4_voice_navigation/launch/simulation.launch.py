@@ -1,5 +1,5 @@
 """Launch Ignition Gazebo simulation with Smart Campus world, 3D models,
-full sensor/control bridges, and TurtleBot 4 standard robot.
+clock bridge, TurtleBot 4 standard robot, and auto dock clearance.
 """
 from pathlib import Path
 import os
@@ -30,45 +30,39 @@ def generate_launch_description():
     pkg_share = Path(share('turtlebot4_voice_navigation'))
     official = Path(share('turtlebot4_ignition_bringup'))
 
-    # Resource search paths for Gazebo to load both robot URDFs and realistic 3D mesh assets
-    resource_paths = [
-        str(Path(share('turtlebot4_description')).parent),
-        str(Path(share('irobot_create_description')).parent),
+    # Base description paths for robot meshes, plus package 3D models
+    desc_paths = [str(Path(share(n)).parent) for n in ['turtlebot4_description', 'irobot_create_description']]
+    model_paths = [
         str(pkg_share / 'models'),
         str(pkg_share.parent.parent / 'src/turtlebot4_voice_navigation/models'),
         os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')
     ]
-    ign_resources = ':'.join(p for p in resource_paths if p)
+    all_resources = ':'.join(p for p in desc_paths + model_paths if p)
 
     system_plugins = os.environ.get('LD_LIBRARY_PATH', '') + ':' + str(Path(share('ign_ros2_control')).parents[1] / 'lib')
     gui_plugins = ':'.join(str(Path(share(n)) / 'lib') for n in ['turtlebot4_ignition_gui_plugins', 'irobot_create_ignition_plugins'])
 
-    # Bridge arguments for ROS-Ignition communication
-    bridge_args = [
-        '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
-        '/scan@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan',
-    ]
-
     return LaunchDescription([
         DeclareLaunchArgument('gui', default_value='true', choices=['true', 'false'], description='Enable Gazebo GUI'),
+        DeclareLaunchArgument('world', default_value='smart_campus', choices=['smart_campus'], description='World name'),
         DeclareLaunchArgument('model', default_value='standard', choices=['standard'], description='TurtleBot 4 model'),
         DeclareLaunchArgument('spawn_x', default_value='0.0', description='Initial spawn X coordinate'),
         DeclareLaunchArgument('spawn_y', default_value='0.0', description='Initial spawn Y coordinate'),
         DeclareLaunchArgument('spawn_yaw', default_value='0.0', description='Initial spawn Yaw orientation'),
 
-        SetEnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', ign_resources),
+        SetEnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', all_resources),
         SetEnvironmentVariable('IGN_GAZEBO_SYSTEM_PLUGIN_PATH', system_plugins),
         SetEnvironmentVariable('IGN_GUI_PLUGIN_PATH', gui_plugins),
 
         OpaqueFunction(function=simulator),
 
-        # Bridge LiDAR /scan and /clock from Ignition Gazebo to ROS 2
+        # Bridge clock from Ignition Gazebo to ROS 2 (lidar/odom/tf are bridged by turtlebot4_spawn)
         Node(
             package='ros_gz_bridge',
             executable='parameter_bridge',
-            name='turtlebot4_voice_bridge',
+            name='voice_clock_bridge',
             output='screen',
-            arguments=bridge_args
+            arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock']
         ),
 
         # Spawn TurtleBot 4 in Smart Campus world
@@ -76,7 +70,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(str(official / 'launch/turtlebot4_spawn.launch.py')),
             launch_arguments={
                 'world': 'smart_campus',
-                'model': LaunchConfiguration('model'),
+                'model': 'standard',
                 'use_sim_time': 'true',
                 'rviz': 'false',
                 'nav2': 'false',
