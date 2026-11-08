@@ -48,6 +48,8 @@ setup(
             'voice_navigation_manager = turtlebot4_voice_navigation.voice_navigation_manager:main',
             'zone_visualizer_node = turtlebot4_voice_navigation.zone_visualizer_node:main',
             'prepare_voice_simulation = turtlebot4_voice_navigation.prepare_simulation:main',
+            'auto_initial_pose = turtlebot4_voice_navigation.auto_initial_pose:main',
+            'voice_gui = turtlebot4_voice_navigation.voice_gui:main',
         ],
     },
 )

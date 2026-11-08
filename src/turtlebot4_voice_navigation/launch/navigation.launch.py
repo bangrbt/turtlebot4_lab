@@ -15,9 +15,11 @@ def generate_launch_description():
 
     default_map = str(pkg_share / 'maps/map.yaml')
     default_rviz = str(pkg_share / 'config/voice_nav.rviz')
+    default_params = str(pkg_share / 'config/localization.yaml')
 
     return LaunchDescription([
         DeclareLaunchArgument('map', default_value=default_map, description='Path to map.yaml'),
+        DeclareLaunchArgument('params', default_value=default_params, description='Path to localization.yaml'),
         DeclareLaunchArgument('rviz', default_value='true', choices=['true', 'false'], description='Start RViz2'),
         DeclareLaunchArgument('nav2', default_value='true', choices=['true', 'false'], description='Start Nav2'),
 
@@ -27,8 +29,18 @@ def generate_launch_description():
             launch_arguments={
                 'use_sim_time': 'true',
                 'map': LaunchConfiguration('map'),
+                'params': LaunchConfiguration('params'),
                 'namespace': ''
             }.items()
+        ),
+
+        # Auto Initial Pose: Publishes /initialpose (0, 0) and waits for map -> base_link
+        Node(
+            package='turtlebot4_voice_navigation',
+            executable='auto_initial_pose',
+            name='auto_initial_pose',
+            output='screen',
+            parameters=[{'use_sim_time': True, 'initial_x': 0.0, 'initial_y': 0.0, 'initial_yaw': 0.0}]
         ),
 
         # Nav2 Navigation Stack
