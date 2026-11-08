@@ -51,12 +51,21 @@ def test_from_to_navigation(parser, sentence, expected_orig_id, expected_dest_id
     assert res.target_zone.id == expected_dest_id
     assert len(res.waypoint_zones) == 2
 
-def test_multi_hop_navigation(parser):
-    sentence = "Đi từ phòng A qua hành lang E rồi đến phòng B"
+@pytest.mark.parametrize("sentence,expected_hops", [
+    ("Đi từ phòng A qua hành lang E rồi đến phòng B", ["A", "E", "B"]),
+    ("Đi lần lượt từ A đến B đến C", ["A", "B", "C"]),
+    ("đi tới khu A đi tới khu B đi từ khu C", ["A", "B", "C"]),
+    ("di chuyển từ A sang B sang C", ["A", "B", "C"]),
+    ("đi qua các khu vực B, C, D", ["B", "C", "D"]),
+    ("chạy từ B sang D tiếp tục sang E", ["B", "D", "E"]),
+    ("đi từ A đến B rồi đến C", ["A", "B", "C"]),
+    ("lộ trình từ phòng A qua sảnh E đến văn phòng C", ["A", "E", "C"]),
+])
+def test_multi_hop_navigation(parser, sentence, expected_hops):
     res = parser.parse(sentence)
     assert res.is_valid, res.error_message
     assert res.intent_type == IntentType.NAVIGATE_WAYPOINTS
-    assert [z.id for z in res.waypoint_zones] == ["A", "E", "B"]
+    assert [z.id for z in res.waypoint_zones] == expected_hops
 
 @pytest.mark.parametrize("sentence", [
     "Dừng lại",

@@ -300,12 +300,14 @@ class VoiceNavigationManager(Node):
             self.active_waypoint_idx += 1
             if self.active_waypoint_idx < len(self.active_waypoints):
                 dwell = float(self.get_parameter('waypoint_dwell_seconds').value)
+                next_zone = self.active_waypoints[self.active_waypoint_idx]
                 self.publish_status(
                     "WAYPOINT_REACHED",
-                    f"Đã đến {reached_zone.name}. Tạm dừng {dwell:.1f}s trước khi chuyển sang chặng tiếp theo."
+                    f"Đã đến {reached_zone.name}. Tạm dừng {dwell:.1f}s trước khi chuyển sang chặng tiếp theo ({next_zone.name})."
                 )
-                time.sleep(dwell)
-                self.send_next_waypoint()
+                if hasattr(self, '_dwell_timer') and self._dwell_timer:
+                    self._dwell_timer.cancel()
+                self._dwell_timer = self.create_timer(dwell, self._on_dwell_finished)
             else:
                 self.is_navigating = False
                 self.publish_status("COMPLETED", f"Đã hoàn thành điều hướng và đến đích: {reached_zone.name}.")
@@ -313,8 +315,21 @@ class VoiceNavigationManager(Node):
             self.is_navigating = False
             self.publish_status("FAILED", f"Điều hướng không thành công (Nav2 Goal Status: {status}).")
 
+    def _on_dwell_finished(self):
+        if hasattr(self, '_dwell_timer') and self._dwell_timer:
+            self._dwell_timer.cancel()
+            self._dwell_timer = None
+        self.send_next_waypoint()
+
     def cancel_active_navigation(self, reason: str = ""):
         """Cancels current Nav2 action goal and stops wheels."""
+        if hasattr(self, '_dwell_timer') and self._dwell_timer:
+            self._dwell_timer.cancel()
+            self._dwell_timer = None
+        if hasattr(self, '_retry_timer') and self._retry_timer:
+            self._retry_timer.cancel()
+            self._retry_timer = None
+
         if self.current_goal_handle is not None and self.is_navigating:
             self.get_logger().info("Cancelling active Nav2 goal...")
             self.current_goal_handle.cancel_goal_async()

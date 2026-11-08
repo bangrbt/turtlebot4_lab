@@ -48,10 +48,39 @@ class VoiceIntent:
 
 
 class CommandParser:
-    """Parses natural language commands in Vietnamese and English."""
+    """Parses natural language commands in Vietnamese and English, extracting single destinations,
+    sequential routes (From A to B), and multi-hop itineraries (A -> B -> C -> ...).
+    """
 
     def __init__(self, semantic_map: SemanticMap):
         self.map = semantic_map
+        self._build_alias_patterns()
+
+    def _build_alias_patterns(self):
+        self._patterns = []
+        for zid, z in self.map.get_all_zones().items():
+            zid_lower = zid.lower()
+            aliases = {
+                zid_lower,
+                f"khu {zid_lower}",
+                f"khu vuc {zid_lower}",
+                f"phong {zid_lower}",
+                f"sanh {zid_lower}",
+                f"hanh lang {zid_lower}",
+                f"room {zid_lower}",
+                f"zone {zid_lower}",
+                strip_accents(normalize_text(z.name)),
+                strip_accents(normalize_text(z.english_name)),
+            }
+            for a in z.aliases:
+                aliases.add(strip_accents(normalize_text(a)))
+
+            for a in aliases:
+                if a:
+                    self._patterns.append((a, zid, len(a)))
+
+        # Sort descending by length so longer phrases match first ("phòng thí nghiệm" before "phòng")
+        self._patterns.sort(key=lambda x: x[2], reverse=True)
 
     def parse(self, text: str) -> VoiceIntent:
         raw = text.strip()
@@ -66,134 +95,122 @@ class CommandParser:
                 error_message="Câu lệnh rỗng."
             )
 
-        # 1. Check Stop / Cancel command
+        # 1. Stop / Cancel command
         if re.search(r'\b(dừng lại|dừng|ngừng|đứng lại|hủy lệnh|hủy bỏ|hủy|thôi|stop|halt|cancel|abort)\b', norm):
             return VoiceIntent(intent_type=IntentType.STOP, raw_text=raw, is_valid=True)
 
-        # 2. Check Query Location command
+        # 2. Query Location command
         if re.search(r'\b(đang ở đâu|vị trí hiện tại|vị trí|ở đâu|robot ở đâu|where are you|current location|where are we)\b', norm):
             return VoiceIntent(intent_type=IntentType.QUERY_LOCATION, raw_text=raw, is_valid=True)
 
-        # 3. Check Multi-waypoint command (Gợi ý mở rộng):
-        # Example: "Đi từ phòng A qua hành lang D rồi đến phòng B"
-        # Example: "Go from room A via corridor D to room B"
-        m_multi = re.search(
-            r'(?:đi|di chuyển|chạy|navigate|move)\s+(?:từ|from)\s+(.+?)\s+(?:qua|đi qua|via|through)\s+(.+?)\s+(?:rồi|sau đó|tiếp tục|then)?\s*(?:đến|tới|sang|to)\s+(.+)',
-            norm
-        )
-        if m_multi:
-            raw_orig, raw_via, raw_dest = m_multi.group(1).strip(), m_multi.group(2).strip(), m_multi.group(3).strip()
-            z_orig = self.map.lookup_zone(raw_orig)
-            z_via = self.map.lookup_zone(raw_via)
-            z_dest = self.map.lookup_zone(raw_dest)
-
-            invalid = []
-            if not z_orig: invalid.append(raw_orig)
-            if not z_via: invalid.append(raw_via)
-            if not z_dest: invalid.append(raw_dest)
-
-            if invalid:
-                err = f"Khu vực '{', '.join(invalid)}' không tồn tại trên bản đồ. Các khu vực hợp lệ: {self.map.get_zone_summary_text()}"
+        # 3. Check for explicitly non-existent single-letter zones (e.g. "khu Z", "phòng F", "zone X")
+        for m_inv in re.finditer(r'\b(?:khu vuc|khu|phong|room|zone)\s+([a-z])\b', unaccented):
+            cand = m_inv.group(1).upper()
+            if cand not in self.map.get_all_zones():
+                inv_name = m_inv.group(0)
+                err = f"Khu vực '{inv_name}' không tồn tại trên bản đồ. Các khu vực hợp lệ: {self.map.get_zone_summary_text()}"
                 return VoiceIntent(
                     intent_type=IntentType.INVALID_ZONE,
                     raw_text=raw,
-                    unrecognized_names=invalid,
+                    unrecognized_names=[inv_name],
                     error_message=err,
                     is_valid=False
                 )
 
-            return VoiceIntent(
-                intent_type=IntentType.NAVIGATE_WAYPOINTS,
-                raw_text=raw,
-                origin_zone=z_orig,
-                target_zone=z_dest,
-                waypoint_zones=[z_orig, z_via, z_dest],
-                is_valid=True
-            )
+        # 4. Extract all valid zone mentions in sentence appearance order
+        matches: List[Tuple[int, int, str, str]] = []  # (start, end, zone_id, pattern)
+        occupied_spans = []
+        for pat, zid, plen in self._patterns:
+            for m_obj in re.finditer(rf'\b{re.escape(pat)}\b', unaccented):
+                st, en = m_obj.span()
+                if not any(ost <= st < oen or ost < en <= oen for ost, oen in occupied_spans):
+                    occupied_spans.append((st, en))
+                    matches.append((st, en, zid, pat))
+        matches.sort(key=lambda x: x[0])
 
-        # 4. Check Sequential Route command (From A to B):
-        # Example: "Di chuyển từ khu vực A đến khu vực B."
-        # Example: "Đi từ văn phòng đến phòng thí nghiệm."
-        m_from_to = re.search(
-            r'(?:đi|di chuyển|chạy|navigate|move)?\s*(?:từ|from)\s+(.+?)\s+(?:đến|tới|sang|to)\s+(.+)',
-            norm
-        )
-        if m_from_to:
-            raw_orig, raw_dest = m_from_to.group(1).strip(), m_from_to.group(2).strip()
-            z_orig = self.map.lookup_zone(raw_orig)
-            z_dest = self.map.lookup_zone(raw_dest)
+        # 5. Check invalid destinations following navigation prepositions
+        # (e.g., "đi đến nhà ăn", "từ phòng A đến phòng ngủ", "chạy tới canteen")
+        segments = re.split(r'\b(?:tu|from|den|toi|sang|qua|via|through|roi|sau do|tiep theo|then|va)\b', unaccented)
+        for seg in segments:
+            seg_s = seg.strip()
+            seg_clean = re.sub(r'^(?:di|di chuyen|chay|hay|move|go|navigate|lan luot|cac|khu vuc|phong)\s*', '', seg_s).strip()
+            if len(seg_clean) >= 3 and seg_clean not in ['robot', 'ngay', 'lap tuc', 'cho toi']:
+                has_match = any(zid.lower() == seg_clean or pat in seg_s for _, _, zid, pat in matches)
+                if not has_match and self.map.lookup_zone(seg_clean) is None:
+                    if re.search(rf'\b(?:den|toi|sang|qua|tu)\s+{re.escape(seg_s)}', unaccented):
+                        err = f"Khu vực '{seg_s}' không tồn tại trên bản đồ. Các khu vực hợp lệ: {self.map.get_zone_summary_text()}"
+                        return VoiceIntent(
+                            intent_type=IntentType.INVALID_ZONE,
+                            raw_text=raw,
+                            unrecognized_names=[seg_s],
+                            error_message=err,
+                            is_valid=False
+                        )
 
-            invalid = []
-            if not z_orig: invalid.append(raw_orig)
-            if not z_dest: invalid.append(raw_dest)
-
-            if invalid:
-                err = f"Khu vực '{', '.join(invalid)}' không tồn tại trên bản đồ. Các khu vực hợp lệ: {self.map.get_zone_summary_text()}"
+        # 6. If no valid zones matched
+        if not matches:
+            if re.search(r'\b(di|di chuyen|chay|go|move|navigate|den|toi|sang)\b', unaccented):
+                m_t = re.search(r'(?:den|toi|sang|to)\s+(.+)', unaccented)
+                target = m_t.group(1).strip() if m_t else raw
+                err = f"Khu vực '{target}' không tồn tại trên bản đồ. Các khu vực hợp lệ: {self.map.get_zone_summary_text()}"
                 return VoiceIntent(
                     intent_type=IntentType.INVALID_ZONE,
                     raw_text=raw,
-                    unrecognized_names=invalid,
+                    unrecognized_names=[target],
                     error_message=err,
                     is_valid=False
                 )
-
+            err = f"Không nhận diện được ý định trong câu: '{raw}'. Vui lòng nói ví dụ: 'Đi đến phòng học' hoặc 'Đi lần lượt từ A đến B đến C'."
             return VoiceIntent(
-                intent_type=IntentType.NAVIGATE_FROM_TO,
+                intent_type=IntentType.UNKNOWN,
                 raw_text=raw,
-                origin_zone=z_orig,
-                target_zone=z_dest,
-                waypoint_zones=[z_orig, z_dest],
-                is_valid=True
-            )
-
-        # 5. Check Direct Navigation command (Single Goal):
-        # Example: "Đi đến khu vực A."
-        # Example: "Đi đến phòng thí nghiệm."
-        m_direct = re.search(
-            r'(?:đi đến|đi tới|di chuyển đến|di chuyển tới|tới|hãy đến|hãy đi tới|chạy đến|chạy tới|go to|navigate to|move to)\s+(.+)',
-            norm
-        )
-        candidate_dest = m_direct.group(1).strip() if m_direct else norm
-
-        # Try to resolve destination zone
-        z_dest = self.map.lookup_zone(candidate_dest)
-        if z_dest:
-            return VoiceIntent(
-                intent_type=IntentType.NAVIGATE_TO,
-                raw_text=raw,
-                target_zone=z_dest,
-                waypoint_zones=[z_dest],
-                is_valid=True
-            )
-
-        # Check if the sentence has any known zone mentioned inside
-        for zid, z in self.map.get_all_zones().items():
-            for alias in [zid.lower(), z.name.lower(), z.english_name.lower()] + [a.lower() for a in z.aliases]:
-                if re.search(rf'\b{re.escape(alias)}\b', norm) or re.search(rf'\b{re.escape(strip_accents(alias))}\b', unaccented):
-                    return VoiceIntent(
-                        intent_type=IntentType.NAVIGATE_TO,
-                        raw_text=raw,
-                        target_zone=z,
-                        waypoint_zones=[z],
-                        is_valid=True
-                    )
-
-        # If user intended navigation ("đi đến ...") but room was not recognized
-        if m_direct:
-            err = f"Khu vực '{candidate_dest}' không tồn tại trên bản đồ. Các khu vực hợp lệ: {self.map.get_zone_summary_text()}"
-            return VoiceIntent(
-                intent_type=IntentType.INVALID_ZONE,
-                raw_text=raw,
-                unrecognized_names=[candidate_dest],
                 error_message=err,
                 is_valid=False
             )
 
-        # Unrecognized intent
-        err = f"Không nhận diện được ý định trong câu: '{raw}'. Vui lòng nói ví dụ: 'Đi đến phòng học' hoặc 'Đi từ khu vực A đến khu vực B'."
-        return VoiceIntent(
-            intent_type=IntentType.UNKNOWN,
-            raw_text=raw,
-            error_message=err,
-            is_valid=False
-        )
+        # 7. Deduplicate consecutive identical zones (e.g. "đi tới A rồi ở A sang B" -> [A, B])
+        zone_objs: List[Zone] = []
+        for _, _, zid, _ in matches:
+            z = self.map.get_zone_by_id(zid)
+            if z and (not zone_objs or zone_objs[-1].id != z.id):
+                zone_objs.append(z)
+
+        # 8. Construct Intent based on zone count and sentence structure
+        if len(zone_objs) == 1:
+            return VoiceIntent(
+                intent_type=IntentType.NAVIGATE_TO,
+                raw_text=raw,
+                target_zone=zone_objs[0],
+                waypoint_zones=zone_objs,
+                is_valid=True
+            )
+        elif len(zone_objs) == 2:
+            # Check if explicit "from ... to ..."
+            if re.search(r'\b(tu|from)\b.+\b(den|toi|sang|to)\b', unaccented):
+                return VoiceIntent(
+                    intent_type=IntentType.NAVIGATE_FROM_TO,
+                    raw_text=raw,
+                    origin_zone=zone_objs[0],
+                    target_zone=zone_objs[1],
+                    waypoint_zones=zone_objs,
+                    is_valid=True
+                )
+            else:
+                return VoiceIntent(
+                    intent_type=IntentType.NAVIGATE_WAYPOINTS,
+                    raw_text=raw,
+                    origin_zone=zone_objs[0],
+                    target_zone=zone_objs[-1],
+                    waypoint_zones=zone_objs,
+                    is_valid=True
+                )
+        else:
+            # Multi-hop route (3 or more stops, e.g. A -> B -> C or A -> E -> C)
+            return VoiceIntent(
+                intent_type=IntentType.NAVIGATE_WAYPOINTS,
+                raw_text=raw,
+                origin_zone=zone_objs[0],
+                target_zone=zone_objs[-1],
+                waypoint_zones=zone_objs,
+                is_valid=True
+            )

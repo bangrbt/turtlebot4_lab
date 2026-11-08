@@ -12,18 +12,33 @@ import threading
 import time
 
 from PyQt5.QtCore import Qt, QTimer, QPointF, QRectF, pyqtSignal, QObject
-from PyQt5.QtGui import QColor, QFont, QPainter, QPen, QBrush, QPolygonF, QIcon, QPainterPath
+from PyQt5.QtGui import QColor, QFont, QPainter, QPen, QBrush, QPolygonF, QIcon, QPainterPath, QImage, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QTextEdit, QProgressBar,
     QCheckBox, QGridLayout, QFrame, QSizePolicy, QScrollArea
 )
 
-import rclpy
-from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
-from std_msgs.msg import String
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from typing import Any, List, Optional, Tuple, Dict
+
+try:
+    import rclpy
+    from rclpy.node import Node
+    from rclpy.qos import qos_profile_sensor_data
+    from std_msgs.msg import String
+    from geometry_msgs.msg import PoseWithCovarianceStamped
+    ROS2_AVAILABLE = True
+except ImportError:
+    rclpy = None
+    Node = object
+    String = Any
+    PoseWithCovarianceStamped = Any
+    ROS2_AVAILABLE = False
+
+try:
+    from nav_msgs.msg import Path as RosNavPath
+except ImportError:
+    RosNavPath = None
 
 # Lazy-loaded audio backends
 sd = None
@@ -61,46 +76,51 @@ ZONE_CFG = {
     'A': {
         'name': 'Khu A: Phòng học',
         'sub': 'Classroom',
-        'fill': QColor(240, 249, 255, 230),      # #f0f9ff
-        'border': QColor(2, 132, 199),           # #0284c7
+        'fill': QColor(2, 132, 199, 35),
+        'border': QColor(2, 132, 199),
         'bounds': (-5.85, 0.875, -0.075, 4.425),
         'target': (-2.2, 2.0),
+        'badge_pos': (-3.0, 3.85),
         'icon': '📚'
     },
     'B': {
         'name': 'Khu B: Phòng Lab',
         'sub': 'Laboratory',
-        'fill': QColor(240, 253, 244, 230),      # #f0fdf4
-        'border': QColor(22, 163, 74),           # #16a34a
+        'fill': QColor(22, 163, 74, 35),
+        'border': QColor(22, 163, 74),
         'bounds': (0.075, 0.875, 5.85, 4.425),
         'target': (2.2, 2.0),
+        'badge_pos': (3.0, 3.85),
         'icon': '🔬'
     },
     'C': {
         'name': 'Khu C: Văn phòng',
         'sub': 'Office',
-        'fill': QColor(255, 247, 237, 230),      # #fff7ed
-        'border': QColor(234, 88, 12),           # #ea580c
+        'fill': QColor(234, 88, 12, 35),
+        'border': QColor(234, 88, 12),
         'bounds': (0.075, -4.425, 5.85, -0.875),
         'target': (2.2, -2.0),
+        'badge_pos': (3.0, -1.25),
         'icon': '💼'
     },
     'D': {
         'name': 'Khu D: Thư viện',
         'sub': 'Library',
-        'fill': QColor(250, 245, 255, 230),      # #faf5ff
-        'border': QColor(147, 51, 234),          # #9333ea
+        'fill': QColor(147, 51, 234, 35),
+        'border': QColor(147, 51, 234),
         'bounds': (-5.85, -4.425, -0.075, -0.875),
         'target': (-2.2, -2.0),
+        'badge_pos': (-3.0, -1.25),
         'icon': '📖'
     },
     'E': {
         'name': 'Khu E: Sảnh trung tâm',
         'sub': 'Corridor & Lobby',
-        'fill': QColor(248, 250, 252, 220),      # #f8fafc
-        'border': QColor(100, 116, 139),         # #64748b
+        'fill': QColor(100, 116, 139, 30),
+        'border': QColor(100, 116, 139),
         'bounds': (-5.85, -0.725, 5.85, 0.725),
         'target': (0.0, 0.0),
+        'badge_pos': (0.0, 0.45),
         'icon': '🏛️'
     },
 }
@@ -110,14 +130,20 @@ class RosBridge(QObject):
     sig_status = pyqtSignal(str)
     sig_speech = pyqtSignal(str)
     sig_pose = pyqtSignal(float, float, float)
+    sig_plan = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
-        self.node = rclpy.create_node('voice_navigation_gui_node')
-        self.cmd_pub = self.node.create_publisher(String, '/voice/command_text', 10)
-        self.node.create_subscription(String, '/voice/navigation_status', self.on_nav_status, 10)
-        self.node.create_subscription(String, '/voice/recognized_text', self.on_recognized_text, 10)
-        self.node.create_subscription(PoseWithCovarianceStamped, '/amcl_pose', self.on_amcl_pose, qos_profile_sensor_data)
+        if ROS2_AVAILABLE and rclpy.ok():
+            self.node = rclpy.create_node('voice_navigation_gui_node')
+            self.cmd_pub = self.node.create_publisher(String, '/voice/command_text', 10)
+            self.node.create_subscription(String, '/voice/navigation_status', self.on_nav_status, 10)
+            self.node.create_subscription(String, '/voice/recognized_text', self.on_recognized_text, 10)
+            self.node.create_subscription(PoseWithCovarianceStamped, '/amcl_pose', self.on_amcl_pose, qos_profile_sensor_data)
+            if RosNavPath is not None:
+                self.node.create_subscription(RosNavPath, '/plan', self.on_plan, 10)
+        else:
+            self.node = None
 
     def on_nav_status(self, msg: String):
         self.sig_status.emit(msg.data)
@@ -134,18 +160,32 @@ class RosBridge(QObject):
         yaw = math.atan2(siny_cosp, cosy_cosp)
         self.sig_pose.emit(x, y, yaw)
 
+    def on_plan(self, msg):
+        try:
+            pts = [(p.pose.position.x, p.pose.position.y) for p in msg.poses]
+            self.sig_plan.emit(pts)
+        except Exception:
+            pass
+
     def send_command(self, cmd_text: str):
-        self.cmd_pub.publish(String(data=cmd_text))
+        if self.node is not None:
+            self.cmd_pub.publish(String(data=cmd_text))
 
 
 class StudioMapWidget(QWidget):
-    """Architectural CAD-style 2D map viewport with clean light grid,
-    rich topological zones, realistic obstacle symbols, and live robot telemetry.
+    """Architectural & Simulation 2D Viewport:
+    - Renders the real Occupancy Grid map (map.pgm) with millimetric physical alignment.
+    - Displays live Nav2 global plan trajectory (/plan) with glowing vector path.
+    - Renders topological semantic zones, non-overlapping bilingual badges, and multi-hop routes.
+    - Displays high-fidelity TurtleBot 4 telemetry with rotating LiDAR arc and heading beam.
+    - Supports interactive drag-to-pan, scroll-to-zoom, and instant CAD Studio / RViz Dark mode switching.
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setMinimumSize(540, 520)
+        self.setMinimumSize(540, 500)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setMouseTracking(True)
+
         self.robot_x = 0.0
         self.robot_y = 0.0
         self.robot_yaw = 0.0
@@ -153,13 +193,72 @@ class StudioMapWidget(QWidget):
         self.target_y = None
         self.show_grid = True
         self.show_labels = True
+        self.show_plan = True
         self.show_obstacles = True
+        self.view_mode = "CAD"  # "CAD" (Light) or "RVIZ" (Dark)
         self.lidar_angle = 0.0
 
-        # Lidar animation timer
+        # Pan and Zoom state
+        self.zoom_level = 1.0
+        self.pan_x = 0.0
+        self.pan_y = 0.0
+        self.is_panning = False
+        self.last_mouse_pos = None
+
+        # Real Nav2 path & multi-hop route
+        self.nav_path = []
+        self.active_route = []
+        self.active_waypoint_idx = 0
+
+        # Occupancy maps
+        self.pixmap_cad = None
+        self.pixmap_rviz = None
+        self._init_occupancy_maps()
+
+        # LiDAR animation timer
         self.anim_timer = QTimer(self)
         self.anim_timer.timeout.connect(self._animate_lidar)
         self.anim_timer.start(50)
+
+    def _init_occupancy_maps(self):
+        pkg_root = Path(__file__).resolve().parent.parent
+        pgm_path = pkg_root / 'maps/map.pgm'
+        if not pgm_path.is_file():
+            pgm_path = Path.cwd() / 'src/turtlebot4_voice_navigation/maps/map.pgm'
+
+        if pgm_path.is_file():
+            raw_img = QImage(str(pgm_path))
+            if not raw_img.isNull():
+                # 1. CAD Studio Color Table (Crisp clean white floors, deep slate walls & obstacles)
+                indexed_cad = raw_img.convertToFormat(QImage.Format_Indexed8)
+                cad_table = []
+                for i in range(256):
+                    if i <= 50:
+                        cad_table.append(QColor(15, 23, 42, 255).rgb())      # Charcoal walls & obstacles
+                    elif i >= 240:
+                        cad_table.append(QColor(255, 255, 255, 255).rgb())  # Pure White floor
+                    else:
+                        cad_table.append(QColor(241, 245, 249, 255).rgb())  # Soft boundary gray
+                indexed_cad.setColorTable(cad_table)
+                self.pixmap_cad = QPixmap.fromImage(indexed_cad)
+
+                # 2. RViz Dark Grid Color Table (Deep obsidian floor, glowing silver/cyan walls)
+                indexed_rviz = raw_img.convertToFormat(QImage.Format_Indexed8)
+                rviz_table = []
+                for i in range(256):
+                    if i <= 50:
+                        rviz_table.append(QColor(241, 245, 249, 255).rgb())  # Bright walls / obstacles
+                    elif i >= 240:
+                        rviz_table.append(QColor(15, 23, 42, 255).rgb())     # Dark floor
+                    else:
+                        rviz_table.append(QColor(3, 7, 18, 255).rgb())       # Deep obsidian
+                indexed_rviz.setColorTable(rviz_table)
+                self.pixmap_rviz = QPixmap.fromImage(indexed_rviz)
+
+    def toggle_view_mode(self):
+        self.view_mode = "RVIZ" if self.view_mode == "CAD" else "CAD"
+        self.update()
+        return self.view_mode
 
     def _animate_lidar(self):
         self.lidar_angle = (self.lidar_angle + 12.0) % 360.0
@@ -176,258 +275,272 @@ class StudioMapWidget(QWidget):
         self.target_y = y
         self.update()
 
+    def set_nav_path(self, points):
+        self.nav_path = points
+        self.update()
+
+    def clear_nav_path(self):
+        self.nav_path.clear()
+        self.update()
+
+    def set_active_route(self, route, current_idx=0):
+        self.active_route = route
+        self.active_waypoint_idx = current_idx
+        self.update()
+
+    def zoom_in(self):
+        self.zoom_level = min(3.0, self.zoom_level * 1.2)
+        self.update()
+
+    def zoom_out(self):
+        self.zoom_level = max(0.5, self.zoom_level / 1.2)
+        self.update()
+
     def reset_view(self):
+        self.zoom_level = 1.0
+        self.pan_x = 0.0
+        self.pan_y = 0.0
         self.target_x = None
         self.target_y = None
+        self.update()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.is_panning = True
+            self.last_mouse_pos = event.pos()
+
+    def mouseMoveEvent(self, event):
+        if self.is_panning and self.last_mouse_pos is not None:
+            delta = event.pos() - self.last_mouse_pos
+            self.pan_x += delta.x()
+            self.pan_y += delta.y()
+            self.last_mouse_pos = event.pos()
+            self.update()
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.is_panning = False
+            self.last_mouse_pos = None
+
+    def wheelEvent(self, event):
+        angle = event.angleDelta().y()
+        if angle > 0:
+            self.zoom_level = min(3.2, self.zoom_level * 1.12)
+        else:
+            self.zoom_level = max(0.5, self.zoom_level / 1.12)
         self.update()
 
     def paintEvent(self, event):
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
+        p.setRenderHint(QPainter.SmoothPixmapTransform)
 
         w = self.width()
         h = self.height()
+        is_dark = (self.view_mode == "RVIZ")
 
-        # 1. High-Tech Studio Canvas Background (#ffffff with subtle slate border)
-        p.fillRect(0, 0, w, h, QColor("#ffffff"))
+        # 1. Canvas Background Fill
+        bg_col = QColor("#090d16") if is_dark else QColor("#ffffff")
+        p.fillRect(0, 0, w, h, bg_col)
 
-        pad = 28
-        side = min(w, h) - 2 * pad
-        cx = w / 2.0
-        cy = h / 2.0
-        scale = side / 13.0  # -6.5m to +6.5m span
+        # Coordinate transformation (World physical coordinates [-7.0, -5.5] to [+7.0, +5.5])
+        side = min(w, h) - 40
+        scale = (side / 14.0) * self.zoom_level
+        cx = w / 2.0 + self.pan_x
+        cy = h / 2.0 + self.pan_y
 
         def to_screen(x, y):
             return cx + x * scale, cy - y * scale
 
-        # 2. Subtle Architectural Grid (1.0m minor, 5.0m major)
+        # 2. Architectural / RViz Coordinate Grid (1.0m intervals)
         if self.show_grid:
-            p.setPen(QPen(QColor("#f1f5f9"), 1))
-            for m in range(-6, 7):
+            grid_pen = QPen(QColor(30, 41, 59, 120) if is_dark else QColor(241, 245, 249), 1)
+            p.setPen(grid_pen)
+            for m in range(-7, 8):
                 gx0, gy0 = to_screen(m, -5.5)
                 gx1, gy1 = to_screen(m, 5.5)
                 p.drawLine(QPointF(gx0, gy0), QPointF(gx1, gy1))
-                gx0, gy0 = to_screen(-6.5, m)
-                gx1, gy1 = to_screen(6.5, m)
+                gx0, gy0 = to_screen(-7.0, m)
+                gx1, gy1 = to_screen(7.0, m)
                 p.drawLine(QPointF(gx0, gy0), QPointF(gx1, gy1))
 
             # Major axes X and Y with coordinate ticks
-            p.setPen(QPen(QColor("#e2e8f0"), 1.5))
+            axis_pen = QPen(QColor(51, 65, 85, 180) if is_dark else QColor(226, 232, 240), 1.5)
+            p.setPen(axis_pen)
             ax0, ay0 = to_screen(0, -5.5)
             ax1, ay1 = to_screen(0, 5.5)
             p.drawLine(QPointF(ax0, ay0), QPointF(ax1, ay1))
-            ax0, ay0 = to_screen(-6.5, 0)
-            ax1, ay1 = to_screen(6.5, 0)
+            ax0, ay0 = to_screen(-7.0, 0)
+            ax1, ay1 = to_screen(7.0, 0)
             p.drawLine(QPointF(ax0, ay0), QPointF(ax1, ay1))
 
-        # 3. Outer Room Boundary Box (#cbd5e1 outline)
-        ox0, oy0 = to_screen(-6.0, 4.5)
-        ox1, oy1 = to_screen(6.0, -4.5)
-        p.setPen(QPen(QColor("#94a3b8"), 1, Qt.DashLine))
-        p.setBrush(Qt.NoBrush)
-        p.drawRect(QRectF(ox0, oy0, ox1 - ox0, oy1 - oy0))
+        # 3. Draw Real Occupancy Grid Raster (map.pgm scaled physically)
+        active_pixmap = self.pixmap_rviz if is_dark else self.pixmap_cad
+        if active_pixmap and not active_pixmap.isNull():
+            sx0, sy0 = to_screen(-7.0, 5.5)
+            sx1, sy1 = to_screen(7.0, -5.5)
+            map_rect = QRectF(sx0, sy0, sx1 - sx0, sy1 - sy0)
+            p.drawPixmap(map_rect.toRect(), active_pixmap)
 
-        # 4. Draw 5 Semantic Zones with Elegant Pastel Fills
+        # 4. Draw 5 Semantic Zone Polygons with Translucent Tint
         for zid, z in ZONE_CFG.items():
             min_x, min_y, max_x, max_y = z['bounds']
             sx0, sy0 = to_screen(min_x, max_y)
             sx1, sy1 = to_screen(max_x, min_y)
+            zrect = QRectF(sx0, sy0, sx1 - sx0, sy1 - sy0)
 
-            # Zone background fill & border
+            # Translucent fill
+            fill_col = QColor(z['border'].red(), z['border'].green(), z['border'].blue(), 30 if is_dark else 25)
             p.setPen(QPen(z['border'], 1.5, Qt.SolidLine if zid != 'E' else Qt.DashLine))
-            p.setBrush(QBrush(z['fill']))
-            p.drawRoundedRect(QRectF(sx0, sy0, sx1 - sx0, sy1 - sy0), 6, 6)
+            p.setBrush(QBrush(fill_col))
+            p.drawRoundedRect(zrect, 8, 8)
 
-            # Zone Badge Label
-            if self.show_labels:
-                tx, ty = z['target']
-                stx, sty = to_screen(tx, ty)
+        # 5. Draw Nav2 Live Global Plan Path (/plan)
+        if self.show_plan and len(self.nav_path) >= 2:
+            # Outer cyan glow
+            p.setPen(QPen(QColor(6, 182, 212, 110), 6, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            p.setBrush(Qt.NoBrush)
+            path_glow = QPainterPath()
+            first = True
+            for wx, wy in self.nav_path:
+                px, py = to_screen(wx, wy)
+                if first:
+                    path_glow.moveTo(px, py)
+                    first = False
+                else:
+                    path_glow.lineTo(px, py)
+            p.drawPath(path_glow)
 
-                # Badge Pill
-                badge_w = 126
-                badge_h = 24
-                badge_rect = QRectF(stx - badge_w / 2.0, sty - badge_h - 10, badge_w, badge_h)
-                p.setPen(QPen(z['border'], 1))
-                p.setBrush(QBrush(QColor("#ffffff")))
-                p.drawRoundedRect(badge_rect, 12, 12)
+            # Inner bright blue/cyan core line
+            p.setPen(QPen(QColor(2, 132, 199, 240) if not is_dark else QColor(34, 211, 238, 240), 2.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            p.drawPath(path_glow)
 
-                # Badge text
+            # Directional chevrons along the path
+            for i in range(15, len(self.nav_path), 20):
+                wx, wy = self.nav_path[i]
+                prev_wx, prev_wy = self.nav_path[i - 5]
+                px, py = to_screen(wx, wy)
+                ang = math.atan2(wy - prev_wy, wx - prev_wx)
+                p.setPen(QPen(QColor(255, 255, 255), 2))
+                p.drawLine(QPointF(px, py), QPointF(px - 6 * math.cos(ang - 0.6), py + 6 * math.sin(ang - 0.6)))
+                p.drawLine(QPointF(px, py), QPointF(px - 6 * math.cos(ang + 0.6), py + 6 * math.sin(ang + 0.6)))
+
+        # 6. Draw Multi-Hop Route Sequence Connections (if active_route is present)
+        if len(self.active_route) >= 2:
+            p.setPen(QPen(QColor(245, 158, 11, 220), 2, Qt.DashLine))
+            for i in range(len(self.active_route) - 1):
+                z1_id = self.active_route[i]
+                z2_id = self.active_route[i+1]
+                if z1_id in ZONE_CFG and z2_id in ZONE_CFG:
+                    p1x, p1y = to_screen(*ZONE_CFG[z1_id]['target'])
+                    p2x, p2y = to_screen(*ZONE_CFG[z2_id]['target'])
+                    p.drawLine(QPointF(p1x, p1y), QPointF(p2x, p2y))
+
+        # 7. Draw Target Waypoints & Golden Crosshair Beacons
+        for zid, z in ZONE_CFG.items():
+            tx, ty = z['target']
+            stx, sty = to_screen(tx, ty)
+
+            # Golden concentric rings
+            p.setPen(QPen(QColor(245, 158, 11), 1.5))
+            p.setBrush(QBrush(QColor(254, 240, 138, 90)))
+            p.drawEllipse(QPointF(stx, sty), 10, 10)
+            p.setBrush(QBrush(QColor(217, 119, 6)))
+            p.drawEllipse(QPointF(stx, sty), 3.5, 3.5)
+            # Target Crosshairs
+            p.drawLine(QPointF(stx - 13, sty), QPointF(stx + 13, sty))
+            p.drawLine(QPointF(stx, sty - 13), QPointF(stx, sty + 13))
+
+            # If this zone is an active route stop, draw sequence badge [1], [2], [3]
+            if zid in self.active_route:
+                hop_num = self.active_route.index(zid) + 1
+                p.setPen(QPen(QColor(255, 255, 255), 1.5))
+                p.setBrush(QBrush(QColor(220, 38, 38) if hop_num == self.active_waypoint_idx + 1 else QColor(37, 99, 235)))
+                p.drawEllipse(QPointF(stx + 14, sty - 14), 10, 10)
                 p.setFont(QFont("Segoe UI", 8, QFont.Bold))
-                p.setPen(QPen(z['border']))
-                p.drawText(badge_rect, Qt.AlignCenter, f"{z['icon']} {z['name']}")
+                p.setPen(QPen(QColor(255, 255, 255)))
+                p.drawText(QRectF(stx + 4, sty - 24, 20, 20), Qt.AlignCenter, str(hop_num))
 
-                # Target waypoint golden beacon
-                p.setPen(QPen(QColor("#f59e0b"), 1.5))
-                p.setBrush(QBrush(QColor(254, 240, 138, 120)))
-                p.drawEllipse(QPointF(stx, sty), 8, 8)
-                p.setBrush(QBrush(QColor("#d97706")))
-                p.drawEllipse(QPointF(stx, sty), 3, 3)
+        # 8. Draw Clean Floating Badges for Zones (Positioned in open quadrant, non-overlapping)
+        if self.show_labels:
+            for zid, z in ZONE_CFG.items():
+                bx, by = z['badge_pos']
+                sbx, sby = to_screen(bx, by)
 
-        # 5. Draw Architectural Walls & Doorways (Dark Charcoal #1e293b, width 4px)
-        walls = [
-            # Outer Walls
-            (-6.0, 4.5, 6.0, 4.5),
-            (-6.0, -4.5, 6.0, -4.5),
-            (-6.0, -4.5, -6.0, 4.5),
-            (6.0, -4.5, 6.0, 4.5),
+                badge_w = 175
+                badge_h = 30
+                badge_rect = QRectF(sbx - badge_w / 2.0, sby - badge_h / 2.0, badge_w, badge_h)
 
-            # Vertical dividing walls
-            (0.0, 0.8, 0.0, 4.5),
-            (0.0, -4.5, 0.0, -0.8),
+                # Soft Drop Shadow
+                p.setPen(Qt.NoPen)
+                p.setBrush(QBrush(QColor(0, 0, 0, 30 if is_dark else 15)))
+                p.drawRoundedRect(badge_rect.adjusted(2, 2, 2, 2), 6, 6)
 
-            # North corridor wall with doorways
-            (-6.0, 0.8, -3.8, 0.8),
-            (-2.6, 0.8, 2.6, 0.8),
-            (3.8, 0.8, 6.0, 0.8),
+                # Badge Container
+                badge_bg = QColor(15, 23, 42, 230) if is_dark else QColor(255, 255, 255, 240)
+                p.setPen(QPen(z['border'], 1.2))
+                p.setBrush(QBrush(badge_bg))
+                p.drawRoundedRect(badge_rect, 6, 6)
 
-            # South corridor wall with doorways
-            (-6.0, -0.8, -3.8, -0.8),
-            (-2.6, -0.8, 2.6, -0.8),
-            (3.8, -0.8, 6.0, -0.8),
-        ]
-        p.setPen(QPen(QColor("#1e293b"), 4, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-        for wx0, wy0, wx1, wy1 in walls:
-            px0, py0 = to_screen(wx0, wy0)
-            px1, py1 = to_screen(wx1, wy1)
-            p.drawLine(QPointF(px0, py0), QPointF(px1, py1))
+                # Text: Line 1 = Name, Line 2 = English
+                p.setFont(QFont("Segoe UI", 8, QFont.Bold))
+                p.setPen(QPen(QColor(241, 245, 249) if is_dark else z['border']))
+                p.drawText(QRectF(badge_rect.left() + 6, badge_rect.top() + 2, badge_w - 12, 14), Qt.AlignLeft | Qt.AlignVCenter, f"{z['icon']} {z['name']}")
 
-        # 6. Realistic Obstacles & Furniture Symbols
-        if self.show_obstacles:
-            # Tables
-            tables = [
-                (-3.6, 2.7, 0.7, 1.4, QColor("#fed7aa"), "Bàn GV"),
-                (3.6, 2.7, 0.8, 1.6, QColor("#bae6fd"), "Lab Bench"),
-                (3.6, -2.7, 0.8, 1.6, QColor("#fed7aa"), "Bàn VP"),
-                (-3.6, -2.7, 0.8, 1.4, QColor("#fed7aa"), "Bàn Đọc"),
-            ]
-            for tox, toy, tdx, tdy, tcol, tname in tables:
-                t0x, t0y = to_screen(tox - tdx/2.0, toy + tdy/2.0)
-                t1x, t1y = to_screen(tox + tdx/2.0, toy - tdy/2.0)
-                p.setPen(QPen(QColor("#9a3412"), 1.5))
-                p.setBrush(QBrush(tcol))
-                p.drawRoundedRect(QRectF(t0x, t0y, t1x - t0x, t1y - t0y), 3, 3)
+                p.setFont(QFont("Segoe UI", 7))
+                p.setPen(QPen(QColor(148, 163, 184)))
+                p.drawText(QRectF(badge_rect.left() + 24, badge_rect.top() + 15, badge_w - 30, 12), Qt.AlignLeft | Qt.AlignVCenter, z['sub'])
 
-            # Indoor Potted Plant (Zone D)
-            px, py = to_screen(-4.6, -1.8)
-            p.setPen(QPen(QColor("#15803d"), 1.5))
-            p.setBrush(QBrush(QColor("#86efac")))
-            p.drawEllipse(QPointF(px, py), 9, 9)
-            p.setBrush(QBrush(QColor("#ea580c")))
-            p.drawEllipse(QPointF(px, py), 4, 4)
-
-            # People (Standing icons)
-            people = [
-                (-1.8, 3.0, "HS"), (1.8, 3.0, "NCV"),
-                (1.8, -3.0, "NV"), (-1.8, -3.0, "ĐG")
-            ]
-            for hx, hy, htag in people:
-                hpx, hpy = to_screen(hx, hy)
-                p.setPen(QPen(QColor("#334155"), 1.5))
-                p.setBrush(QBrush(QColor("#e2e8f0")))
-                p.drawEllipse(QPointF(hpx, hpy), 7, 7)
-                p.setFont(QFont("Segoe UI", 6, QFont.Bold))
-                p.setPen(QPen(QColor("#0f172a")))
-                p.drawText(int(hpx - 8), int(hpy - 5), 16, 10, Qt.AlignCenter, htag)
-
-            # Small Obstacles in Corridor & Doorways
-            # 1. Wet Floor Sign in corridor
-            wfx, wfy = to_screen(-1.2, 0.35)
-            p.setPen(QPen(QColor("#ca8a04"), 1.5))
-            p.setBrush(QBrush(QColor("#fde047")))
-            poly_wfs = QPolygonF([QPointF(wfx, wfy - 6), QPointF(wfx - 5, wfy + 5), QPointF(wfx + 5, wfy + 5)])
-            p.drawPolygon(poly_wfs)
-
-            # 2. Caution Cone in corridor
-            ccx, ccy = to_screen(1.2, -0.35)
-            p.setPen(QPen(QColor("#c2410c"), 1.5))
-            p.setBrush(QBrush(QColor("#fb923c")))
-            p.drawEllipse(QPointF(ccx, ccy), 5, 5)
-            p.setBrush(QBrush(Qt.white))
-            p.drawEllipse(QPointF(ccx, ccy), 2, 2)
-
-            # 3. Recycling Bin at Door A
-            rbx, rby = to_screen(-2.6, 1.25)
-            p.setPen(QPen(QColor("#1d4ed8"), 1.5))
-            p.setBrush(QBrush(QColor("#93c5fd")))
-            p.drawEllipse(QPointF(rbx, rby), 5, 5)
-
-            # 4. Parcel Box at Door B
-            pbx, pby = to_screen(2.6, 1.25)
-            p.setPen(QPen(QColor("#b45309"), 1.5))
-            p.setBrush(QBrush(QColor("#fcd34d")))
-            p.drawRect(QRectF(pbx - 4, pby - 4, 8, 8))
-
-            # 5. Caution Cone at Door C
-            cc2x, cc2y = to_screen(2.6, -1.25)
-            p.setPen(QPen(QColor("#c2410c"), 1.5))
-            p.setBrush(QBrush(QColor("#fb923c")))
-            p.drawEllipse(QPointF(cc2x, cc2y), 5, 5)
-
-            # 6. Supply Box at Door D
-            sbx, sby = to_screen(-2.6, -1.25)
-            p.setPen(QPen(QColor("#b45309"), 1.5))
-            p.setBrush(QBrush(QColor("#fcd34d")))
-            p.drawRect(QRectF(sbx - 4, sby - 4, 8, 8))
-
-        # 7. Draw Active Planned Path & Goal Target Marker
+        # 9. Draw Target Crosshair Marker if a single goal is dispatched
         if self.target_x is not None and self.target_y is not None:
             gx, gy = to_screen(self.target_x, self.target_y)
-            rx, ry = to_screen(self.robot_x, self.robot_y)
-
-            # Path line from robot to target
-            p.setPen(QPen(QColor("#2563eb"), 2, Qt.DashLine))
-            p.drawLine(QPointF(rx, ry), QPointF(gx, gy))
-
-            # Target Crosshair Marker
             p.setPen(QPen(QColor("#ef4444"), 2))
             p.setBrush(QBrush(QColor(239, 68, 68, 40)))
-            p.drawEllipse(QPointF(gx, gy), 14, 14)
-            p.setBrush(Qt.NoBrush)
-            p.drawEllipse(QPointF(gx, gy), 6, 6)
-            p.drawLine(QPointF(gx - 18, gy), QPointF(gx + 18, gy))
-            p.drawLine(QPointF(gx, gy - 18), QPointF(gx, gy + 18))
+            p.drawEllipse(QPointF(gx, gy), 16, 16)
+            p.drawLine(QPointF(gx - 20, gy), QPointF(gx + 20, gy))
+            p.drawLine(QPointF(gx, gy - 20), QPointF(gx, gy + 20))
 
-        # 8. High-Tech TurtleBot 4 Visual (Metallic chassis, LiDAR arc, heading vector, pulse halo)
+        # 10. TurtleBot 4 Robot Representation
         rx, ry = to_screen(self.robot_x, self.robot_y)
-        r_rad = 13.0
+        r_rad = 14.0 * self.zoom_level
 
-        # Pulsing blue halo
+        # Pulsing radar halo
         p.setPen(Qt.NoPen)
         p.setBrush(QBrush(QColor(37, 99, 235, 45)))
-        p.drawEllipse(QPointF(rx, ry), r_rad + 8, r_rad + 8)
+        p.drawEllipse(QPointF(rx, ry), r_rad + 9, r_rad + 9)
 
-        # Rotating LiDAR scan wedge
+        # Rotating LiDAR scan arc
         p.setBrush(QBrush(QColor(16, 185, 129, 35)))
-        p.drawPie(QRectF(rx - 38, ry - 38, 76, 76), int(self.lidar_angle * 16), int(55 * 16))
+        p.drawPie(QRectF(rx - 42 * self.zoom_level, ry - 42 * self.zoom_level, 84 * self.zoom_level, 84 * self.zoom_level), int(self.lidar_angle * 16), int(55 * 16))
 
-        # Main robot chassis (Dark Titanium #0f172a with silver rim)
+        # Robot Chassis
         p.setPen(QPen(QColor("#3b82f6"), 2))
-        p.setBrush(QBrush(QColor("#0f172a")))
+        p.setBrush(QBrush(QColor("#0f172a") if not is_dark else QColor("#1e293b")))
         p.drawEllipse(QPointF(rx, ry), r_rad, r_rad)
 
-        # Lidar top sensor puck
+        # LiDAR puck in center
         p.setPen(QPen(QColor("#0284c7"), 1))
-        p.setBrush(QBrush(QColor("#1e293b")))
-        p.drawEllipse(QPointF(rx, ry), 5, 5)
+        p.setBrush(QBrush(QColor("#38bdf8")))
+        p.drawEllipse(QPointF(rx, ry), 5 * self.zoom_level, 5 * self.zoom_level)
 
         # Heading vector arrow
-        head_len = r_rad + 14
+        head_len = r_rad + 15
         hx = rx + head_len * math.cos(self.robot_yaw)
         hy = ry - head_len * math.sin(self.robot_yaw)
-        p.setPen(QPen(QColor("#2563eb"), 3, Qt.SolidLine, Qt.RoundCap))
+        p.setPen(QPen(QColor("#2563eb") if not is_dark else QColor("#38bdf8"), 3, Qt.SolidLine, Qt.RoundCap))
         p.drawLine(QPointF(rx, ry), QPointF(hx, hy))
 
         # Arrowhead
         arr_angle = math.atan2(ry - hy, hx - rx)
-        p.setBrush(QBrush(QColor("#2563eb")))
+        p.setBrush(QBrush(QColor("#2563eb") if not is_dark else QColor("#38bdf8")))
         arrow_p1 = QPointF(hx - 8 * math.cos(arr_angle - 0.5), hy + 8 * math.sin(arr_angle - 0.5))
         arrow_p2 = QPointF(hx - 8 * math.cos(arr_angle + 0.5), hy + 8 * math.sin(arr_angle + 0.5))
         p.drawPolygon(QPolygonF([QPointF(hx, hy), arrow_p1, arrow_p2]))
 
-        # Robot Tag
-        p.setFont(QFont("Segoe UI", 8, QFont.Bold))
-        p.setPen(QPen(QColor("#0f172a")))
-        p.drawText(int(rx - 55), int(ry - r_rad - 16), 110, 15, Qt.AlignCenter, "TURTLEBOT 4")
+        # Robot live label
+        p.setFont(QFont("Segoe UI", 7, QFont.Bold))
+        p.setPen(QPen(QColor("#0f172a") if not is_dark else QColor("#f1f5f9")))
+        p.drawText(int(rx - 60), int(ry - r_rad - 18), 120, 16, Qt.AlignCenter, f"TB4 ({self.robot_x:+.2f}, {self.robot_y:+.2f})")
 
 
 class VoiceNavigationMainWindow(QMainWindow):
@@ -701,8 +814,10 @@ class VoiceNavigationMainWindow(QMainWindow):
             ("📖 [D] Thư viện", "Đi đến thư viện", "#9333ea", 1, 1),
             ("🏛️ [E] Sảnh chờ", "Đi đến hành lang", "#475569", 2, 0),
             ("🔀 [A ➔ B] Liên phòng", "Di chuyển từ khu vực A đến khu vực B", "#d97706", 2, 1),
-            ("🧭 Đa chặng (A->E->C)", "Đi từ phòng học qua sảnh rồi đến văn phòng", "#4f46e5", 3, 0),
-            ("⚠️ Điểm không tồn tại", "Đi đến khu vực Z", "#dc2626", 3, 1),
+            ("🧭 Đa chặng (A➔B➔C)", "Đi lần lượt từ A đến B đến C", "#2563eb", 3, 0),
+            ("⚡ Xuyên sảnh (A➔E➔C)", "Đi từ phòng học qua sảnh rồi đến văn phòng", "#4f46e5", 3, 1),
+            ("🔄 Vòng cung (B➔D➔E)", "Đi từ phòng lab qua thư viện rồi đến sảnh", "#059669", 4, 0),
+            ("⚠️ Điểm không tồn tại", "Đi đến khu vực Z", "#dc2626", 4, 1),
         ]
 
         for text, cmd, col, r, c in zone_buttons:
@@ -799,15 +914,26 @@ class VoiceNavigationMainWindow(QMainWindow):
         center_layout.setContentsMargins(10, 10, 10, 10)
         center_layout.setSpacing(6)
 
+        # Map Canvas Widget (instantiate first)
+        self.map_widget = StudioMapWidget()
+
         # Map Viewport Header
         map_header = QHBoxLayout()
         map_header.setSpacing(8)
 
-        lbl_map_title = QLabel("BẢN ĐỒ PHÂN ĐOẠN 2D • SMART CAMPUS")
+        lbl_map_title = QLabel("BẢN ĐỒ OCCUPANCY & TOPOLOGY 2D")
         lbl_map_title.setProperty("class", "section-header")
         map_header.addWidget(lbl_map_title)
 
         map_header.addStretch(1)
+
+        self.btn_view_mode = QPushButton("🎨 Đổi: RViz Dark / CAD")
+        self.btn_view_mode.setStyleSheet("""
+            QPushButton { background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: 600; color: #334155; }
+            QPushButton:hover { background-color: #f1f5f9; border-color: #64748b; }
+        """)
+        self.btn_view_mode.clicked.connect(self._on_toggle_view_mode)
+        map_header.addWidget(self.btn_view_mode)
 
         self.chk_show_grid = QCheckBox("Lưới 1.0m")
         self.chk_show_grid.setChecked(True)
@@ -815,16 +941,31 @@ class VoiceNavigationMainWindow(QMainWindow):
         self.chk_show_grid.toggled.connect(self._toggle_grid)
         map_header.addWidget(self.chk_show_grid)
 
-        self.chk_show_obs = QCheckBox("Vật cản")
-        self.chk_show_obs.setChecked(True)
-        self.chk_show_obs.setStyleSheet("font-size: 11px; color: #64748b;")
-        self.chk_show_obs.toggled.connect(self._toggle_obstacles)
-        map_header.addWidget(self.chk_show_obs)
+        self.chk_show_plan = QCheckBox("Đường /plan")
+        self.chk_show_plan.setChecked(True)
+        self.chk_show_plan.setStyleSheet("font-size: 11px; color: #64748b;")
+        self.chk_show_plan.toggled.connect(self._toggle_plan)
+        map_header.addWidget(self.chk_show_plan)
+
+        self.chk_show_labels = QCheckBox("Nhãn vùng")
+        self.chk_show_labels.setChecked(True)
+        self.chk_show_labels.setStyleSheet("font-size: 11px; color: #64748b;")
+        self.chk_show_labels.toggled.connect(self._toggle_labels)
+        map_header.addWidget(self.chk_show_labels)
+
+        btn_in = QPushButton("+")
+        btn_in.setFixedSize(24, 24)
+        btn_in.setStyleSheet("font-weight: bold; border: 1px solid #cbd5e1; border-radius: 4px; background: white;")
+        btn_in.clicked.connect(self.map_widget.zoom_in)
+        map_header.addWidget(btn_in)
+
+        btn_out = QPushButton("-")
+        btn_out.setFixedSize(24, 24)
+        btn_out.setStyleSheet("font-weight: bold; border: 1px solid #cbd5e1; border-radius: 4px; background: white;")
+        btn_out.clicked.connect(self.map_widget.zoom_out)
+        map_header.addWidget(btn_out)
 
         center_layout.addLayout(map_header)
-
-        # Map Canvas Widget
-        self.map_widget = StudioMapWidget()
         center_layout.addWidget(self.map_widget, stretch=1)
 
         studio_layout.addWidget(center_frame, stretch=1)
@@ -982,11 +1123,29 @@ class VoiceNavigationMainWindow(QMainWindow):
         self.bridge.sig_pose.connect(self._on_pose_received)
         self.bridge.sig_status.connect(self._on_status_received)
         self.bridge.sig_speech.connect(self._on_speech_received)
+        self.bridge.sig_plan.connect(self._on_plan_received)
         self.sig_update_vu.connect(self._on_vu_update)
         self.sig_recognized.connect(self._on_speech_transcribed)
 
         self.log("[KHỞI ĐỘNG]: Giao diện 3D Robotics Studio - TurtleBot 4 Lab 07 sẵn sàng.")
         self.log("[CẤU HÌNH]: 5 Khu vực phân vùng A, B, C, D, E | Nav2 Action Client kết nối.")
+
+    def _on_plan_received(self, points):
+        self.map_widget.set_nav_path(points)
+
+    def _on_toggle_view_mode(self):
+        mode = self.map_widget.toggle_view_mode()
+        btn_txt = "🎨 Chế độ: RViz Dark" if mode == "RVIZ" else "🎨 Chế độ: CAD Studio"
+        self.btn_view_mode.setText(btn_txt)
+        self.log(f"[VIEWPORT]: Đã chuyển sang chế độ {mode}.")
+
+    def _toggle_plan(self, checked):
+        self.map_widget.show_plan = checked
+        self.map_widget.update()
+
+    def _toggle_labels(self, checked):
+        self.map_widget.show_labels = checked
+        self.map_widget.update()
 
     def _on_pose_received(self, x, y, yaw):
         self.map_widget.set_robot_pose(x, y, yaw)
@@ -1010,9 +1169,11 @@ class VoiceNavigationMainWindow(QMainWindow):
     def _on_status_received(self, status_json: str):
         try:
             data = json.loads(status_json)
-            st = data.get("status", "UNKNOWN")
-            msg = data.get("message", "")
-            target = data.get("target")
+            st = data.get("state", data.get("status", "UNKNOWN"))
+            msg = data.get("feedback", data.get("message", ""))
+            cur_zone = data.get("current_zone", "")
+            route = data.get("active_route", [])
+            wp_idx = data.get("waypoint_index", 0)
 
             badge_styles = {
                 "IDLE": "background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;",
@@ -1020,24 +1181,28 @@ class VoiceNavigationMainWindow(QMainWindow):
                 "WAYPOINT_REACHED": "background-color: #fefce8; color: #a16207; border: 1px solid #fef08a;",
                 "COMPLETED": "background-color: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0;",
                 "CANCELLED": "background-color: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;",
+                "CANCELED": "background-color: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;",
                 "FAILED": "background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;",
                 "REJECTED": "background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;",
+                "QUERY_RESULT": "background-color: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe;",
             }
 
-            style = badge_styles.get(st, "background-color: #f1f5f9; color: #0f172a;")
-            self.lbl_nav_badge.setText(f"{st} • {msg[:28]}")
+            style = badge_styles.get(st, "background-color: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1;")
+            self.lbl_nav_badge.setText(f"{st} • {msg[:30]}")
             self.lbl_nav_badge.setStyleSheet(f"{style} border-radius: 5px; padding: 6px 8px; font-size: 11px; font-weight: 700;")
 
-            if target and isinstance(target, dict):
-                tx = target.get("x")
-                ty = target.get("y")
-                if tx is not None and ty is not None:
-                    self.map_widget.set_target(tx, ty)
+            if cur_zone and cur_zone != "Chưa xác định":
+                self.lbl_cur_zone.setText(f"📍 {cur_zone}")
 
-            if st == "COMPLETED":
-                self.map_widget.target_x = None
-                self.map_widget.target_y = None
-                self.map_widget.update()
+            if route:
+                self.map_widget.set_active_route(route, wp_idx)
+
+            if st in ("COMPLETED", "IDLE", "FAILED", "CANCELLED", "CANCELED", "REJECTED"):
+                self.map_widget.clear_nav_path()
+                if st == "COMPLETED":
+                    self.map_widget.target_x = None
+                    self.map_widget.target_y = None
+                    self.map_widget.active_route.clear()
 
             self.log(f"[{st}]: {msg}")
         except Exception:

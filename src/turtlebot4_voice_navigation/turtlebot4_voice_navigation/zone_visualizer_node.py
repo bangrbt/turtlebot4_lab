@@ -12,7 +12,7 @@ from visualization_msgs.msg import Marker, MarkerArray
 from geometry_msgs.msg import Point
 from std_msgs.msg import String, ColorRGBA
 
-from .semantic_map import SemanticMap, Zone
+from .semantic_map import SemanticMap, Zone, strip_accents
 
 
 class ZoneVisualizerNode(Node):
@@ -87,9 +87,11 @@ class ZoneVisualizerNode(Node):
             txt_marker.pose.position.x = z.target_pose.x
             txt_marker.pose.position.y = z.target_pose.y
             txt_marker.pose.position.z = z.marker_z + 0.4
-            txt_marker.scale.z = 0.38  # Text height in meters
-            txt_marker.color = ColorRGBA(r=1.0, g=1.0, b=1.0, a=0.95)
-            txt_marker.text = f"[{z.id}] {z.name}"
+            txt_marker.scale.z = 0.32  # Crisp height in meters
+            txt_marker.color = ColorRGBA(r=1.0, g=1.0, b=1.0, a=0.98)
+            # Use ASCII uppercase bilingual text to prevent Ogre3D character dropping in RViz
+            ascii_vi = strip_accents(z.name).upper()
+            txt_marker.text = f"[{z.id}] {ascii_vi} | {z.english_name.upper()}"
             arr.markers.append(txt_marker)
 
             # 2. Polygon Boundary Outline (LINE_STRIP)

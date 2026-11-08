@@ -204,9 +204,9 @@ class SemanticMap:
             if alias == norm or alias == unaccented:
                 return self.zones[zid]
 
-        # Heuristic: check if the text ends with or contains a single zone letter (a, b, c, d)
-        # e.g., "hành lang d", "phòng học a", "khu vực b"
-        match_suffix = re.search(r'\b(?:phòng|khu|khu vực|hành lang|sảnh|room|area|zone)\s+([a-d])\b', unaccented)
+        # Heuristic: check if the text ends with or contains a single zone letter (a, b, c, d, e)
+        # e.g., "hành lang d", "phòng học a", "khu vực b", "sảnh e"
+        match_suffix = re.search(r'\b(?:phòng|phong|khu|khu vực|khu vuc|hành lang|hanh lang|sảnh|sanh|room|area|zone)\s+([a-e])\b', unaccented)
         if match_suffix:
             letter = match_suffix.group(1).upper()
             if letter in self.zones:

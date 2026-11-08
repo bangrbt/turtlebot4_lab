@@ -19,16 +19,17 @@ BANNER = """
   [Phím tắt nhanh]:
     1. Đi đến khu vực A (Phòng học)
     2. Đi đến phòng thí nghiệm (Khu vực B)
-    3. Di chuyển từ khu vực A đến khu vực B
+    3. Di chuyển từ khu vực A đến khu vực B (Từ A -> B)
     4. Đi đến văn phòng (Khu vực C)
     5. Đi đến thư viện (Khu vực D)
-    6. Đi từ phòng học qua hành lang rồi đến phòng thí nghiệm (Multi-waypoint)
-    7. Đi đến phòng tổng thống (Kiểm tra xử lý khu vực KHÔNG tồn tại)
-    8. Robot đang ở đâu? (Truy vấn vị trí hiện tại)
-    9. Dừng lại (Emergency Stop)
+    6. Đi lần lượt từ A đến B đến C (Lộ trình đa chặng 3 khu vực)
+    7. Đi từ phòng A qua sảnh E rồi đến phòng B (Hành trình xuyên sảnh)
+    8. Đi đến khu vực Z (Kiểm tra xử lý khu vực KHÔNG tồn tại)
+    9. Robot đang ở đâu? (Truy vấn vị trí hiện tại)
+    0. Dừng lại (Emergency Stop)
    
   [Hoặc nhập trực tiếp bất kỳ câu lệnh bằng tiếng Việt hoặc tiếng Anh]:
-    Ví dụ: 'Đi đến thư viện', 'Go to classroom', 'Di chuyển từ B sang C'
+    Ví dụ: 'Đi đến thư viện', 'Đi lần lượt từ A đến B đến C', 'Di chuyển từ B sang C'
     'list' : Hiển thị tọa độ chi tiết 5 khu vực
     'q'    : Thoát
 ========================================================================
@@ -40,10 +41,11 @@ SHORTCUTS = {
     '3': "Di chuyển từ khu vực A đến khu vực B",
     '4': "Đi đến văn phòng",
     '5': "Đi đến thư viện",
-    '6': "Đi từ phòng học qua hành lang rồi đến phòng thí nghiệm",
-    '7': "Đi đến phòng tổng thống",
-    '8': "Robot đang ở đâu?",
-    '9': "Dừng lại"
+    '6': "Đi lần lượt từ A đến B đến C",
+    '7': "Đi từ phòng A qua sảnh E rồi đến phòng B",
+    '8': "Đi đến khu vực Z",
+    '9': "Robot đang ở đâu?",
+    '0': "Dừng lại"
 }
 
 
