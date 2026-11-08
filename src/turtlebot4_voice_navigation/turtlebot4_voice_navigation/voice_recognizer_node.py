@@ -6,10 +6,23 @@ from typing import Optional
 import json
 import os
 import queue
+import sys
 import threading
 import time
 import wave
 import math
+
+# Automatically inject workspace virtual environment site-packages (sounddevice, vosk, etc.)
+for _venv_cand in [
+    Path('/home/anhbang/turtlebot4_lab_ws/.venv_gesture/lib/python3.10/site-packages'),
+    Path.home() / 'turtlebot4_lab_ws/.venv_gesture/lib/python3.10/site-packages',
+    Path(__file__).resolve().parents[4] / '.venv_gesture/lib/python3.10/site-packages',
+    Path(__file__).resolve().parents[3] / '.venv_gesture/lib/python3.10/site-packages',
+]:
+    if _venv_cand.is_dir() and str(_venv_cand) not in sys.path:
+        sys.path.insert(0, str(_venv_cand))
+        break
+
 import numpy as np
 
 import rclpy
@@ -100,7 +113,11 @@ class VoiceRecognizerNode(Node):
                 if self.model_path and Path(self.model_path).is_dir():
                     model_dir = Path(self.model_path)
                 else:
+                    ws_root = Path(__file__).resolve().parents[4]
                     candidates = [
+                        Path('/home/anhbang/turtlebot4_lab_ws/.cache_voice/vosk-model-small-vn'),
+                        Path.home() / 'turtlebot4_lab_ws/.cache_voice/vosk-model-small-vn',
+                        ws_root / '.cache_voice/vosk-model-small-vn',
                         local_cache / "vosk-model-small-vn",
                         local_cache / f"vosk-model-small-{self.language}",
                         cache_dir / f"vosk-model-small-{self.language}",

@@ -7,8 +7,20 @@ Usage:
     python3 test_microphone.py
 """
 import sys
+from pathlib import Path
 import time
 import math
+
+# Automatically inject workspace virtual environment site-packages
+for _venv_cand in [
+    Path('/home/anhbang/turtlebot4_lab_ws/.venv_gesture/lib/python3.10/site-packages'),
+    Path.home() / 'turtlebot4_lab_ws/.venv_gesture/lib/python3.10/site-packages',
+    Path(__file__).resolve().parents[4] / '.venv_gesture/lib/python3.10/site-packages',
+    Path(__file__).resolve().parents[3] / '.venv_gesture/lib/python3.10/site-packages',
+]:
+    if _venv_cand.is_dir() and str(_venv_cand) not in sys.path:
+        sys.path.insert(0, str(_venv_cand))
+        break
 
 print("=" * 70)
 print("   TURTLEBOT 4 - KIỂM TRA PHẦN CỨNG MICROPHONE & ÂM THANH")

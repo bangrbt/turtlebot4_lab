@@ -11,6 +11,17 @@ import sys
 import threading
 import time
 
+# Automatically inject workspace virtual environment site-packages (sounddevice, vosk, speech_recognition, etc.)
+for _venv_cand in [
+    Path('/home/anhbang/turtlebot4_lab_ws/.venv_gesture/lib/python3.10/site-packages'),
+    Path.home() / 'turtlebot4_lab_ws/.venv_gesture/lib/python3.10/site-packages',
+    Path(__file__).resolve().parents[4] / '.venv_gesture/lib/python3.10/site-packages',
+    Path(__file__).resolve().parents[3] / '.venv_gesture/lib/python3.10/site-packages',
+]:
+    if _venv_cand.is_dir() and str(_venv_cand) not in sys.path:
+        sys.path.insert(0, str(_venv_cand))
+        break
+
 from PyQt5.QtCore import Qt, QTimer, QPointF, QRectF, pyqtSignal, QObject
 from PyQt5.QtGui import QColor, QFont, QPainter, QPen, QBrush, QPolygonF, QIcon, QPainterPath, QImage, QPixmap
 from PyQt5.QtWidgets import (
@@ -49,6 +60,14 @@ sr = None
 
 def get_audio():
     global sd, np, vosk, sr
+    for _venv_cand in [
+        Path('/home/anhbang/turtlebot4_lab_ws/.venv_gesture/lib/python3.10/site-packages'),
+        Path.home() / 'turtlebot4_lab_ws/.venv_gesture/lib/python3.10/site-packages',
+    ]:
+        if _venv_cand.is_dir() and str(_venv_cand) not in sys.path:
+            sys.path.insert(0, str(_venv_cand))
+            break
+
     if sd is None:
         try:
             import sounddevice as _sd
@@ -638,17 +657,23 @@ class VoiceNavigationMainWindow(QMainWindow):
     def _load_vosk_worker(self):
         _, _, v, _ = get_audio()
         if v:
+            ws_root = Path(__file__).resolve().parents[4]
             paths = [
+                Path('/home/anhbang/turtlebot4_lab_ws/.cache_voice/vosk-model-small-vn'),
+                ws_root / '.cache_voice/vosk-model-small-vn',
+                Path.home() / 'turtlebot4_lab_ws/.cache_voice/vosk-model-small-vn',
                 Path.cwd() / '.cache_voice/vosk-model-small-vn',
                 Path.home() / '.cache/turtlebot4_voice/vosk-model-small-vn',
-                Path.cwd() / '.cache_voice/vosk-model-small-en-us',
+                ws_root / '.cache_voice/vosk-model-small-en-us',
             ]
             for p in paths:
                 if p.is_dir():
                     try:
                         self.vosk_model = v.Model(str(p))
+                        self.log(f"[AI VOSK]: Đã nạp thành công mô hình nhận dạng tiếng Việt: {p.name}")
                         break
-                    except Exception:
+                    except Exception as ex:
+                        pass
                         pass
 
     def _build_ui(self):
@@ -1260,10 +1285,7 @@ class VoiceNavigationMainWindow(QMainWindow):
         threading.Thread(target=self._record_worker, daemon=True).start()
 
     def _record_worker(self):
-        s_device, n_py, _, _ = get_audio()
-        if s_device is None or n_py is None:
-            self.log("[!] Microphone chưa sẵn sàng hoặc thiếu sounddevice/numpy.")
-            return
+        s_device, n_py, v_mod, s_rec = get_audio()
 
         self.is_recording = True
         self.btn_ptt.setText("🔴  ĐANG LẮNG NGHE... HÃY NÓI!")
@@ -1284,38 +1306,54 @@ class VoiceNavigationMainWindow(QMainWindow):
         rate = 16000
         duration = 3.5
         audio_buffer = []
+        raw_bytes = None
 
-        def callback(indata, frames, time_info, status):
-            vol = float(n_py.linalg.norm(indata) * 10)
-            level = min(100, int(vol * 5.0))
-            self.sig_update_vu.emit(level)
-            audio_buffer.append(indata.copy())
+        # 1. Try sounddevice high-precision stream
+        if s_device is not None and n_py is not None:
+            def callback(indata, frames, time_info, status):
+                vol = float(n_py.linalg.norm(indata) * 10)
+                level = min(100, int(vol * 5.0))
+                self.sig_update_vu.emit(level)
+                audio_buffer.append(indata.copy())
 
+            try:
+                with s_device.InputStream(samplerate=rate, channels=1, dtype='int16', callback=callback):
+                    for _ in range(int(duration * 20)):
+                        time.sleep(0.05)
+                if audio_buffer:
+                    raw_bytes = n_py.concatenate(audio_buffer, axis=0).tobytes()
+            except Exception as ex:
+                self.log(f"[CẢNH BÁO sounddevice]: {ex}. Chuyển sang thu âm ALSA arecord...")
+
+        # 2. Seamless arecord ALSA hardware capture fallback
+        if not raw_bytes:
+            import subprocess
+            try:
+                self.log("[MICRO]: Đang thu âm trực tiếp qua arecord ALSA...")
+                cmd = ["arecord", "-d", str(int(math.ceil(duration))), "-r", str(rate), "-c", "1", "-f", "S16_LE", "-t", "raw", "-q"]
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                raw_bytes, _ = p.communicate(timeout=duration + 1.5)
+            except Exception as e_ar:
+                self.log(f"[!] Lỗi thu âm arecord: {e_ar}")
+
+        self.lbl_mic_status.setText("Trạng thái: Đang phân tích nhận dạng giọng nói...")
+        self.lbl_mic_status.setStyleSheet("background-color: #fefce8; color: #854d0e; padding: 6px 10px; border-radius: 5px; font-weight: 600; border: 1px solid #fef08a;")
+        self.sig_update_vu.emit(0.0)
+
+        recognized_txt = ""
         try:
-            with s_device.InputStream(samplerate=rate, channels=1, dtype='int16', callback=callback):
-                for _ in range(int(duration * 20)):
-                    time.sleep(0.05)
-
-            self.lbl_mic_status.setText("Trạng thái: Đang phân tích nhận dạng giọng nói...")
-            self.lbl_mic_status.setStyleSheet("background-color: #fefce8; color: #854d0e; padding: 6px 10px; border-radius: 5px; font-weight: 600; border: 1px solid #fef08a;")
-            self.sig_update_vu.emit(0.0)
-
-            recognized_txt = ""
-            if audio_buffer:
-                raw_bytes = n_py.concatenate(audio_buffer, axis=0).tobytes()
-                # 1. Try offline Vosk if model exists
-                if self.vosk_model:
+            if raw_bytes and len(raw_bytes) > 2000:
+                # 1. Try offline Vosk model (Vietnamese)
+                if self.vosk_model and v_mod is not None:
                     try:
-                        _, _, v, _ = get_audio()
-                        rec = v.KaldiRecognizer(self.vosk_model, rate)
+                        rec = v_mod.KaldiRecognizer(self.vosk_model, rate)
                         rec.AcceptWaveform(raw_bytes)
                         res = json.loads(rec.FinalResult())
                         recognized_txt = res.get('text', '').strip()
-                    except Exception:
-                        pass
+                    except Exception as e_vosk:
+                        self.log(f"[!] Lỗi Vosk: {e_vosk}")
 
                 # 2. Try online Google Speech Recognition (Vietnamese / English)
-                _, _, _, s_rec = get_audio()
                 if not recognized_txt and s_rec is not None:
                     try:
                         r = s_rec.Recognizer()
@@ -1337,7 +1375,6 @@ class VoiceNavigationMainWindow(QMainWindow):
             else:
                 self.lbl_mic_status.setText("Không thu nhận được âm thanh từ micro.")
                 self.lbl_mic_status.setStyleSheet("background-color: #fef2f2; color: #b91c1c; padding: 6px 10px; border-radius: 5px; border: 1px solid #fecaca;")
-
         except Exception as e:
             self.log(f"[LỖI MICRO]: {e}")
             self.lbl_mic_status.setText(f"Lỗi Micro: {e}")
