@@ -58,11 +58,11 @@ def get_audio():
 
 
 ZONE_CFG = {
-    'A': {'name': 'Khu A: Phòng học', 'fill': QColor(30, 58, 95, 200), 'border': QColor(56, 189, 248), 'bounds': (-5.0, 1.3, -1.3, 5.0), 'target': (-3.2, 2.6)},
-    'B': {'name': 'Khu B: Phòng TN', 'fill': QColor(20, 83, 45, 200), 'border': QColor(74, 222, 128), 'bounds': (1.3, 1.3, 5.0, 5.0), 'target': (3.2, 2.6)},
-    'C': {'name': 'Khu C: Văn phòng', 'fill': QColor(124, 45, 18, 200), 'border': QColor(251, 146, 60), 'bounds': (1.3, -5.0, 5.0, -1.3), 'target': (3.2, -2.6)},
-    'D': {'name': 'Khu D: Thư viện', 'fill': QColor(76, 29, 149, 200), 'border': QColor(192, 132, 252), 'bounds': (-5.0, -5.0, -1.3, -1.3), 'target': (-3.2, -2.6)},
-    'E': {'name': 'Khu E: Hành lang & Sảnh', 'fill': QColor(51, 65, 85, 180), 'border': QColor(148, 163, 184), 'bounds': (-5.0, -1.3, 5.0, 1.3), 'target': (0.0, 0.0)},
+    'A': {'name': 'Khu A: Phòng học', 'fill': QColor(30, 58, 95, 200), 'border': QColor(56, 189, 248), 'bounds': (-5.8, 0.8, -0.15, 4.4), 'target': (-2.2, 2.0)},
+    'B': {'name': 'Khu B: Phòng TN', 'fill': QColor(20, 83, 45, 200), 'border': QColor(74, 222, 128), 'bounds': (0.15, 0.8, 5.8, 4.4), 'target': (2.2, 2.0)},
+    'C': {'name': 'Khu C: Văn phòng', 'fill': QColor(124, 45, 18, 200), 'border': QColor(251, 146, 60), 'bounds': (0.15, -4.4, 5.8, -0.8), 'target': (2.2, -2.0)},
+    'D': {'name': 'Khu D: Thư viện', 'fill': QColor(76, 29, 149, 200), 'border': QColor(192, 132, 252), 'bounds': (-5.8, -4.4, -0.15, -0.8), 'target': (-2.2, -2.0)},
+    'E': {'name': 'Khu E: Hành lang & Sảnh', 'fill': QColor(51, 65, 85, 180), 'border': QColor(148, 163, 184), 'bounds': (-5.8, -0.8, 5.8, 0.8), 'target': (0.0, 0.0)},
 }
 
 
@@ -168,12 +168,11 @@ class MapWidget(QWidget):
             p.setBrush(QBrush(QColor("#facc15")))
             p.drawEllipse(QPointF(stx, sty), 4, 4)
 
-        # Draw Internal Corridor Walls
+        # Draw Internal Corridor Walls and Doorways
         walls = [
-            (-5.0, 1.2, -1.2, 1.2), (1.2, 1.2, 5.0, 1.2),
-            (-5.0, -1.2, -1.2, -1.2), (1.2, -1.2, 5.0, -1.2),
-            (-1.2, 1.2, -1.2, 5.0), (1.2, 1.2, 1.2, 5.0),
-            (-1.2, -1.2, -1.2, -5.0), (1.2, -1.2, 1.2, -5.0),
+            (-5.8, 0.8, -3.8, 0.8), (-2.6, 0.8, 2.6, 0.8), (3.8, 0.8, 5.8, 0.8),
+            (-5.8, -0.8, -3.8, -0.8), (-2.6, -0.8, 2.6, -0.8), (3.8, -0.8, 5.8, -0.8),
+            (0.0, 0.8, 0.0, 4.4), (0.0, -0.8, 0.0, -4.4),
         ]
         p.setPen(QPen(QColor("#94a3b8"), 3))
         for wx0, wy0, wx1, wy1 in walls:

@@ -88,20 +88,14 @@ def generate_environment():
         grid[r_start:r_end+1, c_start:c_end+1] = 0
 
     # 3. Realistic 3D Objects specification
-    # Each object has:
-    #   name: identifier
-    #   asset: 'chair', 'person', 'bicycle', 'oak_tree', 'fire_hydrant', 'backpack', or 'furniture'
-    #   pose: (x, y, z, roll, pitch, yaw)
-    #   mesh_scale: tuple or None
-    #   collision_type: 'box' or 'cylinder'
-    #   collision_size: (dx, dy, dz) or (radius, length)
-    #   color_rgba: visual color tint for furniture / fallback
+    # All objects are placed with large clearances (>1.0m) from walls and doorways.
+    # The bicycle is completely removed as requested.
     objects = [
         # --- ZONE A: PHÒNG HỌC (Classroom) ---
         {
             "name": "zone_a_teacher_desk",
             "asset": "furniture",
-            "pose": (-3.8, 3.5, 0.375, 0, 0, 0),
+            "pose": (-3.6, 2.7, 0.375, 0, 0, 0),
             "collision_type": "box",
             "collision_size": (0.7, 1.4, 0.75),
             "color_rgba": (0.6, 0.4, 0.25, 1.0)
@@ -109,7 +103,7 @@ def generate_environment():
         {
             "name": "zone_a_chair_teacher",
             "asset": "chair",
-            "pose": (-4.5, 3.5, 0.0, 0, 0, 0),
+            "pose": (-4.3, 2.7, 0.0, 0, 0, 0),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
@@ -117,7 +111,7 @@ def generate_environment():
         {
             "name": "zone_a_chair_student1",
             "asset": "chair",
-            "pose": (-2.8, 3.5, 0.0, 0, 0, 3.1415),
+            "pose": (-2.9, 2.7, 0.0, 0, 0, 3.1415),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
@@ -125,15 +119,15 @@ def generate_environment():
         {
             "name": "zone_a_person_student",
             "asset": "person",
-            "pose": (-3.8, 4.4, 0.0, 0, 0, -1.57),
+            "pose": (-1.8, 3.0, 0.0, 0, 0, -1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
-            "collision_size": (0.5, 0.4, 1.7)
+            "collision_size": (0.45, 0.4, 1.7)
         },
         {
             "name": "zone_a_backpack",
             "asset": "backpack",
-            "pose": (-3.0, 4.2, 0.0, 0, 0, 0),
+            "pose": (-2.0, 2.0, 0.0, 0, 0, 0),
             "mesh_scale": (0.8, 0.8, 0.8),
             "collision_type": "box",
             "collision_size": (0.35, 0.35, 0.45)
@@ -143,7 +137,7 @@ def generate_environment():
         {
             "name": "zone_b_lab_bench",
             "asset": "furniture",
-            "pose": (3.8, 3.5, 0.4, 0, 0, 0),
+            "pose": (3.6, 2.7, 0.4, 0, 0, 0),
             "collision_type": "box",
             "collision_size": (0.8, 1.6, 0.8),
             "color_rgba": (0.2, 0.4, 0.6, 1.0)
@@ -151,7 +145,7 @@ def generate_environment():
         {
             "name": "zone_b_chair_lab",
             "asset": "chair",
-            "pose": (4.5, 3.5, 0.0, 0, 0, 3.1415),
+            "pose": (4.4, 2.7, 0.0, 0, 0, 3.1415),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
@@ -159,15 +153,15 @@ def generate_environment():
         {
             "name": "zone_b_person_researcher",
             "asset": "person",
-            "pose": (3.8, 4.4, 0.0, 0, 0, -1.57),
+            "pose": (1.8, 3.0, 0.0, 0, 0, -1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
-            "collision_size": (0.5, 0.4, 1.7)
+            "collision_size": (0.45, 0.4, 1.7)
         },
         {
             "name": "zone_b_fire_extinguisher",
             "asset": "fire_hydrant",
-            "pose": (1.8, 2.0, 0.0, 0, 0, 0),
+            "pose": (4.8, 1.8, 0.0, 0, 0, 0),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "cylinder",
             "collision_size": (0.2, 0.8)
@@ -177,7 +171,7 @@ def generate_environment():
         {
             "name": "zone_c_office_desk",
             "asset": "furniture",
-            "pose": (3.8, -3.5, 0.375, 0, 0, 0),
+            "pose": (3.6, -2.7, 0.375, 0, 0, 0),
             "collision_type": "box",
             "collision_size": (0.8, 1.6, 0.75),
             "color_rgba": (0.45, 0.28, 0.18, 1.0)
@@ -185,7 +179,7 @@ def generate_environment():
         {
             "name": "zone_c_chair_exec",
             "asset": "chair",
-            "pose": (4.5, -3.5, 0.0, 0, 0, 3.1415),
+            "pose": (4.4, -2.7, 0.0, 0, 0, 3.1415),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
@@ -193,15 +187,15 @@ def generate_environment():
         {
             "name": "zone_c_person_staff",
             "asset": "person",
-            "pose": (3.8, -4.4, 0.0, 0, 0, 1.57),
+            "pose": (1.8, -3.0, 0.0, 0, 0, 1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
-            "collision_size": (0.5, 0.4, 1.7)
+            "collision_size": (0.45, 0.4, 1.7)
         },
         {
             "name": "zone_c_backpack",
             "asset": "backpack",
-            "pose": (3.0, -4.2, 0.0, 0, 0, 0),
+            "pose": (2.0, -2.0, 0.0, 0, 0, 0),
             "mesh_scale": (0.8, 0.8, 0.8),
             "collision_type": "box",
             "collision_size": (0.35, 0.35, 0.45)
@@ -211,7 +205,7 @@ def generate_environment():
         {
             "name": "zone_d_reading_table",
             "asset": "furniture",
-            "pose": (-3.2, -3.2, 0.35, 0, 0, 0),
+            "pose": (-3.6, -2.7, 0.35, 0, 0, 0),
             "collision_type": "box",
             "collision_size": (0.8, 1.4, 0.7),
             "color_rgba": (0.55, 0.45, 0.35, 1.0)
@@ -219,41 +213,33 @@ def generate_environment():
         {
             "name": "zone_d_chair_reading",
             "asset": "chair",
-            "pose": (-2.4, -3.2, 0.0, 0, 0, 3.1415),
+            "pose": (-4.3, -2.7, 0.0, 0, 0, 0),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
         },
         {
-            "name": "zone_d_indoor_plant_tree",
-            "asset": "oak_tree",
-            "pose": (-4.5, -4.5, 0.0, 0, 0, 0),
-            "mesh_scale": (0.12, 0.12, 0.12),
+            "name": "zone_d_indoor_potted_plant",
+            "asset": "potted_plant",
+            "pose": (-4.6, -1.8, 0.0, 0, 0, 0),
             "collision_type": "cylinder",
-            "collision_size": (0.18, 1.2)
+            "collision_size": (0.24, 1.1)
         },
         {
             "name": "zone_d_person_reader",
             "asset": "person",
-            "pose": (-3.2, -2.0, 0.0, 0, 0, -1.57),
+            "pose": (-1.8, -3.0, 0.0, 0, 0, 1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
-            "collision_size": (0.5, 0.4, 1.7)
+            "collision_size": (0.45, 0.4, 1.7)
         },
 
         # --- ZONE E: HÀNH LANG & SẢNH CHỜ (Corridor & Lobby) ---
-        {
-            "name": "zone_e_bicycle_parked",
-            "asset": "bicycle",
-            "pose": (-0.8, -0.4, 0.0, 0, 0, 0),
-            "mesh_scale": (0.85, 0.85, 0.85),
-            "collision_type": "box",
-            "collision_size": (0.35, 1.4, 0.9)
-        },
+        # Bicycle is removed completely. Fire hydrant placed at far west end.
         {
             "name": "zone_e_lobby_hydrant",
             "asset": "fire_hydrant",
-            "pose": (-1.5, 0.5, 0.0, 0, 0, 0),
+            "pose": (-5.2, 0.0, 0.0, 0, 0, 0),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "cylinder",
             "collision_size": (0.2, 0.8)
@@ -599,6 +585,7 @@ def generate_environment():
             scale = obj.get("mesh_scale", (0.85, 0.85, 0.85))
             sdf_lines += [
                 '        <visual name="visual">',
+                '          <pose>0 0 0 0 0 0</pose>',
                 '          <geometry>',
                 '            <mesh>',
                 f'              <uri>model://person/meshes/standing.dae</uri>',
@@ -607,28 +594,38 @@ def generate_environment():
                 '          </geometry>',
                 '        </visual>'
             ]
-        elif asset == "bicycle":
-            scale = obj.get("mesh_scale", (0.85, 0.85, 0.85))
+        elif asset == "potted_plant":
             sdf_lines += [
-                '        <visual name="visual">',
-                '          <geometry>',
-                '            <mesh>',
-                f'              <uri>model://bicycle/meshes/bicycle.obj</uri>',
-                f'              <scale>{scale[0]} {scale[1]} {scale[2]}</scale>',
-                '            </mesh>',
-                '          </geometry>',
-                '        </visual>'
-            ]
-        elif asset == "oak_tree":
-            scale = obj.get("mesh_scale", (0.22, 0.22, 0.22))
-            sdf_lines += [
-                '        <visual name="visual">',
-                '          <geometry>',
-                '            <mesh>',
-                f'              <uri>model://oak_tree/meshes/oak_tree.dae</uri>',
-                f'              <scale>{scale[0]} {scale[1]} {scale[2]}</scale>',
-                '            </mesh>',
-                '          </geometry>',
+                '        <!-- Realistic Decorative Potted Plant -->',
+                '        <visual name="pot_body">',
+                '          <pose>0 0 0.20 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.22</radius><length>0.40</length></cylinder></geometry>',
+                '          <material><ambient>0.72 0.38 0.24 1</ambient><diffuse>0.72 0.38 0.24 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="pot_rim">',
+                '          <pose>0 0 0.40 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.24</radius><length>0.05</length></cylinder></geometry>',
+                '          <material><ambient>0.62 0.32 0.18 1</ambient><diffuse>0.62 0.32 0.18 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="soil">',
+                '          <pose>0 0 0.41 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.20</radius><length>0.04</length></cylinder></geometry>',
+                '          <material><ambient>0.18 0.12 0.08 1</ambient><diffuse>0.18 0.12 0.08 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="stem">',
+                '          <pose>0 0 0.55 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.035</radius><length>0.28</length></cylinder></geometry>',
+                '          <material><ambient>0.35 0.25 0.15 1</ambient><diffuse>0.35 0.25 0.15 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="foliage_main">',
+                '          <pose>0 0 0.85 0 0 0</pose>',
+                '          <geometry><sphere><radius>0.35</radius></sphere></geometry>',
+                '          <material><ambient>0.15 0.55 0.18 1</ambient><diffuse>0.15 0.55 0.18 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="foliage_top">',
+                '          <pose>0 0 1.05 0 0 0</pose>',
+                '          <geometry><sphere><radius>0.26</radius></sphere></geometry>',
+                '          <material><ambient>0.22 0.65 0.25 1</ambient><diffuse>0.22 0.65 0.25 1</diffuse></material>',
                 '        </visual>'
             ]
         elif asset == "fire_hydrant":
