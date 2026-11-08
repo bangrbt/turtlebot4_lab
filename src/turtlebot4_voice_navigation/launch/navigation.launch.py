@@ -16,10 +16,12 @@ def generate_launch_description():
     default_map = str(pkg_share / 'maps/map.yaml')
     default_rviz = str(pkg_share / 'config/voice_nav.rviz')
     default_params = str(pkg_share / 'config/localization.yaml')
+    default_nav2_params = str(pkg_share / 'config/nav2.yaml')
 
     return LaunchDescription([
         DeclareLaunchArgument('map', default_value=default_map, description='Path to map.yaml'),
         DeclareLaunchArgument('params', default_value=default_params, description='Path to localization.yaml'),
+        DeclareLaunchArgument('nav2_params', default_value=default_nav2_params, description='Path to nav2.yaml'),
         DeclareLaunchArgument('rviz', default_value='true', choices=['true', 'false'], description='Start RViz2'),
         DeclareLaunchArgument('nav2', default_value='true', choices=['true', 'false'], description='Start Nav2'),
 
@@ -43,11 +45,12 @@ def generate_launch_description():
             parameters=[{'use_sim_time': True, 'initial_x': 0.0, 'initial_y': 0.0, 'initial_yaw': 0.0}]
         ),
 
-        # Nav2 Navigation Stack
+        # Nav2 Navigation Stack with robust transform tolerance
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(str(nav_share / 'launch/nav2.launch.py')),
             launch_arguments={
                 'use_sim_time': 'true',
+                'params_file': LaunchConfiguration('nav2_params'),
                 'namespace': ''
             }.items(),
             condition=IfCondition(LaunchConfiguration('nav2'))

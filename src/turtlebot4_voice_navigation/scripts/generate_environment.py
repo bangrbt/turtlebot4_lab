@@ -101,7 +101,7 @@ def generate_environment():
         {
             "name": "zone_a_teacher_desk",
             "asset": "furniture",
-            "pose": (-4.8, 3.2, 0.375, 0, 0, 0),
+            "pose": (-3.8, 3.5, 0.375, 0, 0, 0),
             "collision_type": "box",
             "collision_size": (0.7, 1.4, 0.75),
             "color_rgba": (0.6, 0.4, 0.25, 1.0)
@@ -109,7 +109,7 @@ def generate_environment():
         {
             "name": "zone_a_chair_teacher",
             "asset": "chair",
-            "pose": (-5.4, 3.2, 0.0, 0, 0, 0),
+            "pose": (-4.5, 3.5, 0.0, 0, 0, 0),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
@@ -117,7 +117,7 @@ def generate_environment():
         {
             "name": "zone_a_chair_student1",
             "asset": "chair",
-            "pose": (-2.0, 3.2, 0.0, 0, 0, 3.1415),
+            "pose": (-2.8, 3.5, 0.0, 0, 0, 3.1415),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
@@ -125,7 +125,7 @@ def generate_environment():
         {
             "name": "zone_a_person_student",
             "asset": "person",
-            "pose": (-4.6, 1.8, 0.0, 0, 0, 0.8),
+            "pose": (-3.8, 4.4, 0.0, 0, 0, -1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
             "collision_size": (0.5, 0.4, 1.7)
@@ -133,7 +133,7 @@ def generate_environment():
         {
             "name": "zone_a_backpack",
             "asset": "backpack",
-            "pose": (-4.8, 3.8, 0.0, 0, 0, 0),
+            "pose": (-3.0, 4.2, 0.0, 0, 0, 0),
             "mesh_scale": (0.8, 0.8, 0.8),
             "collision_type": "box",
             "collision_size": (0.35, 0.35, 0.45)
@@ -143,15 +143,15 @@ def generate_environment():
         {
             "name": "zone_b_lab_bench",
             "asset": "furniture",
-            "pose": (4.6, 3.0, 0.425, 0, 0, 0),
+            "pose": (3.8, 3.5, 0.4, 0, 0, 0),
             "collision_type": "box",
-            "collision_size": (0.8, 1.6, 0.85),
+            "collision_size": (0.8, 1.6, 0.8),
             "color_rgba": (0.2, 0.4, 0.6, 1.0)
         },
         {
             "name": "zone_b_chair_lab",
             "asset": "chair",
-            "pose": (4.6, 1.8, 0.0, 0, 0, 1.57),
+            "pose": (4.5, 3.5, 0.0, 0, 0, 3.1415),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
@@ -159,7 +159,7 @@ def generate_environment():
         {
             "name": "zone_b_person_researcher",
             "asset": "person",
-            "pose": (4.6, 4.0, 0.0, 0, 0, -1.57),
+            "pose": (3.8, 4.4, 0.0, 0, 0, -1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
             "collision_size": (0.5, 0.4, 1.7)
@@ -167,7 +167,7 @@ def generate_environment():
         {
             "name": "zone_b_fire_extinguisher",
             "asset": "fire_hydrant",
-            "pose": (1.2, 3.8, 0.0, 0, 0, 0),
+            "pose": (1.8, 2.0, 0.0, 0, 0, 0),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "cylinder",
             "collision_size": (0.2, 0.8)
@@ -177,7 +177,7 @@ def generate_environment():
         {
             "name": "zone_c_office_desk",
             "asset": "furniture",
-            "pose": (4.6, -3.2, 0.375, 0, 0, 0),
+            "pose": (3.8, -3.5, 0.375, 0, 0, 0),
             "collision_type": "box",
             "collision_size": (0.8, 1.6, 0.75),
             "color_rgba": (0.45, 0.28, 0.18, 1.0)
@@ -185,7 +185,7 @@ def generate_environment():
         {
             "name": "zone_c_chair_exec",
             "asset": "chair",
-            "pose": (4.6, -2.2, 0.0, 0, 0, -1.57),
+            "pose": (4.5, -3.5, 0.0, 0, 0, 3.1415),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
@@ -193,7 +193,7 @@ def generate_environment():
         {
             "name": "zone_c_person_staff",
             "asset": "person",
-            "pose": (4.6, -4.0, 0.0, 0, 0, 1.57),
+            "pose": (3.8, -4.4, 0.0, 0, 0, 1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
             "collision_size": (0.5, 0.4, 1.7)
@@ -201,7 +201,7 @@ def generate_environment():
         {
             "name": "zone_c_backpack",
             "asset": "backpack",
-            "pose": (3.6, -3.8, 0.0, 0, 0, 0),
+            "pose": (3.0, -4.2, 0.0, 0, 0, 0),
             "mesh_scale": (0.8, 0.8, 0.8),
             "collision_type": "box",
             "collision_size": (0.35, 0.35, 0.45)
@@ -211,15 +211,15 @@ def generate_environment():
         {
             "name": "zone_d_reading_table",
             "asset": "furniture",
-            "pose": (-3.4, -3.4, 0.325, 0, 0, 0),
+            "pose": (-3.2, -3.2, 0.35, 0, 0, 0),
             "collision_type": "box",
-            "collision_size": (0.7, 1.4, 0.65),
+            "collision_size": (0.8, 1.4, 0.7),
             "color_rgba": (0.55, 0.45, 0.35, 1.0)
         },
         {
             "name": "zone_d_chair_reading",
             "asset": "chair",
-            "pose": (-2.0, -3.4, 0.0, 0, 0, 3.1415),
+            "pose": (-2.4, -3.2, 0.0, 0, 0, 3.1415),
             "mesh_scale": (0.00817, 0.00817, 0.00817),
             "collision_type": "box",
             "collision_size": (0.65, 0.65, 0.9)
@@ -227,15 +227,15 @@ def generate_environment():
         {
             "name": "zone_d_indoor_plant_tree",
             "asset": "oak_tree",
-            "pose": (-5.0, -1.8, 0.0, 0, 0, 0),
-            "mesh_scale": (0.22, 0.22, 0.22),
+            "pose": (-4.5, -4.5, 0.0, 0, 0, 0),
+            "mesh_scale": (0.12, 0.12, 0.12),
             "collision_type": "cylinder",
-            "collision_size": (0.22, 1.2)
+            "collision_size": (0.18, 1.2)
         },
         {
             "name": "zone_d_person_reader",
             "asset": "person",
-            "pose": (-4.8, -3.4, 0.0, 0, 0, 0),
+            "pose": (-3.2, -2.0, 0.0, 0, 0, -1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
             "collision_size": (0.5, 0.4, 1.7)
@@ -245,15 +245,15 @@ def generate_environment():
         {
             "name": "zone_e_bicycle_parked",
             "asset": "bicycle",
-            "pose": (0.0, 0.55, 0.0, 0, 0, 0),
+            "pose": (-0.8, -0.4, 0.0, 0, 0, 0),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
-            "collision_size": (0.4, 1.4, 0.9)
+            "collision_size": (0.35, 1.4, 0.9)
         },
         {
             "name": "zone_e_lobby_hydrant",
             "asset": "fire_hydrant",
-            "pose": (-1.8, 0.55, 0.0, 0, 0, 0),
+            "pose": (-1.5, 0.5, 0.0, 0, 0, 0),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "cylinder",
             "collision_size": (0.2, 0.8)
@@ -543,17 +543,44 @@ def generate_environment():
             '      <link name="link">'
         ]
 
-        # Visual representation
+        # Visual representation: Realistic Table (Top + 4 Legs)
         if asset == "furniture":
             dx, dy, dz = c_size
             color = obj.get("color_rgba", (0.5, 0.4, 0.3, 1.0))
+            top_th = 0.04
+            leg_r = 0.03
+            leg_h = dz - top_th
+            lx = dx / 2.0 - 0.06
+            ly = dy / 2.0 - 0.06
             sdf_lines += [
-                '        <visual name="visual">',
-                f'          <geometry><box><size>{dx:.3f} {dy:.3f} {dz:.3f}</size></box></geometry>',
+                '        <!-- Realistic Table: Wooden Top + 4 Legs -->',
+                '        <visual name="table_top">',
+                f'          <pose>0 0 {dz/2.0 - top_th/2.0:.3f} 0 0 0</pose>',
+                f'          <geometry><box><size>{dx:.3f} {dy:.3f} {top_th:.3f}</size></box></geometry>',
                 '          <material>',
                 f'            <ambient>{color[0]} {color[1]} {color[2]} {color[3]}</ambient>',
                 f'            <diffuse>{color[0]} {color[1]} {color[2]} {color[3]}</diffuse>',
                 '          </material>',
+                '        </visual>',
+                '        <visual name="leg_fl">',
+                f'          <pose>{lx:.3f} {ly:.3f} {-top_th/2.0:.3f} 0 0 0</pose>',
+                f'          <geometry><cylinder><radius>{leg_r}</radius><length>{leg_h:.3f}</length></cylinder></geometry>',
+                '          <material><ambient>0.2 0.2 0.2 1</ambient><diffuse>0.2 0.2 0.2 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="leg_fr">',
+                f'          <pose>{lx:.3f} {-ly:.3f} {-top_th/2.0:.3f} 0 0 0</pose>',
+                f'          <geometry><cylinder><radius>{leg_r}</radius><length>{leg_h:.3f}</length></cylinder></geometry>',
+                '          <material><ambient>0.2 0.2 0.2 1</ambient><diffuse>0.2 0.2 0.2 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="leg_bl">',
+                f'          <pose>{-lx:.3f} {ly:.3f} {-top_th/2.0:.3f} 0 0 0</pose>',
+                f'          <geometry><cylinder><radius>{leg_r}</radius><length>{leg_h:.3f}</length></cylinder></geometry>',
+                '          <material><ambient>0.2 0.2 0.2 1</ambient><diffuse>0.2 0.2 0.2 1</diffuse></material>',
+                '        </visual>',
+                '        <visual name="leg_br">',
+                f'          <pose>{-lx:.3f} {-ly:.3f} {-top_th/2.0:.3f} 0 0 0</pose>',
+                f'          <geometry><cylinder><radius>{leg_r}</radius><length>{leg_h:.3f}</length></cylinder></geometry>',
+                '          <material><ambient>0.2 0.2 0.2 1</ambient><diffuse>0.2 0.2 0.2 1</diffuse></material>',
                 '        </visual>'
             ]
         elif asset == "chair":

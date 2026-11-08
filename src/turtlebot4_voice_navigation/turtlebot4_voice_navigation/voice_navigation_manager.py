@@ -268,13 +268,27 @@ class VoiceNavigationManager(Node):
     def on_goal_response(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
-            self.publish_status("FAILED", "Mục tiêu điều hướng bị Nav2 từ chối.")
+            retries = getattr(self, '_goal_retry_count', 0)
+            if retries < 3:
+                self._goal_retry_count = retries + 1
+                self.get_logger().warn(f"Nav2 rejected goal (costmap/TF warming up). Retrying in 1.5s (attempt {self._goal_retry_count}/3)...")
+                self._retry_timer = self.create_timer(1.5, self._retry_send_waypoint)
+                return
+            self._goal_retry_count = 0
+            self.publish_status("FAILED", "Mục tiêu điều hướng bị Nav2 từ chối. Hãy đảm bảo Nav2 và bản đồ đã hoàn tất khởi động.")
             self.is_navigating = False
             return
 
+        self._goal_retry_count = 0
         self.current_goal_handle = goal_handle
         result_future = goal_handle.get_result_async()
         result_future.add_done_callback(self.on_nav_result)
+
+    def _retry_send_waypoint(self):
+        if hasattr(self, '_retry_timer') and self._retry_timer:
+            self._retry_timer.cancel()
+            self._retry_timer = None
+        self.send_next_waypoint()
 
     def on_nav_result(self, future):
         result = future.result()
