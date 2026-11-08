@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sets up Python virtual environment, dependencies, and offline Vosk speech models.
+# Sets up Python virtual environment, dependencies, and offline Vosk speech models for Lab 07.
 set -euo pipefail
 
 _pkg_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -9,47 +9,50 @@ _venv_dir="$_ws_root/.venv_gesture"
 
 mkdir -p "$_cache_dir"
 
-echo "[*] Setting up Python dependencies for Voice Navigation..."
+echo "========================================================================"
+echo "   CÀI ĐẶT MÔI TRƯỜNG NHẬN DẠNG GIỌNG NÓI CHO TURTLEBOT 4 (LAB 07)    "
+echo "========================================================================"
 
-# Re-use .venv_gesture or create if missing
-if [[ ! -d "$_venv_dir" ]]; then
-    python3 -m venv --system-site-packages --without-pip "$_venv_dir"
-fi
-
-# Ensure pip is installed
-if ! "$_venv_dir/bin/python" -m pip --version >/dev/null 2>&1; then
-    if [[ -x "$_ws_root/.venv_yolo/bin/python" ]]; then
-        "$_ws_root/.venv_yolo/bin/python" -m pip --python "$_venv_dir/bin/python" install pip
-    else
-        python3 - "$_cache_dir/get-pip.py" <<'PY'
-import sys, urllib.request
-urllib.request.urlretrieve('https://bootstrap.pypa.io/get-pip.py', sys.argv[1])
-PY
-        "$_venv_dir/bin/python" "$_cache_dir/get-pip.py"
+# 1. Ensure .venv_gesture has pip
+if [[ ! -x "$_venv_dir/bin/pip" ]]; then
+    if [[ -d "$_ws_root/.venv_yolo/lib/python3.10/site-packages/pip" ]]; then
+        cp -r "$_ws_root/.venv_yolo/lib/python3.10/site-packages/pip"* "$_venv_dir/lib/python3.10/site-packages/"
+        cp "$_ws_root/.venv_yolo/bin/pip"* "$_venv_dir/bin/"
+        sed -i 's/\.venv_yolo/\.venv_gesture/g' "$_venv_dir/bin/pip"*
     fi
 fi
 
-echo "[*] Installing vosk and sounddevice..."
-"$_venv_dir/bin/python" -m pip install -q "vosk>=0.3.45" "sounddevice>=0.4.6" "pyyaml"
+# 2. Install Speech Recognition and Audio Libraries
+echo "[*] Cài đặt các thư viện Python: vosk, SpeechRecognition, sounddevice, pyyaml..."
+"$_venv_dir/bin/pip" install -q "vosk>=0.3.45" "SpeechRecognition>=3.10.0" "sounddevice>=0.4.6" "pyyaml" || {
+    echo "[!] Chú ý: Pip install cần kết nối mạng. Nếu máy đang offline, hệ thống vẫn hoạt động với chế độ Audio VAD và Terminal."
+}
 
-# Download Vosk Vietnamese Model (Small offline model ~40MB)
+# 3. Download and unpack Vosk Vietnamese Speech Model (small-vn ~40MB)
 _vn_model_dir="$_cache_dir/vosk-model-small-vn"
 if [[ ! -d "$_vn_model_dir" ]]; then
-    echo "[*] Downloading Vosk Vietnamese Speech Model (small-vn ~40MB)..."
+    echo "[*] Đang tải mô hình nhận dạng tiếng Việt Vosk (vosk-model-small-vn ~40MB)..."
     _zip_path="$_cache_dir/vosk-model-small-vn-0.4.zip"
     if [[ ! -f "$_zip_path" ]]; then
         curl -fSL -o "$_zip_path" "https://alphacephei.com/vosk/models/vosk-model-small-vn-0.4.zip" || {
-            echo "[!] Warning: Model download failed (network issue). Text-fallback mode remains 100% functional."
+            echo "[!] Lưu ý: Tải model offline chưa thành công do mạng. Node vẫn hỗ trợ nhận diện qua Google STT và nhập lệnh trực tiếp."
         }
     fi
     if [[ -f "$_zip_path" ]]; then
         unzip -q -o "$_zip_path" -d "$_cache_dir"
         mv "$_cache_dir/vosk-model-small-vn-0.4" "$_vn_model_dir" || true
         rm -f "$_zip_path"
-        echo "[+] Vosk Vietnamese model installed at: $_vn_model_dir"
+        echo "[+] Đã giải nén mô hình tiếng Việt vào: $_vn_model_dir"
     fi
 else
-    echo "[+] Vosk Vietnamese model already present at: $_vn_model_dir"
+    echo "[+] Mô hình tiếng Việt Vosk đã sẵn sàng tại: $_vn_model_dir"
 fi
 
-echo "[OK] Environment setup complete."
+# 4. Generate environment map, SDF world, and sample audio
+echo "[*] Khởi tạo bản đồ 5 khu vực và thế giới mô phỏng..."
+"$_venv_dir/bin/python" "$_pkg_dir/scripts/generate_environment.py"
+"$_venv_dir/bin/python" "$_pkg_dir/scripts/generate_sample_audio.py"
+
+echo "========================================================================"
+echo "[OK] Hoàn tất thiết lập môi trường Voice Navigation thành công!"
+echo "========================================================================"

@@ -21,15 +21,22 @@
     "format": "PCM 16-bit"
   },
   {
-    "filename": "04_khu_vuc_khong_ton_tai.wav",
-    "text": "Đi đến nhà ăn",
+    "filename": "04_di_den_thu_vien.wav",
+    "text": "Đi đến thư viện",
     "sample_rate": 16000,
     "channels": 1,
     "format": "PCM 16-bit"
   },
   {
     "filename": "05_multi_waypoints.wav",
-    "text": "Đi từ phòng A qua hành lang D rồi đến phòng B",
+    "text": "Đi từ phòng học qua hành lang rồi đến phòng thí nghiệm",
+    "sample_rate": 16000,
+    "channels": 1,
+    "format": "PCM 16-bit"
+  },
+  {
+    "filename": "06_khu_vuc_khong_ton_tai.wav",
+    "text": "Đi đến phòng tổng thống",
     "sample_rate": 16000,
     "channels": 1,
     "format": "PCM 16-bit"

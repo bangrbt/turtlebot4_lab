@@ -15,8 +15,8 @@
     </plugin>
     <gravity>0 0 -9.8</gravity>
     <scene>
-      <ambient>0.65 0.65 0.65 1.0</ambient>
-      <background>0.75 0.82 0.88 1.0</background>
+      <ambient>0.7 0.7 0.7 1.0</ambient>
+      <background>0.78 0.84 0.90 1.0</background>
     </scene>
     <light name="sun" type="directional">
       <pose>0 0 10 0 0 0</pose>
@@ -25,6 +25,7 @@
       <direction>-0.4 0.2 -0.9</direction>
       <cast_shadows>true</cast_shadows>
     </light>
+    <!-- Ground plane floor -->
     <model name="ground">
       <static>true</static>
       <pose>0 0 -0.05 0 0 0</pose>
@@ -107,13 +108,13 @@
     </model>
     <model name="divider_north_v">
       <static>true</static>
-      <pose>0.000 2.500 0.5 0 0 0</pose>
+      <pose>0.000 2.650 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>0.150 4.000 1.0</size></box></geometry>
+          <geometry><box><size>0.150 3.700 1.0</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>0.150 4.000 1.0</size></box></geometry>
+          <geometry><box><size>0.150 3.700 1.0</size></box></geometry>
           <material>
             <ambient>0.25 0.35 0.45 1.0</ambient>
             <diffuse>0.25 0.35 0.45 1.0</diffuse>
@@ -123,13 +124,13 @@
     </model>
     <model name="divider_south_v">
       <static>true</static>
-      <pose>0.000 -2.500 0.5 0 0 0</pose>
+      <pose>0.000 -2.650 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>0.150 4.000 1.0</size></box></geometry>
+          <geometry><box><size>0.150 3.700 1.0</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>0.150 4.000 1.0</size></box></geometry>
+          <geometry><box><size>0.150 3.700 1.0</size></box></geometry>
           <material>
             <ambient>0.25 0.35 0.45 1.0</ambient>
             <diffuse>0.25 0.35 0.45 1.0</diffuse>
@@ -137,15 +138,15 @@
         </visual>
       </link>
     </model>
-    <model name="corridor_n_left">
+    <model name="corridor_n_west">
       <static>true</static>
-      <pose>-4.850 0.500 0.5 0 0 0</pose>
+      <pose>-4.900 0.800 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>2.200 0.150 1.0</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>2.200 0.150 1.0</size></box></geometry>
           <material>
             <ambient>0.25 0.35 0.45 1.0</ambient>
             <diffuse>0.25 0.35 0.45 1.0</diffuse>
@@ -153,15 +154,15 @@
         </visual>
       </link>
     </model>
-    <model name="corridor_n_mid_l">
+    <model name="corridor_n_mid">
       <static>true</static>
-      <pose>-1.150 0.500 0.5 0 0 0</pose>
+      <pose>0.000 0.800 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>5.000 0.150 1.0</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>5.000 0.150 1.0</size></box></geometry>
           <material>
             <ambient>0.25 0.35 0.45 1.0</ambient>
             <diffuse>0.25 0.35 0.45 1.0</diffuse>
@@ -169,15 +170,15 @@
         </visual>
       </link>
     </model>
-    <model name="corridor_n_mid_r">
+    <model name="corridor_n_east">
       <static>true</static>
-      <pose>1.150 0.500 0.5 0 0 0</pose>
+      <pose>4.900 0.800 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>2.200 0.150 1.0</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>2.200 0.150 1.0</size></box></geometry>
           <material>
             <ambient>0.25 0.35 0.45 1.0</ambient>
             <diffuse>0.25 0.35 0.45 1.0</diffuse>
@@ -185,15 +186,15 @@
         </visual>
       </link>
     </model>
-    <model name="corridor_n_right">
+    <model name="corridor_s_west">
       <static>true</static>
-      <pose>4.850 0.500 0.5 0 0 0</pose>
+      <pose>-4.900 -0.800 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>2.200 0.150 1.0</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>2.200 0.150 1.0</size></box></geometry>
           <material>
             <ambient>0.25 0.35 0.45 1.0</ambient>
             <diffuse>0.25 0.35 0.45 1.0</diffuse>
@@ -201,15 +202,15 @@
         </visual>
       </link>
     </model>
-    <model name="corridor_s_mid_r">
+    <model name="corridor_s_mid">
       <static>true</static>
-      <pose>1.150 -0.500 0.5 0 0 0</pose>
+      <pose>0.000 -0.800 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>5.000 0.150 1.0</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>5.000 0.150 1.0</size></box></geometry>
           <material>
             <ambient>0.25 0.35 0.45 1.0</ambient>
             <diffuse>0.25 0.35 0.45 1.0</diffuse>
@@ -217,15 +218,15 @@
         </visual>
       </link>
     </model>
-    <model name="corridor_s_right">
+    <model name="corridor_s_east">
       <static>true</static>
-      <pose>4.850 -0.500 0.5 0 0 0</pose>
+      <pose>4.900 -0.800 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>2.200 0.150 1.0</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>2.300 0.150 1.0</size></box></geometry>
+          <geometry><box><size>2.200 0.150 1.0</size></box></geometry>
           <material>
             <ambient>0.25 0.35 0.45 1.0</ambient>
             <diffuse>0.25 0.35 0.45 1.0</diffuse>
@@ -233,276 +234,342 @@
         </visual>
       </link>
     </model>
-    <model name="podium_a">
+    <model name="zone_a_teacher_desk">
       <static>true</static>
-      <pose>-4.600 3.400 0.425 0 0 0</pose>
+      <pose>-4.800 3.200 0.375 0.0000 0.0000 0.0000</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><box><size>0.800 1.400 0.850</size></box></geometry>
-        </collision>
-        <visual name="visual">
-          <geometry><box><size>0.800 1.400 0.850</size></box></geometry>
-          <material>
-            <ambient>0.55 0.35 0.2 1.0</ambient>
-            <diffuse>0.55 0.35 0.2 1.0</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-    <model name="desk_a1">
-      <static>true</static>
-      <pose>-3.000 3.200 0.375 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry><box><size>0.700 1.400 0.750</size></box></geometry>
-        </collision>
         <visual name="visual">
           <geometry><box><size>0.700 1.400 0.750</size></box></geometry>
           <material>
-            <ambient>0.7 0.5 0.3 1.0</ambient>
-            <diffuse>0.7 0.5 0.3 1.0</diffuse>
+            <ambient>0.6 0.4 0.25 1.0</ambient>
+            <diffuse>0.6 0.4 0.25 1.0</diffuse>
           </material>
         </visual>
-      </link>
-    </model>
-    <model name="desk_a2">
-      <static>true</static>
-      <pose>-1.400 3.200 0.375 0 0 0</pose>
-      <link name="link">
         <collision name="collision">
+          <pose>0 0 0.375 0 0 0</pose>
           <geometry><box><size>0.700 1.400 0.750</size></box></geometry>
         </collision>
-        <visual name="visual">
-          <geometry><box><size>0.700 1.400 0.750</size></box></geometry>
-          <material>
-            <ambient>0.7 0.5 0.3 1.0</ambient>
-            <diffuse>0.7 0.5 0.3 1.0</diffuse>
-          </material>
-        </visual>
       </link>
     </model>
-    <model name="column_a">
+    <model name="zone_a_chair_teacher">
       <static>true</static>
-      <pose>-5.000 1.600 0.500 0 0 0</pose>
+      <pose>-5.400 3.200 0.000 0.0000 0.0000 0.0000</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><cylinder><radius>0.220</radius><length>1.000</length></cylinder></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><cylinder><radius>0.220</radius><length>1.000</length></cylinder></geometry>
-          <material>
-            <ambient>0.3 0.4 0.5 1.0</ambient>
-            <diffuse>0.3 0.4 0.5 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://chair/meshes/Chair.obj</uri>
+              <scale>0.00817 0.00817 0.00817</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.450 0 0 0</pose>
+          <geometry><box><size>0.650 0.650 0.900</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="lab_bench_b1">
+    <model name="zone_a_chair_student1">
       <static>true</static>
-      <pose>4.600 3.400 0.425 0 0 0</pose>
+      <pose>-2.000 3.200 0.000 0.0000 0.0000 3.1415</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><box><size>0.800 1.500 0.850</size></box></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><box><size>0.800 1.500 0.850</size></box></geometry>
-          <material>
-            <ambient>0.2 0.4 0.55 1.0</ambient>
-            <diffuse>0.2 0.4 0.55 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://chair/meshes/Chair.obj</uri>
+              <scale>0.00817 0.00817 0.00817</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.450 0 0 0</pose>
+          <geometry><box><size>0.650 0.650 0.900</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="console_b">
+    <model name="zone_a_person_student">
       <static>true</static>
-      <pose>1.400 3.400 0.500 0 0 0</pose>
+      <pose>-4.600 1.800 0.000 0.0000 0.0000 0.8000</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><box><size>0.800 1.200 1.000</size></box></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><box><size>0.800 1.200 1.000</size></box></geometry>
-          <material>
-            <ambient>0.25 0.3 0.35 1.0</ambient>
-            <diffuse>0.25 0.3 0.35 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://person/meshes/standing.dae</uri>
+              <scale>0.85 0.85 0.85</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.850 0 0 0</pose>
+          <geometry><box><size>0.500 0.400 1.700</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="island_b">
+    <model name="zone_a_backpack">
       <static>true</static>
-      <pose>4.600 1.600 0.425 0 0 0</pose>
+      <pose>-4.800 3.800 0.000 0.0000 0.0000 0.0000</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><box><size>0.800 1.200 0.850</size></box></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><box><size>0.800 1.200 0.850</size></box></geometry>
-          <material>
-            <ambient>0.2 0.4 0.55 1.0</ambient>
-            <diffuse>0.2 0.4 0.55 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://backpack/meshes/Backpack.dae</uri>
+              <scale>0.8 0.8 0.8</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.225 0 0 0</pose>
+          <geometry><box><size>0.350 0.350 0.450</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="column_b">
+    <model name="zone_b_lab_bench">
       <static>true</static>
-      <pose>1.400 1.600 0.500 0 0 0</pose>
+      <pose>4.600 3.000 0.425 0.0000 0.0000 0.0000</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><cylinder><radius>0.220</radius><length>1.000</length></cylinder></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><cylinder><radius>0.220</radius><length>1.000</length></cylinder></geometry>
+          <geometry><box><size>0.800 1.600 0.850</size></box></geometry>
           <material>
-            <ambient>0.3 0.4 0.5 1.0</ambient>
-            <diffuse>0.3 0.4 0.5 1.0</diffuse>
+            <ambient>0.2 0.4 0.6 1.0</ambient>
+            <diffuse>0.2 0.4 0.6 1.0</diffuse>
           </material>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.425 0 0 0</pose>
+          <geometry><box><size>0.800 1.600 0.850</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="exec_desk_c">
+    <model name="zone_b_chair_lab">
       <static>true</static>
-      <pose>4.600 -2.800 0.400 0 0 0</pose>
+      <pose>4.600 1.800 0.000 0.0000 0.0000 1.5700</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><box><size>0.800 1.600 0.800</size></box></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><box><size>0.800 1.600 0.800</size></box></geometry>
-          <material>
-            <ambient>0.5 0.3 0.15 1.0</ambient>
-            <diffuse>0.5 0.3 0.15 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://chair/meshes/Chair.obj</uri>
+              <scale>0.00817 0.00817 0.00817</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.450 0 0 0</pose>
+          <geometry><box><size>0.650 0.650 0.900</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="cabinet_c">
+    <model name="zone_b_person_researcher">
       <static>true</static>
-      <pose>1.400 -3.500 0.600 0 0 0</pose>
+      <pose>4.600 4.000 0.000 0.0000 0.0000 -1.5700</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><box><size>0.600 1.400 1.200</size></box></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><box><size>0.600 1.400 1.200</size></box></geometry>
-          <material>
-            <ambient>0.35 0.35 0.35 1.0</ambient>
-            <diffuse>0.35 0.35 0.35 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://person/meshes/standing.dae</uri>
+              <scale>0.85 0.85 0.85</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.850 0 0 0</pose>
+          <geometry><box><size>0.500 0.400 1.700</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="plant_c">
+    <model name="zone_b_fire_extinguisher">
       <static>true</static>
-      <pose>5.200 -1.200 0.350 0 0 0</pose>
+      <pose>1.200 3.800 0.000 0.0000 0.0000 0.0000</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><cylinder><radius>0.250</radius><length>0.700</length></cylinder></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><cylinder><radius>0.250</radius><length>0.700</length></cylinder></geometry>
-          <material>
-            <ambient>0.15 0.55 0.2 1.0</ambient>
-            <diffuse>0.15 0.55 0.2 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://fire_hydrant/meshes/fire_hydrant.dae</uri>
+              <scale>0.85 0.85 0.85</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.400 0 0 0</pose>
+          <geometry><cylinder><radius>0.200</radius><length>0.800</length></cylinder></geometry>
+        </collision>
       </link>
     </model>
-    <model name="column_c">
+    <model name="zone_c_office_desk">
       <static>true</static>
-      <pose>4.600 -1.200 0.500 0 0 0</pose>
+      <pose>4.600 -3.200 0.375 0.0000 0.0000 0.0000</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><cylinder><radius>0.220</radius><length>1.000</length></cylinder></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><cylinder><radius>0.220</radius><length>1.000</length></cylinder></geometry>
+          <geometry><box><size>0.800 1.600 0.750</size></box></geometry>
           <material>
-            <ambient>0.3 0.4 0.5 1.0</ambient>
-            <diffuse>0.3 0.4 0.5 1.0</diffuse>
+            <ambient>0.45 0.28 0.18 1.0</ambient>
+            <diffuse>0.45 0.28 0.18 1.0</diffuse>
           </material>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.375 0 0 0</pose>
+          <geometry><box><size>0.800 1.600 0.750</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="bench_d">
+    <model name="zone_c_chair_exec">
       <static>true</static>
-      <pose>-4.600 -3.200 0.250 0 0 0</pose>
+      <pose>4.600 -2.200 0.000 0.0000 0.0000 -1.5700</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><box><size>0.700 1.600 0.500</size></box></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><box><size>0.700 1.600 0.500</size></box></geometry>
-          <material>
-            <ambient>0.45 0.35 0.25 1.0</ambient>
-            <diffuse>0.45 0.35 0.25 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://chair/meshes/Chair.obj</uri>
+              <scale>0.00817 0.00817 0.00817</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.450 0 0 0</pose>
+          <geometry><box><size>0.650 0.650 0.900</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="column_d1">
+    <model name="zone_c_person_staff">
       <static>true</static>
-      <pose>-1.500 -2.500 0.500 0 0 0</pose>
+      <pose>4.600 -4.000 0.000 0.0000 0.0000 1.5700</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><cylinder><radius>0.250</radius><length>1.000</length></cylinder></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><cylinder><radius>0.250</radius><length>1.000</length></cylinder></geometry>
-          <material>
-            <ambient>0.3 0.4 0.5 1.0</ambient>
-            <diffuse>0.3 0.4 0.5 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://person/meshes/standing.dae</uri>
+              <scale>0.85 0.85 0.85</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.850 0 0 0</pose>
+          <geometry><box><size>0.500 0.400 1.700</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="plant_d1">
+    <model name="zone_c_backpack">
       <static>true</static>
-      <pose>-5.200 -1.200 0.350 0 0 0</pose>
+      <pose>3.600 -3.800 0.000 0.0000 0.0000 0.0000</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><cylinder><radius>0.250</radius><length>0.700</length></cylinder></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><cylinder><radius>0.250</radius><length>0.700</length></cylinder></geometry>
-          <material>
-            <ambient>0.15 0.55 0.2 1.0</ambient>
-            <diffuse>0.15 0.55 0.2 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://backpack/meshes/Backpack.dae</uri>
+              <scale>0.8 0.8 0.8</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.225 0 0 0</pose>
+          <geometry><box><size>0.350 0.350 0.450</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="plant_d2">
+    <model name="zone_d_reading_table">
       <static>true</static>
-      <pose>-5.200 0.000 0.350 0 0 0</pose>
+      <pose>-3.400 -3.400 0.325 0.0000 0.0000 0.0000</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><cylinder><radius>0.250</radius><length>0.700</length></cylinder></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><cylinder><radius>0.250</radius><length>0.700</length></cylinder></geometry>
+          <geometry><box><size>0.700 1.400 0.650</size></box></geometry>
           <material>
-            <ambient>0.15 0.55 0.2 1.0</ambient>
-            <diffuse>0.15 0.55 0.2 1.0</diffuse>
+            <ambient>0.55 0.45 0.35 1.0</ambient>
+            <diffuse>0.55 0.45 0.35 1.0</diffuse>
           </material>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.325 0 0 0</pose>
+          <geometry><box><size>0.700 1.400 0.650</size></box></geometry>
+        </collision>
       </link>
     </model>
-    <model name="notice_board_d">
+    <model name="zone_d_chair_reading">
       <static>true</static>
-      <pose>0.000 -0.600 0.550 0 0 0</pose>
+      <pose>-2.000 -3.400 0.000 0.0000 0.0000 3.1415</pose>
       <link name="link">
-        <collision name="collision">
-          <geometry><box><size>0.800 0.180 1.100</size></box></geometry>
-        </collision>
         <visual name="visual">
-          <geometry><box><size>0.800 0.180 1.100</size></box></geometry>
-          <material>
-            <ambient>0.6 0.4 0.2 1.0</ambient>
-            <diffuse>0.6 0.4 0.2 1.0</diffuse>
-          </material>
+          <geometry>
+            <mesh>
+              <uri>model://chair/meshes/Chair.obj</uri>
+              <scale>0.00817 0.00817 0.00817</scale>
+            </mesh>
+          </geometry>
         </visual>
+        <collision name="collision">
+          <pose>0 0 0.450 0 0 0</pose>
+          <geometry><box><size>0.650 0.650 0.900</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+    <model name="zone_d_indoor_plant_tree">
+      <static>true</static>
+      <pose>-5.000 -1.800 0.000 0.0000 0.0000 0.0000</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>model://oak_tree/meshes/oak_tree.dae</uri>
+              <scale>0.22 0.22 0.22</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <pose>0 0 0.600 0 0 0</pose>
+          <geometry><cylinder><radius>0.220</radius><length>1.200</length></cylinder></geometry>
+        </collision>
+      </link>
+    </model>
+    <model name="zone_d_person_reader">
+      <static>true</static>
+      <pose>-4.800 -3.400 0.000 0.0000 0.0000 0.0000</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>model://person/meshes/standing.dae</uri>
+              <scale>0.85 0.85 0.85</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <pose>0 0 0.850 0 0 0</pose>
+          <geometry><box><size>0.500 0.400 1.700</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+    <model name="zone_e_bicycle_parked">
+      <static>true</static>
+      <pose>0.000 0.550 0.000 0.0000 0.0000 0.0000</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>model://bicycle/meshes/bicycle.obj</uri>
+              <scale>0.85 0.85 0.85</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <pose>0 0 0.450 0 0 0</pose>
+          <geometry><box><size>0.400 1.400 0.900</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+    <model name="zone_e_lobby_hydrant">
+      <static>true</static>
+      <pose>-1.800 0.550 0.000 0.0000 0.0000 0.0000</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>model://fire_hydrant/meshes/fire_hydrant.dae</uri>
+              <scale>0.85 0.85 0.85</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <pose>0 0 0.400 0 0 0</pose>
+          <geometry><cylinder><radius>0.200</radius><length>0.800</length></cylinder></geometry>
+        </collision>
       </link>
     </model>
   </world>

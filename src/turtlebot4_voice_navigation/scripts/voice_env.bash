@@ -21,6 +21,7 @@ export IGN_PARTITION=turtlebot4_voice_77
 
 # 4. Cache and model directories
 export TB4_VOICE_CACHE="$TB4_VOICE_WS/.cache_voice"
+export IGN_GAZEBO_RESOURCE_PATH="$TB4_VOICE_WS/src/turtlebot4_voice_navigation/models:${IGN_GAZEBO_RESOURCE_PATH:-}"
 mkdir -p "$TB4_VOICE_CACHE"
 
 # 5. Activate Python environment (reusing .venv_gesture which contains OpenCV, NumPy, Sounddevice)

@@ -1,7 +1,7 @@
-# TurtleBot 4 — Phân vùng bản đồ và điều hướng robot bằng giọng nói (Lab 07)
+# TurtleBot 4 — Phân vùng bản đồ và điều hướng robot bằng giọng nói (Bài thực hành 7)
 
 Package **`turtlebot4_voice_navigation`**, ROS 2 Humble / Gazebo Fortress / Nav2.  
-Hệ thống cho phép TurtleBot 4 tự động phân vùng bản đồ 2D Occupancy Grid, gắn nhãn ngữ nghĩa các phòng, nhận dạng câu lệnh giọng nói (tiếng Việt & tiếng Anh), và điều hướng tự hành qua Nav2 với khả năng xử lý lộ trình đa điểm và từ chối khu vực không tồn tại.
+Hệ thống cho phép TurtleBot 4 tự động phân vùng bản đồ 2D Occupancy Grid, gắn nhãn ngữ nghĩa **05 khu vực chức năng**, nhận dạng câu lệnh giọng nói (tiếng Việt & tiếng Anh qua microphone hoặc terminal), và tự hành né tránh vật cản 3D thực tế bằng Nav2 với khả năng xử lý lộ trình đơn trạm, đa điểm và từ chối khu vực không tồn tại.
 
 ---
 
@@ -10,20 +10,20 @@ Hệ thống cho phép TurtleBot 4 tự động phân vùng bản đồ 2D Occup
 ```
 +-----------------------------------------------------------------------------------+
 |                              NGƯỜI DÙNG / GIỌNG NÓI                               |
-|        Microphone laptop / File âm thanh mẫu / Terminal nhập lệnh văn bản         |
+|       Microphone laptop / voice_terminal.py / Kênh văn bản / File mẫu .wav        |
 +-----------------------------------------------------------------------------------+
                                        |
                                        v
                      +-----------------------------------+
                      |       voice_recognizer_node       |
-                     |  Offline STT: Vosk / Whisper / VAD |
+                     |  Vosk (Offline) / Google / VAD    |
                      +-----------------------------------+
                                        | /voice/recognized_text (String)
                                        v
 +------------------------+   +-----------------------------------+   +-----------------------+
 |      BẢN ĐỒ GỐC        |   |     voice_navigation_manager      |   |  zone_visualizer_node |
 | map.pgm + map.yaml     |-->|   NLU Intent Parser & Routing     |<--|  3D Markers on /map   |
-| (OpenCV Segmentation)  |   | (Single / From-To / Multi-Waypt)  |   | (Labels, Boundaries)  |
+| (Tường & Vật cản 3D)   |   | (Single / From-To / Multi-Waypt)  |   | (Labels, Boundaries)  |
 +------------------------+   +-----------------------------------+   +-----------------------+
             |                                  |
             v                                  | Nav2 NavigateToPose / NavigateThroughPoses
@@ -37,159 +37,143 @@ Hệ thống cho phép TurtleBot 4 tự động phân vùng bản đồ 2D Occup
                                  +---------------------------+
                                  |  TurtleBot 4 Simulation   |
                                  |   Gazebo Smart Campus     |
+                                 | (Bàn ghế, Cây, Người 3D)  |
                                  +---------------------------+
 ```
 
 ### Các Module & Node cốt lõi:
-1. **`map_segmentation.py`**:
-   - Sử dụng OpenCV xử lý ảnh Occupancy Grid (`map.pgm`).
-   - Ứng dụng lọc hình thái học (Morphological opening), biến đổi khoảng cách (Distance Transform), và thuật toán **Watershed** để phân chia không gian tự do thành các phòng riêng biệt qua các nút thắt cửa ra vào (doorways).
-   - Chuyển đổi chính xác tọa độ pixel $(u, v) \leftrightarrow$ tọa độ thực $(x, y)$ trong hệ trục `/map` của ROS 2.
-   - Tìm điểm cực đại khoảng cách tới tường (max clearance) làm điểm đích an toàn nhất cho robot.
-   - Xuất bản đồ trực quan `segmented_map.png` và cấu hình ngữ nghĩa `zones.yaml`.
+1. **`generate_environment.py` & `map_segmentation.py`**:
+   - Thiết lập bản đồ 14.0m × 11.0m, phân chia thành **05 khu vực chức năng** rõ rệt nối với trục hành lang sảnh chính rộng 1.6m và các cửa ra vào 1.2m thông thoáng.
+   - Bố trí các vật thể 3D thực tế (người, ghế, xe đạp, cây xanh, bình chữa cháy, balo), không sử dụng các khối lập phương đơn sơ.
+   - Tính toán mặt cắt va chạm tại độ cao tia quét laser LiDAR ($z = 0.18$m) để vẽ trực tiếp lên `map.pgm` và xuất `segmented_map.png` có in chữ tên phòng to rõ, màu sắc trực quan.
 2. **`semantic_map.py`**:
-   - Quản lý metadata các khu vực: Tên, ID (A, B, C, D), mô tả, tọa độ đích $(x, y, \theta)$, ranh giới đa giác (polygon), màu sắc hiển thị.
-   - Hỗ trợ tra cứu từ đồng nghĩa (aliases) đa dạng: tiếng Việt có dấu, không dấu, viết tắt, và tiếng Anh.
-   - Thuật toán **Ray-Casting Point-in-Polygon (PIP)**: Kiểm tra vị trí hiện tại của robot đang nằm trong phòng nào trong thời gian thực.
+   - Quản lý metadata 5 khu vực: Tên, ID (A, B, C, D, E), mô tả, tọa độ đích $(x, y, \theta)$, ranh giới đa giác, màu sắc hiển thị.
+   - Cơ chế tự động mở rộng tra cứu từ đồng nghĩa (aliases): hỗ trợ mọi biến thể tiếng Việt có dấu, không dấu, viết tắt, và tiếng Anh.
+   - Thuật toán **Ray-Casting Point-in-Polygon (PIP)**: Xác định tức thì vị trí robot đang ở phòng nào trong thời gian thực.
 3. **`nlu_parser.py`**:
    - Phân tích ngữ pháp và trích xuất ý định (Intent Extraction) từ câu nói:
-     - **Điều hướng trực tiếp (NAVIGATE_TO)**: *"Đi đến khu vực A."*, *"Đi đến phòng thí nghiệm."*
-     - **Điều hướng có gốc và đích (NAVIGATE_FROM_TO)**: *"Di chuyển từ khu vực A đến khu vực B."* (Nếu robot chưa ở A $\rightarrow$ đi qua A trước rồi mới đến B).
-     - **Lộ trình đa điểm (NAVIGATE_WAYPOINTS - Mở rộng)**: *"Đi từ phòng A qua hành lang D rồi đến phòng B."*
+     - **Điều hướng trực tiếp (NAVIGATE_TO)**: *"Đi đến khu vực A."*, *"Đi đến phòng thí nghiệm."*, *"Đi đến thư viện."*
+     - **Điều hướng có điểm xuất phát (NAVIGATE_FROM_TO)**: *"Di chuyển từ khu vực A đến khu vực B."* (Nếu robot chưa ở A $\rightarrow$ đi qua A trước rồi mới đến B).
+     - **Lộ trình đa điểm (NAVIGATE_WAYPOINTS)**: *"Đi từ phòng học qua hành lang rồi đến phòng thí nghiệm."*
      - **Dừng khẩn cấp (STOP)**: *"Dừng lại"*, *"Hủy lệnh"*.
      - **Hỏi vị trí (QUERY_LOCATION)**: *"Robot đang ở đâu?"*, *"Vị trí hiện tại"*.
-     - **Bắt lỗi phòng không tồn tại (INVALID_ZONE)**: Nhận diện và từ chối các phòng lạ (*"Đi đến nhà ăn"*, *"Khu vực Z"*), xuất thông báo giải thích rõ ràng và giữ robot đứng yên an toàn.
+     - **Bắt lỗi phòng không tồn tại (INVALID_ZONE)**: Bắt các phòng lạ (*"Đi đến phòng tổng thống"*, *"Đi đến nhà ăn"*), từ chối di chuyển và in danh sách phòng hợp lệ.
 4. **`voice_recognizer_node`**:
-   - Nhận dạng giọng nói ngoại tuyến (offline) bằng **Vosk** hoặc **Whisper**.
-   - Hỗ trợ đa kênh đầu vào: Microphone laptop trực tiếp, file âm thanh `.wav` mẫu, hoặc kênh văn bản `/voice/command_text`.
-5. **`voice_navigation_manager`**:
-   - Đóng vai trò Action Client kết nối với Nav2 (`NavigateToPose` và `NavigateThroughPoses`).
-   - Theo dõi trạng thái robot qua `/tf` (`map` $\to$ `base_link`) và `/amcl_pose`.
-   - Điều phối thứ tự di chuyển và xuất trạng thái `/voice/navigation_status`.
+   - Nhận dạng giọng nói linh hoạt: Hỗ trợ offline **Vosk** (`vosk-model-small-vn`), online Google SpeechRecognition, và đo ngưỡng năng lượng RMS âm thanh microphone.
+   - Tự động quét và chọn thiết bị micro mặc định, hỗ trợ kèm kênh tiêm lệnh văn bản `/voice/command_text`.
+5. **`prepare_voice_simulation`**:
+   - Tự động di chuyển `standard_dock` ra ngoài sau khi khởi tạo để robot được nhả sạc (undock) ngay lập tức, bánh xe không bị khóa và Nav2 tự do điều khiển `/cmd_vel`.
 6. **`zone_visualizer_node`**:
    - Xuất `MarkerArray` lên topic `/semantic_zones_markers`.
-   - Hiển thị nhãn 3D chữ nổi trên không gian phòng trong RViz2, vẽ đường viền phòng đổi màu, đánh dấu tâm đích và vẽ đường lộ trình dự kiến màu vàng.
+   - Hiển thị nhãn chữ nổi 3D đa sắc cho cả 5 phòng, vẽ khung viền ranh giới, đánh dấu tâm đích an toàn trong RViz2.
 
 ---
 
-## 2. Bản đồ & Khu vực ngữ nghĩa (Smart Campus)
+## 2. Bản đồ & 05 Khu vực ngữ nghĩa (Smart Campus)
 
-Môi trường mô phỏng Gazebo Fortress diện tích compact **12.0m × 9.0m**, bao gồm 4 khu vực chức năng được bố trí vật cản (bàn ghế, bục giảng, tủ tài liệu, cây cảnh, cột trang trí) với hành lang thông thoáng:
+Môi trường mô phỏng Gazebo Fortress diện tích **14.0m × 11.0m**, bao gồm 5 khu vực chức năng với các vật thể 3D thực tế:
 
-| Khu vực | Mã ID | Tên chức năng | Tọa độ đích $(x, y, \theta)$ | Đặc điểm nhận diện & Vật cản |
+| Khu vực | Mã ID | Tên chức năng | Tọa độ đích $(x, y, \theta)$ | Vật thể 3D đặc trưng |
 |---|:---:|---|:---:|---|
-| **Khu vực A** | `A` | **Phòng học (Classroom)** | $(-3.0\text{m}, 2.0\text{m}, 0.0\text{ rad})$ | Bục giảng, bàn ghế sinh viên, cột chịu lực |
-| **Khu vực B** | `B` | **Phòng thí nghiệm (Laboratory)** | $(2.8\text{m}, 2.0\text{m}, 1.57\text{ rad})$ | Bàn thí nghiệm, tủ điều khiển thiết bị |
-| **Khu vực C** | `C` | **Văn phòng (Office)** | $(2.8\text{m}, -2.0\text{m}, -1.57\text{ rad})$ | Bàn làm việc, tủ sách, chậu cây cảnh |
-| **Khu vực D** | `D` | **Hành lang & Sảnh (Corridor & Lobby)** | $(-3.0\text{m}, -1.8\text{m}, 0.0\text{ rad})$ | Ghế chờ sảnh, sảnh thông tầng, chậu cây |
+| **Khu A** | `A` | **Phòng học (Classroom)** | $(-3.2\text{m}, 2.6\text{m}, 0.0\text{ rad})$ | Bàn giáo viên, 2 ghế học viên, người đứng, balo |
+| **Khu B** | `B` | **Phòng thí nghiệm (Laboratory)** | $(3.2\text{m}, 2.6\text{m}, 0.0\text{ rad})$ | Bàn thí nghiệm, ghế xoay, nhà nghiên cứu, bình cứu hỏa |
+| **Khu C** | `C` | **Văn phòng (Office)** | $(3.2\text{m}, -2.6\text{m}, 0.0\text{ rad})$ | Bàn làm việc, ghế văn phòng, nhân viên, balo |
+| **Khu D** | `D` | **Thư viện (Library)** | $(-3.2\text{m}, -2.6\text{m}, 0.0\text{ rad})$ | Cây xanh nội thất (Oak tree), bàn ghế đọc, độc giả |
+| **Khu E** | `E` | **Hành lang & Sảnh (Corridor & Lobby)** | $(0.0\text{m}, 0.0\text{m}, 0.0\text{ rad})$ | Xe đạp dựng tường, bình cứu hỏa, điểm xuất phát TB4 |
 
-* Vị trí xuất phát ban đầu của robot: $(x = 0.0, y = 0.0, \text{yaw} = 0.0)$ tại ngã tư trung tâm hành lang.
-
----
-
-## 3. Hướng dẫn chạy chương trình
-
-Hệ thống sử dụng môi trường độc lập: **`ROS_DOMAIN_ID=77`** và Ignition partition `turtlebot4_voice_77`.  
-Mỗi terminal mới luôn chạy lệnh `source src/turtlebot4_voice_navigation/scripts/voice_env.bash`.
-
-### Cách 1: Chạy theo từng Terminal (Khuyến nghị cho kiểm tra & chấm demo)
-
-* **Terminal 1: Khởi động Mô phỏng Gazebo (Smart Campus World)**
-  ```bash
-  cd ~/turtlebot4_lab_ws
-  source src/turtlebot4_voice_navigation/scripts/voice_env.bash
-  ros2 launch turtlebot4_voice_navigation simulation.launch.py
-  ```
-
-* **Terminal 2: Khởi động Bản đồ, Định vị AMCL, Nav2 & RViz2**
-  ```bash
-  cd ~/turtlebot4_lab_ws
-  source src/turtlebot4_voice_navigation/scripts/voice_env.bash
-  ros2 launch turtlebot4_voice_navigation navigation.launch.py
-  ```
-  *(Cửa sổ RViz2 sẽ hiện lên với đầy đủ Bản đồ, Laser Scan, Robot, Costmap và nhãn chữ nổi 3D của 4 khu vực).*
-
-* **Terminal 3: Khởi động Hệ thống Nhận dạng Giọng nói & Điều hướng**
-  ```bash
-  cd ~/turtlebot4_lab_ws
-  source src/turtlebot4_voice_navigation/scripts/voice_env.bash
-  ros2 launch turtlebot4_voice_navigation voice_nav.launch.py
-  ```
-
-* **Terminal 4: Bảng điều khiển lệnh tương tác (Voice Terminal CLI)**
-  ```bash
-  cd ~/turtlebot4_lab_ws
-  source src/turtlebot4_voice_navigation/scripts/voice_env.bash
-  python3 src/turtlebot4_voice_navigation/scripts/voice_terminal.py
-  ```
+* **Vị trí xuất phát của robot:** $(x = 0.0, y = 0.0, \text{yaw} = 0.0)$ tại trung tâm sảnh Zone E, hoàn toàn không bị vướng vật cản.
 
 ---
 
-### Cách 2: Khởi động All-in-One (1 lệnh duy nhất)
+## 3. Hướng dẫn chạy chương trình chi tiết
+
+Môi trường chạy sử dụng Domain ID độc lập: **`ROS_DOMAIN_ID=77`** và Partition `turtlebot4_voice_77`.  
+Mỗi terminal mới luôn chạy lệnh:
+```bash
+source src/turtlebot4_voice_navigation/scripts/voice_env.bash
+```
+
+### Bước 0: Chuẩn bị & Kiểm tra Microphone (Chỉ cần chạy 1 lần đầu)
+
+1. **Cài đặt thư viện giọng nói & mô hình tiếng Việt Vosk (chạy khi có mạng):**
+   ```bash
+   cd ~/turtlebot4_lab_ws
+   bash src/turtlebot4_voice_navigation/scripts/setup_environment.bash
+   ```
+
+2. **Kiểm tra phần cứng Microphone (3 giây):**
+   ```bash
+   cd ~/turtlebot4_lab_ws
+   source src/turtlebot4_voice_navigation/scripts/voice_env.bash
+   python3 src/turtlebot4_voice_navigation/scripts/test_microphone.py
+   ```
+   *(Nói vào mic một câu; màn hình sẽ hiển thị thanh âm lượng RMS và xác nhận `[OK] MICROPHONE HOẠT ĐỘNG TỐT!`)*
+
+---
+
+### Quy trình chạy Demo (Khuyến nghị mở 4 Terminal)
+
+#### Terminal 1: Khởi động Mô phỏng Gazebo (Thế giới Smart Campus 5 phòng & Robot)
 ```bash
 cd ~/turtlebot4_lab_ws
 source src/turtlebot4_voice_navigation/scripts/voice_env.bash
-ros2 launch turtlebot4_voice_navigation system.launch.py
+ros2 launch turtlebot4_voice_navigation simulation.launch.py
 ```
+*(Chờ Gazebo hiển thị và xuất dòng thông báo: `Arena Ready! TurtleBot 4 is undocked at (0, 0) in Zone E (Lobby). Ready for voice navigation!`)*
+
+#### Terminal 2: Khởi động Định vị AMCL, Ngăn xếp Nav2 & RViz2
+```bash
+cd ~/turtlebot4_lab_ws
+source src/turtlebot4_voice_navigation/scripts/voice_env.bash
+ros2 launch turtlebot4_voice_navigation navigation.launch.py
+```
+*(Cửa sổ RViz2 sẽ hiện lên với bản đồ 5 khu vực, chùm hạt AMCL và các nhãn chữ 3D trên từng phòng).*
+
+#### Terminal 3: Khởi động Bộ nhận diện giọng nói & Điều phối hành vi
+```bash
+cd ~/turtlebot4_lab_ws
+source src/turtlebot4_voice_navigation/scripts/voice_env.bash
+ros2 launch turtlebot4_voice_navigation voice_nav.launch.py
+```
+*(Node voice recognizer sẽ bật micro lắng nghe và kết nối Action Client tới Nav2).*
+
+#### Terminal 4: Bật Giao diện tương tác Voice Terminal (Nói vào mic hoặc chọn số)
+```bash
+cd ~/turtlebot4_lab_ws
+source src/turtlebot4_voice_navigation/scripts/voice_env.bash
+python3 src/turtlebot4_voice_navigation/scripts/voice_terminal.py
+```
+
+Tại Terminal 4, bạn có thể:
+- **Nói trực tiếp vào microphone laptop** các câu lệnh tiếng Việt.
+- **Hoặc chọn nhanh phím số từ 1 đến 9**:
+  - `1`: "Đi đến khu vực A" (Phòng học)
+  - `2`: "Đi đến phòng thí nghiệm" (Khu vực B)
+  - `3`: "Di chuyển từ khu vực A đến khu vực B"
+  - `4`: "Đi đến văn phòng" (Khu vực C)
+  - `5`: "Đi đến thư viện" (Khu vực D)
+  - `6`: "Đi từ phòng học qua hành lang rồi đến phòng thí nghiệm" (Lộ trình đa trạm)
+  - `7`: "Đi đến phòng tổng thống" (Kiểm tra bắt lỗi phòng không tồn tại)
+  - `8`: "Robot đang ở đâu?" (Truy vấn vị trí hiện tại)
+  - `9`: "Dừng lại" (Dừng khẩn cấp)
 
 ---
 
-## 4. Các câu lệnh thử nghiệm (Test Cases)
+## 4. Chạy kiểm thử tự động (Unit Tests)
 
-Bạn có thể nói trực tiếp vào microphone hoặc gõ vào `voice_terminal.py` (hoặc publish topic `/voice/command_text`):
-
-1. **Test Case 1: Lệnh điều hướng trực tiếp 1 điểm**
-   ```text
-   Nhập lệnh > Đi đến khu vực A.
-   ```
-   $\rightarrow$ Robot nhận diện đích là `Khu vực A (Phòng học)`, lập kế hoạch đường đi tránh vật cản qua cửa phòng A và di chuyển đến đích.
-
-2. **Test Case 2: Lệnh sử dụng tên ngữ nghĩa**
-   ```text
-   Nhập lệnh > Đi đến phòng thí nghiệm.
-   ```
-   $\rightarrow$ Robot di chuyển vào `Khu vực B (Phòng thí nghiệm)`.
-
-3. **Test Case 3: Lệnh di chuyển từ gốc đến đích ("Từ A đến B")**
-   ```text
-   Nhập lệnh > Di chuyển từ khu vực A đến khu vực B.
-   ```
-   $\rightarrow$ Hệ thống kiểm tra: Nếu robot chưa ở phòng A, robot sẽ tự động lái đến phòng A trước, dừng xác nhận 2 giây, sau đó tiếp tục hành trình đến phòng B!
-
-4. **Test Case 4: Lệnh đa điểm qua trạm trung gian (Gợi ý mở rộng)**
-   ```text
-   Nhập lệnh > Đi từ phòng A qua hành lang D rồi đến phòng B.
-   ```
-   $\rightarrow$ RViz vẽ đường nối lộ trình màu vàng [A $\rightarrow$ D $\rightarrow$ B]. Robot lần lượt di chuyển tuần tự qua 3 phòng.
-
-5. **Test Case 5: Bắt lỗi khu vực không tồn tại**
-   ```text
-   Nhập lệnh > Đi đến nhà ăn
-   ```
-   $\rightarrow$ Phản hồi: `[REJECTED] Khu vực 'nhà ăn' không tồn tại trên bản đồ. Các khu vực hợp lệ: A (Khu vực A), B (Khu vực B), C (Khu vực C), D (Khu vực D).` Robot giữ nguyên trạng thái đứng yên!
-
-6. **Test Case 6: Kiểm tra vị trí hiện tại**
-   ```text
-   Nhập lệnh > Robot đang ở đâu?
-   ```
-   $\rightarrow$ Trả lời chính xác phòng mà robot đang đứng dựa trên thuật toán Point-in-Polygon.
-
-7. **Test Case 7: Dừng khẩn cấp**
-   ```text
-   Nhập lệnh > Dừng lại
-   ```
-   $\rightarrow$ Lập tức hủy action goal của Nav2, phanh dừng robot về 0 m/s.
+Toàn bộ 90 ca kiểm thử đã được tự động hóa bằng `pytest`:
+```bash
+cd ~/turtlebot4_lab_ws
+source src/turtlebot4_voice_navigation/scripts/voice_env.bash
+python3 -m pytest src/turtlebot4_voice_navigation/test/ -v
+```
+Kết quả: **`90 passed in 1.76s`** (100% Passed).
 
 ---
 
-## 5. Kiểm thử độc lập & Unit Tests
-
-Chạy toàn bộ 77 kiểm thử tự động (không cần mở Gazebo):
-```bash
-PYTHONPATH=src/turtlebot4_voice_navigation .venv_gesture/bin/python -m pytest src/turtlebot4_voice_navigation/test -v
-```
-
-Kiểm tra phân vùng lại bản đồ bất kỳ:
-```bash
-python3 src/turtlebot4_voice_navigation/scripts/segment_map.py --map src/turtlebot4_voice_navigation/maps/map.yaml
-```
+## 5. Tài liệu nộp bài
+- **Bản đồ gốc & bản đồ phân vùng:** `maps/map.pgm`, `maps/map.yaml`, `maps/segmented_map.png`
+- **Tệp cấu hình 5 khu vực:** `config/zones.yaml`, `config/zones.json`
+- **Mô hình 3D thực tế:** `models/chair`, `models/person`, `models/bicycle`, `models/oak_tree`, `models/fire_hydrant`, `models/backpack`
+- **Báo cáo PDF hoàn chỉnh (2 trang chuẩn academic):** `docs/report.pdf`
+- **File âm thanh kiểm thử mẫu:** `sample_audio/01_di_den_khu_vuc_a.wav` ... `sample_audio/06_khu_vuc_khong_ton_tai.wav`

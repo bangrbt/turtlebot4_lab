@@ -158,14 +158,18 @@ class MapSegmenter:
                 'mask': region_mask
             })
 
-        # Sort regions geographically (Top-Left A, Top-Right B, Bottom-Right C, Remainder D)
-        # Quadrant classification relative to map origin center
+        # Sort regions geographically:
+        # Central/corridor area (|y - center_y| < 0.9m) -> Zone E
+        # Top-Left -> Zone A, Top-Right -> Zone B
+        # Bottom-Right -> Zone C, Bottom-Left -> Zone D
         center_x = self.origin[0] + (self.width * self.resolution) / 2.0
         center_y = self.origin[1] + (self.height * self.resolution) / 2.0
 
         for r in valid_regions:
             x, y = r['centroid_m']
-            if x < center_x and y >= center_y:
+            if abs(y - center_y) <= 0.85 and (x > -5.0 and x < 5.0):
+                r['quadrant'] = 'CEN'
+            elif x < center_x and y >= center_y:
                 r['quadrant'] = 'TL'
             elif x >= center_x and y >= center_y:
                 r['quadrant'] = 'TR'
@@ -174,13 +178,14 @@ class MapSegmenter:
             else:
                 r['quadrant'] = 'BL'
 
-        # Map to Zone IDs A, B, C, D
-        id_map = {'TL': 'A', 'TR': 'B', 'BR': 'C', 'BL': 'D'}
+        # Map to Zone IDs A, B, C, D, E
+        id_map = {'TL': 'A', 'TR': 'B', 'BR': 'C', 'BL': 'D', 'CEN': 'E'}
         names = {
             'A': ('Khu vực A (Phòng học)', 'Classroom'),
             'B': ('Khu vực B (Phòng thí nghiệm)', 'Laboratory'),
             'C': ('Khu vực C (Văn phòng)', 'Office'),
-            'D': ('Khu vực D (Hành lang & Sảnh)', 'Corridor & Lobby')
+            'D': ('Khu vực D (Thư viện)', 'Library'),
+            'E': ('Khu vực E (Hành lang & Sảnh)', 'Corridor & Lobby')
         }
 
         # Fallback alphabetical assignment if quadrants conflict
@@ -188,7 +193,7 @@ class MapSegmenter:
         for r in valid_regions:
             cand_id = id_map.get(r['quadrant'], 'A')
             if cand_id in assigned_ids:
-                for alt in ['A', 'B', 'C', 'D']:
+                for alt in ['A', 'B', 'C', 'D', 'E']:
                     if alt not in assigned_ids:
                         cand_id = alt
                         break
@@ -206,10 +211,11 @@ class MapSegmenter:
     def export_visualization(self, output_png_path: str, zones_dict: Optional[Dict[str, Any]] = None):
         """Draws colored segmentation overlay with labels and target poses."""
         color_map = {
-            'A': (100, 220, 0),    # Emerald (BGR)
-            'B': (255, 180, 0),    # Cyan/Blue
-            'C': (220, 80, 220),   # Magenta
-            'D': (40, 160, 255)    # Orange
+            'A': (140, 210, 245),   # Soft warm yellow/orange
+            'B': (235, 205, 140),   # Soft cyan/teal
+            'C': (215, 160, 230),   # Soft lavender
+            'D': (160, 225, 170),   # Soft green
+            'E': (200, 200, 245)    # Soft salmon/peach
         }
 
         vis = cv2.cvtColor(self.image, cv2.COLOR_GRAY2BGR)

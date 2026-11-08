@@ -89,30 +89,95 @@ class SemanticMap:
         self.zones: Dict[str, Zone] = {}
         self._alias_map: Dict[str, str] = {}  # normalized alias -> zone_id
 
-        for zid, data in raw.items():
-            t_data = data.get('target_pose', {})
-            target = TargetPose(
-                x=float(t_data.get('x', 0.0)),
-                y=float(t_data.get('y', 0.0)),
-                yaw=float(t_data.get('yaw', 0.0))
-            )
+        # Normalize raw data to list of zone dictionaries
+        zone_entries = []
+        if isinstance(raw, list):
+            zone_entries = raw
+        elif isinstance(raw, dict):
+            if 'zones' in raw and isinstance(raw['zones'], list):
+                zone_entries = raw['zones']
+            elif 'zones' in raw and isinstance(raw['zones'], dict):
+                zone_entries = list(raw['zones'].values())
+            else:
+                for k, v in raw.items():
+                    if isinstance(v, dict):
+                        if 'id' not in v:
+                            v['id'] = k
+                        zone_entries.append(v)
+
+        for data in zone_entries:
+            zid = str(data.get('id', ''))
+            if not zid or zid == 'metadata':
+                continue
+
+            # Extract target pose: supports both target_pose dict and waypoint list
+            if 'target_pose' in data and isinstance(data['target_pose'], dict):
+                t_data = data['target_pose']
+                target = TargetPose(
+                    x=float(t_data.get('x', 0.0)),
+                    y=float(t_data.get('y', 0.0)),
+                    yaw=float(t_data.get('yaw', 0.0))
+                )
+            elif 'waypoint' in data and isinstance(data['waypoint'], list):
+                wp = data['waypoint']
+                target = TargetPose(
+                    x=float(wp[0]),
+                    y=float(wp[1]),
+                    yaw=float(wp[2]) if len(wp) > 2 else 0.0
+                )
+            elif 'center' in data and isinstance(data['center'], list):
+                c = data['center']
+                target = TargetPose(x=float(c[0]), y=float(c[1]), yaw=0.0)
+            else:
+                target = TargetPose(x=0.0, y=0.0, yaw=0.0)
+
+            # Extract polygon from polygon field or from bounds [xmin, xmax, ymin, ymax]
+            polygon = data.get('polygon', [])
+            if not polygon and 'bounds' in data:
+                b = data['bounds']
+                polygon = [
+                    [b[0], b[2]],
+                    [b[1], b[2]],
+                    [b[1], b[3]],
+                    [b[0], b[3]]
+                ]
+
+            # Colors
+            color_rgb = data.get('color_rgb')
+            if not color_rgb and 'color_bgr' in data:
+                bgr = data['color_bgr']
+                color_rgb = [int(bgr[2]), int(bgr[1]), int(bgr[0])]
+            elif not color_rgb:
+                color_rgb = [128, 128, 128]
+
             zone = Zone(
-                id=str(data.get('id', zid)),
+                id=zid,
                 code=str(data.get('code', f"ZONE_{zid}")),
                 name=str(data.get('name', f"Khu vực {zid}")),
-                english_name=str(data.get('english_name', zid)),
+                english_name=str(data.get('name_en', data.get('english_name', zid))),
                 description=str(data.get('description', '')),
                 target_pose=target,
-                polygon=data.get('polygon', []),
+                polygon=polygon,
                 aliases=[str(a) for a in data.get('aliases', [])],
-                color_rgb=data.get('color_rgb', [128, 128, 128]),
+                color_rgb=color_rgb,
                 marker_z=float(data.get('marker_z', 1.0))
             )
             self.zones[zone.id] = zone
 
             # Register standard aliases
+            zid_lower = zone.id.lower()
             self._register_alias(zone.id, zone.id)
-            self._register_alias(zone.id.lower(), zone.id)
+            self._register_alias(zid_lower, zone.id)
+            self._register_alias(f"phòng {zid_lower}", zone.id)
+            self._register_alias(f"phong {zid_lower}", zone.id)
+            self._register_alias(f"khu {zid_lower}", zone.id)
+            self._register_alias(f"khu vực {zid_lower}", zone.id)
+            self._register_alias(f"hành lang {zid_lower}", zone.id)
+            self._register_alias(f"hanh lang {zid_lower}", zone.id)
+            self._register_alias(f"sảnh {zid_lower}", zone.id)
+            self._register_alias(f"sanh {zid_lower}", zone.id)
+            self._register_alias(f"room {zid_lower}", zone.id)
+            self._register_alias(f"zone {zid_lower}", zone.id)
             self._register_alias(zone.name, zone.id)
             self._register_alias(zone.english_name, zone.id)
             for alias in zone.aliases:

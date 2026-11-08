@@ -14,10 +14,11 @@ def generate_launch_description():
 
     return LaunchDescription([
         DeclareLaunchArgument('zones_file', default_value=default_zones, description='Path to zones.yaml'),
-        DeclareLaunchArgument('backend', default_value='vosk', choices=['vosk', 'whisper', 'text_only'], description='Speech recognition backend'),
+        DeclareLaunchArgument('backend', default_value='auto', choices=['auto', 'vosk', 'google', 'whisper', 'text_only'], description='Speech recognition backend'),
         DeclareLaunchArgument('language', default_value='vi', choices=['vi', 'en'], description='Speech language'),
         DeclareLaunchArgument('enable_mic', default_value='true', choices=['true', 'false'], description='Enable microphone stream'),
         DeclareLaunchArgument('waypoint_dwell_seconds', default_value='2.0', description='Pause time between sequential waypoints'),
+        DeclareLaunchArgument('use_sim_time', default_value='true', description='Use simulation clock'),
 
         # 1. 3D Semantic Zone Visualizer for RViz
         Node(
@@ -25,10 +26,13 @@ def generate_launch_description():
             executable='zone_visualizer_node',
             name='zone_visualizer_node',
             output='screen',
-            parameters=[{'zones_file': LaunchConfiguration('zones_file')}]
+            parameters=[{
+                'zones_file': LaunchConfiguration('zones_file'),
+                'use_sim_time': ParameterValue(LaunchConfiguration('use_sim_time'), value_type=bool)
+            }]
         ),
 
-        # 2. Voice Recognizer (Vosk / Whisper / Mic / Text fallback)
+        # 2. Voice Recognizer (Vosk / Google / Mic / Text fallback)
         Node(
             package='turtlebot4_voice_navigation',
             executable='voice_recognizer_node',
@@ -37,7 +41,8 @@ def generate_launch_description():
             parameters=[{
                 'backend': LaunchConfiguration('backend'),
                 'language': LaunchConfiguration('language'),
-                'enable_mic': ParameterValue(LaunchConfiguration('enable_mic'), value_type=bool)
+                'enable_mic': ParameterValue(LaunchConfiguration('enable_mic'), value_type=bool),
+                'use_sim_time': ParameterValue(LaunchConfiguration('use_sim_time'), value_type=bool)
             }]
         ),
 
@@ -49,7 +54,8 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'zones_file': LaunchConfiguration('zones_file'),
-                'waypoint_dwell_seconds': ParameterValue(LaunchConfiguration('waypoint_dwell_seconds'), value_type=float)
+                'waypoint_dwell_seconds': ParameterValue(LaunchConfiguration('waypoint_dwell_seconds'), value_type=float),
+                'use_sim_time': ParameterValue(LaunchConfiguration('use_sim_time'), value_type=bool)
             }]
         ),
     ])

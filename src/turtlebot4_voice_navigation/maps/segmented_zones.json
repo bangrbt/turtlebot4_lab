@@ -1,167 +1,202 @@
 {
-  "A": {
-    "id": "A",
-    "code": "ZONE_A",
-    "name": "Khu vực A (Phòng học)",
-    "english_name": "Classroom",
-    "area_m2": 37.97,
-    "target_pose": {
-      "x": 2.8,
-      "y": -1.95,
-      "yaw": 0.0
-    },
-    "clearance_m": 1.4,
-    "polygon": [
-      [
-        0.2,
-        4.25
-      ],
-      [
-        0.2,
-        0.65
-      ],
-      [
-        2.4,
-        0.55
-      ],
-      [
-        0.7,
-        0.25
-      ],
-      [
-        2.3,
-        -0.75
-      ],
-      [
-        0.2,
-        -0.85
-      ],
-      [
-        0.2,
-        -4.35
-      ],
-      [
-        5.8,
-        -4.35
-      ],
-      [
-        5.8,
-        -0.75
-      ],
-      [
-        3.6,
-        -0.65
-      ],
-      [
-        5.8,
-        -0.35
-      ],
-      [
-        3.6,
-        0.35
-      ],
-      [
-        5.8,
-        0.65
-      ],
-      [
-        5.8,
-        4.25
-      ]
-    ]
+  "metadata": {
+    "environment_name": "Smart Campus TurtleBot 4 Lab 07",
+    "map_width_m": 14.0,
+    "map_height_m": 11.0,
+    "resolution": 0.05,
+    "origin": [
+      -7.0,
+      -5.5,
+      0.0
+    ],
+    "total_zones": 5
   },
-  "C": {
-    "id": "C",
-    "code": "ZONE_C",
-    "name": "Khu vực C (Văn phòng)",
-    "english_name": "Office",
-    "area_m2": 37.88,
-    "target_pose": {
-      "x": -6.95,
-      "y": 5.4,
-      "yaw": 0.0
-    },
-    "clearance_m": 1.19,
-    "polygon": [
-      [
-        -6.95,
-        5.4
+  "zones": [
+    {
+      "id": "A",
+      "name": "Phòng học",
+      "name_en": "Classroom",
+      "color_bgr": [
+        140,
+        210,
+        245
       ],
-      [
-        -6.95,
-        -5.45
+      "color_hex": "#F5D28C",
+      "bounds": [
+        -5.8,
+        -0.15,
+        0.8,
+        4.4
       ],
-      [
-        6.9,
-        -5.45
+      "center": [
+        -3.2,
+        2.6
       ],
-      [
-        6.9,
-        5.4
+      "waypoint": [
+        -3.2,
+        2.6,
+        0.0
+      ],
+      "description": "Khu vực giảng dạy, phòng học trang bị bàn ghế và bảng giảng viên.",
+      "aliases": [
+        "khu vuc a",
+        "khu a",
+        "phong hoc",
+        "lop hoc",
+        "classroom",
+        "room a",
+        "a"
       ]
-    ]
-  },
-  "D": {
-    "id": "D",
-    "code": "ZONE_D",
-    "name": "Khu vực D (Hành lang & Sảnh)",
-    "english_name": "Corridor & Lobby",
-    "area_m2": 41.46,
-    "target_pose": {
-      "x": -3.0,
-      "y": -1.25,
-      "yaw": 0.0
     },
-    "clearance_m": 1.72,
-    "polygon": [
-      [
-        -5.8,
-        4.25
+    {
+      "id": "B",
+      "name": "Phòng thí nghiệm",
+      "name_en": "Laboratory",
+      "color_bgr": [
+        235,
+        205,
+        140
       ],
-      [
-        -5.8,
-        0.65
+      "color_hex": "#8CCDDE",
+      "bounds": [
+        0.15,
+        5.8,
+        0.8,
+        4.4
       ],
-      [
-        -3.6,
-        0.55
+      "center": [
+        3.2,
+        2.6
       ],
-      [
-        -5.2,
-        -0.4
+      "waypoint": [
+        3.2,
+        2.6,
+        0.0
       ],
-      [
-        -5.8,
-        0.25
-      ],
-      [
-        -5.8,
-        -4.35
-      ],
-      [
-        -0.2,
-        -4.35
-      ],
-      [
-        -0.5,
-        -0.55
-      ],
-      [
-        0.9,
-        -0.3
-      ],
-      [
-        -2.4,
-        0.35
-      ],
-      [
-        -0.2,
-        0.65
-      ],
-      [
-        -0.2,
-        4.25
+      "description": "Phòng thực hành robot, thiết bị đo kiểm và hệ thống an toàn.",
+      "aliases": [
+        "khu vuc b",
+        "khu b",
+        "phong thi nghiem",
+        "phong lab",
+        "lab",
+        "thi nghiem",
+        "laboratory",
+        "room b",
+        "b"
       ]
-    ]
-  }
+    },
+    {
+      "id": "C",
+      "name": "Văn phòng",
+      "name_en": "Office",
+      "color_bgr": [
+        215,
+        160,
+        230
+      ],
+      "color_hex": "#E6A0D7",
+      "bounds": [
+        0.15,
+        5.8,
+        -4.4,
+        -0.8
+      ],
+      "center": [
+        3.2,
+        -2.6
+      ],
+      "waypoint": [
+        3.2,
+        -2.6,
+        0.0
+      ],
+      "description": "Khu vực bàn làm việc quản lý, máy tính văn phòng và tài liệu hành chính.",
+      "aliases": [
+        "khu vuc c",
+        "khu c",
+        "van phong",
+        "phong lam viec",
+        "office",
+        "room c",
+        "c"
+      ]
+    },
+    {
+      "id": "D",
+      "name": "Thư viện",
+      "name_en": "Library",
+      "color_bgr": [
+        160,
+        225,
+        170
+      ],
+      "color_hex": "#AAD5A0",
+      "bounds": [
+        -5.8,
+        -0.15,
+        -4.4,
+        -0.8
+      ],
+      "center": [
+        -3.2,
+        -2.6
+      ],
+      "waypoint": [
+        -3.2,
+        -2.6,
+        0.0
+      ],
+      "description": "Không gian yên tĩnh đọc sách, cây xanh trang trí và bàn đọc cá nhân.",
+      "aliases": [
+        "khu vuc d",
+        "khu d",
+        "thu vien",
+        "phong doc",
+        "library",
+        "reading room",
+        "room d",
+        "d"
+      ]
+    },
+    {
+      "id": "E",
+      "name": "Hành lang & Sảnh chờ",
+      "name_en": "Corridor & Lobby",
+      "color_bgr": [
+        200,
+        200,
+        245
+      ],
+      "color_hex": "#F5C8C8",
+      "bounds": [
+        -5.8,
+        5.8,
+        -0.8,
+        0.8
+      ],
+      "center": [
+        0.0,
+        0.0
+      ],
+      "waypoint": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "description": "Trục giao thông chính kết nối 4 phòng chức năng, sảnh đón và bãi đỗ xe đạp.",
+      "aliases": [
+        "khu vuc e",
+        "khu e",
+        "hanh lang",
+        "sanh",
+        "sanh cho",
+        "corridor",
+        "lobby",
+        "hallway",
+        "room e",
+        "e"
+      ]
+    }
+  ]
 }
