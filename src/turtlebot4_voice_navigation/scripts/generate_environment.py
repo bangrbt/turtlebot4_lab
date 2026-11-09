@@ -245,47 +245,47 @@ def generate_environment():
             "collision_size": (0.2, 0.8)
         },
 
-        # --- SMALL PASSAGEWAY OBSTACLES: CORRIDOR & ROOM ENTRANCES ---
-        # Carefully positioned along corridor and doorway thresholds to test dynamic navigation and obstacle avoidance
+        # --- SMALL PASSAGEWAY OBSTACLES: CORRIDOR & ROOM FLANKS ---
+        # Positioned with generous clearances (>0.9m) from doorways to ensure smooth, unhindered Nav2 navigation
         {
             "name": "obs_wet_floor_sign_corridor",
             "asset": "wet_floor_sign",
-            "pose": (-1.2, 0.35, 0.0, 0, 0, 0),
+            "pose": (-1.4, 0.45, 0.0, 0, 0, 0),
             "collision_type": "box",
             "collision_size": (0.28, 0.20, 0.48)
         },
         {
             "name": "obs_caution_cone_corridor",
             "asset": "caution_cone",
-            "pose": (1.2, -0.35, 0.0, 0, 0, 0),
+            "pose": (1.4, -0.45, 0.0, 0, 0, 0),
             "collision_type": "cylinder",
             "collision_size": (0.15, 0.45)
         },
         {
             "name": "obs_recycling_bin_door_a",
             "asset": "trash_bin",
-            "pose": (-2.6, 1.25, 0.0, 0, 0, 0),
+            "pose": (-1.2, 1.8, 0.0, 0, 0, 0),
             "collision_type": "cylinder",
             "collision_size": (0.16, 0.58)
         },
         {
             "name": "obs_parcel_box_door_b",
             "asset": "parcel_box",
-            "pose": (2.6, 1.25, 0.0, 0, 0, 0.2),
+            "pose": (1.2, 1.8, 0.0, 0, 0, 0.2),
             "collision_type": "box",
             "collision_size": (0.32, 0.28, 0.24)
         },
         {
             "name": "obs_caution_cone_door_c",
             "asset": "caution_cone",
-            "pose": (2.6, -1.25, 0.0, 0, 0, 0),
+            "pose": (1.2, -1.8, 0.0, 0, 0, 0),
             "collision_type": "cylinder",
             "collision_size": (0.15, 0.45)
         },
         {
             "name": "obs_supply_box_door_d",
             "asset": "parcel_box",
-            "pose": (-2.6, -1.25, 0.0, 0, 0, -0.2),
+            "pose": (-1.2, -1.8, 0.0, 0, 0, -0.2),
             "collision_type": "box",
             "collision_size": (0.32, 0.28, 0.24)
         },

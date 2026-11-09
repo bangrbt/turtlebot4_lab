@@ -668,7 +668,7 @@
     </model>
     <model name="obs_wet_floor_sign_corridor">
       <static>true</static>
-      <pose>-1.200 0.350 0.000 0.0000 0.0000 0.0000</pose>
+      <pose>-1.400 0.450 0.000 0.0000 0.0000 0.0000</pose>
       <link name="link">
         <visual name="sign_board">
           <pose>0 0 0.24 0 0 0</pose>
@@ -688,7 +688,7 @@
     </model>
     <model name="obs_caution_cone_corridor">
       <static>true</static>
-      <pose>1.200 -0.350 0.000 0.0000 0.0000 0.0000</pose>
+      <pose>1.400 -0.450 0.000 0.0000 0.0000 0.0000</pose>
       <link name="link">
         <visual name="cone_base">
           <pose>0 0 0.02 0 0 0</pose>
@@ -713,7 +713,7 @@
     </model>
     <model name="obs_recycling_bin_door_a">
       <static>true</static>
-      <pose>-2.600 1.250 0.000 0.0000 0.0000 0.0000</pose>
+      <pose>-1.200 1.800 0.000 0.0000 0.0000 0.0000</pose>
       <link name="link">
         <visual name="bin_body">
           <pose>0 0 0.28 0 0 0</pose>
@@ -733,7 +733,7 @@
     </model>
     <model name="obs_parcel_box_door_b">
       <static>true</static>
-      <pose>2.600 1.250 0.000 0.0000 0.0000 0.2000</pose>
+      <pose>1.200 1.800 0.000 0.0000 0.0000 0.2000</pose>
       <link name="link">
         <visual name="box_body">
           <pose>0 0 0.12 0 0 0</pose>
@@ -753,7 +753,7 @@
     </model>
     <model name="obs_caution_cone_door_c">
       <static>true</static>
-      <pose>2.600 -1.250 0.000 0.0000 0.0000 0.0000</pose>
+      <pose>1.200 -1.800 0.000 0.0000 0.0000 0.0000</pose>
       <link name="link">
         <visual name="cone_base">
           <pose>0 0 0.02 0 0 0</pose>
@@ -778,7 +778,7 @@
     </model>
     <model name="obs_supply_box_door_d">
       <static>true</static>
-      <pose>-2.600 -1.250 0.000 0.0000 0.0000 -0.2000</pose>
+      <pose>-1.200 -1.800 0.000 0.0000 0.0000 -0.2000</pose>
       <link name="link">
         <visual name="box_body">
           <pose>0 0 0.12 0 0 0</pose>
