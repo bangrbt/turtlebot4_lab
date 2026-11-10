@@ -172,16 +172,6 @@ turtlebot4_voice_navigation/
 │   ├── map.pgm / map.yaml     # Bản đồ Occupancy Grid $14m \times 11m$
 │   ├── segmented_map.png      # Bản đồ phân vùng màu sắc có gắn nhãn
 │   └── segmented_zones.json   # Tọa độ ranh giới và waypoint
-├── report/                    # Toàn bộ mã nguồn báo cáo LaTeX chuẩn Overleaf
-│   ├── report.tex             # Tệp chính biên dịch LaTeX
-│   ├── 01_architecture.tex    # Chương 1: Kiến trúc hệ thống
-│   ├── 02_nodes_topics.tex    # Chương 2: Node, Topic, Action
-│   ├── 03_perception.tex      # Chương 3: Phân vùng bản đồ Watershed
-│   ├── 04_behaviors.tex       # Chương 4: Nhận dạng giọng nói & NLU
-│   ├── 05_results.tex         # Chương 5: Kết quả thực nghiệm
-│   ├── 06_conclusion.tex      # Chương 6: Kết luận & Link video/git
-│   ├── figures/               # Thư mục hình ảnh chất lượng cao
-│   └── lab07_voice_navigation_report.zip # Tệp nén sẵn sàng tải lên Overleaf
 ├── scripts/
 │   └── generate_environment.py # Sinh thế giới SDF và bản đồ Occupancy grid
 ├── test/
