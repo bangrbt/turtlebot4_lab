@@ -13,7 +13,7 @@ Hệ thống cho phép TurtleBot 4 tự động phân vùng bản đồ 2D Occup
 * **Nhánh Git:** `assignments_4`
 * **Mã nguồn GitHub:** [https://github.com/bangrbt/turtlebot4_lab/tree/assignments_4/src/turtlebot4_voice_navigation](https://github.com/bangrbt/turtlebot4_lab/tree/assignments_4/src/turtlebot4_voice_navigation)
 * **Video Demo Thực nghiệm (Google Drive):** [https://drive.google.com/file/d/13ebzpQBoCgz06Z1LBtly1qYH1US6P3N8/view?usp=sharing](https://drive.google.com/file/d/13ebzpQBoCgz06Z1LBtly1qYH1US6P3N8/view?usp=sharing)
-* **Mã nguồn Báo cáo LaTeX (Overleaf ZIP):** `report/lab07_voice_navigation_report.zip` hoặc tại thư mục gốc workspace `lab07_voice_navigation_report.zip`.
+* **Báo cáo LaTeX:** Tệp nén sẵn sàng nộp Overleaf: `lab07_voice_navigation_report.zip` (lưu cục bộ tại thư mục gốc workspace theo quy định nộp mã nguồn tách biệt báo cáo).
 
 ---
 

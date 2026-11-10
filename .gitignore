@@ -62,8 +62,3 @@ weights/
 # Voice navigation caches and downloaded models
 .cache_voice/
 !/src/turtlebot4_voice_navigation/maps/segmented_map.png
-!/src/turtlebot4_voice_navigation/docs/report.pdf
-!/src/turtlebot4_voice_navigation/report/
-!/src/turtlebot4_voice_navigation/report/*.tex
-!/src/turtlebot4_voice_navigation/report/figures/*
-!/src/turtlebot4_voice_navigation/report/*.zip
