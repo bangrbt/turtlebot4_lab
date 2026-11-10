@@ -13,70 +13,81 @@ Trong các bài kiểm tra thực nghiệm và quay video demo thuyết trình, 
 \end{enumerate}
 
 \subsubsection{Thuật toán Khử méo & Cân bằng Âm lượng Đa tầng}
-Hệ thống giải quyết triệt để vấn đề này bằng chuỗi xử lý 5 bước cài đặt trong hàm \code{clean_audio_stream} của giao diện Studio:
+Hệ thống giải quyết triệt để vấn đề này bằng chuỗi xử lý 5 bước chuẩn hóa, được căn lề đồng bộ và tường minh:
 
-\begin{enumerate}[label=\textbf{Bước \arabic*:}]
-    \item \textbf{Khử trôi mức một chiều (DC Offset Removal):}
-    \begin{equation}
-    s_1[n] = x[n] - \frac{1}{N} \sum_{k=0}^{N-1} x[k]
-    \end{equation}
-    
-    \item \textbf{Lọc thông cao 80\,Hz (Butterworth High-Pass Filter):}
-    Triệt tiêu dải tần dưới 80\,Hz (nhiễu quạt máy tính, rung cơ học bàn phím, tiếng 50/60\,Hz AC hum):
-    \begin{equation}
-    s_2[n] = \alpha \cdot \left( s_2[n-1] + s_1[n] - s_1[n-1] \right), \quad \alpha = 0.97
-    \end{equation}
-    
-    \item \textbf{Cắt tỉa khoảng lặng & Tiếng ồn nền (Smart Noise Gate / VAD Trimming):}
-    Chia tín hiệu thành các khung $25\,\text{ms}$ ($M = 400$ mẫu). Tính năng lượng hiệu dụng RMS của từng khung:
-    \begin{equation}
-    \text{RMS}_m = \sqrt{\frac{1}{M} \sum_{j=0}^{M-1} s_2[m \cdot M + j]^2}
-    \end{equation}
-    Xác định ngưỡng âm giọng nói $T_{\text{speech}} = \max\left(0.012, 0.15 \cdot \max_m \text{RMS}_m\right)$. Hệ thống tự động cắt bỏ hoàn toàn các khung có $\text{RMS}_m < T_{\text{speech}}$ ở đầu và đuôi đoạn ghi âm (chỉ giữ lại phần phát âm thực tế kèm $75\,\text{ms}$ biên đệm), loại bỏ $100\%$ tiếng quạt rít trong thời gian chờ.
-    
-    \item \textbf{Nắn đỉnh bão hòa mềm ($\tanh$ Soft-Knee Saturation):}
-    Để xóa bỏ cạnh vuông của các đỉnh sóng bị xén cứng do quá ngưỡng micro, hàm phi tuyến hyperbolic tangent được áp dụng cho các mẫu có biên độ lớn hơn $0.65$:
-    \begin{equation}
-    s_3[n] = \begin{cases}
-    s_2[n], & |s_2[n]| \le 0.65 \\
-    \tanh\left(1.25 \cdot s_2[n]\right) \cdot 0.75, & |s_2[n]| > 0.65
-    \end{cases}
-    \end{equation}
-    Hàm $\tanh$ nắn tròn đỉnh sóng một cách mềm mại, triệt tiêu các thành phần hài bậc cao gây sai lệch nhận dạng.
-    
-    \item \textbf{Cân bằng âm lượng tự động thích nghi (Adaptive Auto AGC):}
-    Tính mức đỉnh năng lượng phân vị thứ 95 ($P_{95}$) của phân đoạn giọng nói. Nhân toàn bộ tín hiệu với hệ số bù:
-    \begin{equation}
-    G_{\text{AGC}} = \text{clip}\left(\frac{V_{\text{target}}}{P_{95}}, 0.10, 8.0\right) \cdot K_{\text{slider}}, \quad V_{\text{target}} = 0.35 \; (-9\,\text{dBFS})
-    \end{equation}
-    với $K_{\text{slider}} \in [0.20, 1.50]$ là hệ số điều chỉnh từ thanh trượt trên giao diện Studio.
-\end{enumerate}
+\vspace{2mm}
+\noindent\textbf{Bước 1: Khử trôi mức một chiều (DC Offset Removal)}\\
+Loại bỏ thành phần điện áp phân cực tĩnh từ bộ chuyển đổi ADC phần cứng:
+\begin{equation}
+s_1[n] = x[n] - \frac{1}{N} \sum_{k=0}^{N-1} x[k]
+\end{equation}
 
+\vspace{1mm}
+\noindent\textbf{Bước 2: Lọc thông cao 80\,Hz (Butterworth High-Pass Filter)}\\
+Triệt tiêu dải tần số thấp dưới 80\,Hz (tiếng ù quạt máy tính, rung động bàn phím, tiếng 50/60\,Hz AC hum):
+\begin{equation}
+s_2[n] = \alpha \cdot \left( s_2[n-1] + s_1[n] - s_1[n-1] \right), \quad \alpha = 0.97
+\end{equation}
+
+\vspace{1mm}
+\noindent\textbf{Bước 3: Cắt tỉa khoảng lặng \& tiếng ồn nền (Smart Noise Gate / VAD Trimming)}\\
+Chia tín hiệu thành các khung $25\,\text{ms}$ ($M = 400$ mẫu). Tính năng lượng hiệu dụng RMS của từng khung:
+\begin{equation}
+\text{RMS}_m = \sqrt{\frac{1}{M} \sum_{j=0}^{M-1} s_2[m \cdot M + j]^2}
+\end{equation}
+Xác định ngưỡng âm giọng nói $T_{\text{speech}} = \max\left(0.012, 0.15 \cdot \max_m \text{RMS}_m\right)$. Hệ thống tự động cắt bỏ hoàn toàn các khung có $\text{RMS}_m < T_{\text{speech}}$ ở đầu và đuôi đoạn ghi âm (chỉ giữ lại phần phát âm thực tế kèm $75\,\text{ms}$ biên đệm), loại bỏ $100\%$ tiếng quạt rít trong thời gian chờ.
+
+\vspace{1mm}
+\noindent\textbf{Bước 4: Nắn đỉnh bão hòa mềm ($\tanh$ Soft-Knee Saturation)}\\
+Để xóa bỏ cạnh vuông của các đỉnh sóng bị xén cứng do quá ngưỡng micro, hàm phi tuyến hyperbolic tangent được áp dụng cho các mẫu có biên độ lớn hơn $0.65$:
+\begin{equation}
+s_3[n] = \begin{cases}
+s_2[n], & |s_2[n]| \le 0.65 \\
+\tanh\left(1.25 \cdot s_2[n]\right) \cdot 0.75, & |s_2[n]| > 0.65
+\end{cases}
+\end{equation}
+Hàm $\tanh$ nắn tròn đỉnh sóng một cách mềm mại, triệt tiêu các thành phần hài bậc cao gây sai lệch nhận dạng.
+
+\vspace{1mm}
+\noindent\textbf{Bước 5: Cân bằng âm lượng tự động thích nghi (Adaptive Auto AGC)}\\
+Tính mức đỉnh năng lượng phân vị thứ 95 ($P_{95}$) của phân đoạn giọng nói. Nhân toàn bộ tín hiệu với hệ số bù:
+\begin{equation}
+G_{\text{AGC}} = \text{clip}\left(\frac{V_{\text{target}}}{P_{95}}, 0.10, 8.0\right) \cdot K_{\text{slider}}, \quad V_{\text{target}} = 0.35 \; (-9\,\text{dBFS})
+\end{equation}
+với $K_{\text{slider}} \in [0.20, 1.50]$ là hệ số điều chỉnh từ thanh trượt trên giao diện Studio.
+
+\vspace{2mm}
 Nhờ cơ chế này, dù micro hệ điều hành đặt ở mức $20\%$ hay kéo lên tối đa $100\%$, tín hiệu cấp cho bộ nhận diện luôn được chuẩn hóa về mức $0.35$ hoàn hảo không méo tiếng.
 
 \subsection{Kiến trúc Nhận dạng Giọng nói Đa tầng (Hybrid Speech Recognition)}
 
 Trước đây, việc đặt mô hình offline Vosk trước Google Speech dẫn đến hiện tượng Vosk bị "ảo giác" khi âm lượng lớn, tự phát sinh các từ vô nghĩa như *"vũ văn lộc"*, *"bướu hê hê"*, *"lũ lụt"*. Do biến kết quả không rỗng, Google Speech bị bỏ qua hoàn toàn.
 
-Kiến trúc mới giải quyết triệt để vấn đề này thông qua cơ chế hai tầng (Hình~\ref{fig:stt_flow}):
+Kiến trúc mới giải quyết triệt để vấn đề này thông qua cơ chế hai tầng với khoảng cách trực quan rộng rãi, nhãn chú thích tách rời hoàn toàn khỏi các khối hộp (Hình~\ref{fig:stt_flow}):
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[node distance=1.0cm and 0.8cm, auto]
-    \node[block, fill=softblue, text width=4.0cm] (input) {\textbf{Tín hiệu Âm thanh sạch}\\PCM 16\,kHz, Peak $= 0.35$};
-    \node[block, fill=softgreen, right=1.2cm of input, text width=4.2cm] (google) {\textbf{Google Speech AI}\\Deep Learning Cloud (vi-VN)};
-    \node[block, fill=softorange, below=1.2cm of google, text width=4.2cm] (vosk) {\textbf{Vosk Kaldi Offline}\\Model Small VN};
-    \node[block, fill=softorange, right=1.2cm of vosk, text width=3.8cm] (guard) {\textbf{Domain Keyword Guard}\\Lọc từ khóa điều hướng};
-    \node[block, fill=softpurple, right=1.2cm of google, text width=3.8cm] (output) {\textbf{Chuỗi Ký tự Hợp lệ}\\Gửi tới NLU Parser};
+\begin{tikzpicture}[
+    node distance=1.4cm and 2.0cm,
+    block/.style={draw=uetblue, line width=0.8pt, rounded corners=3pt, fill=white, align=center, font=\small, inner sep=6pt},
+    flow/.style={-{Latex[length=2.5mm]}, draw=uetblue, line width=1.0pt}
+]
+    \node[block, fill=softblue, text width=3.8cm] (input) {\textbf{Âm thanh Tiền Xử lý}\\PCM 16\,kHz, Peak $= 0.35$};
+    \node[block, fill=softgreen, right=2.0cm of input, text width=4.0cm] (google) {\textbf{Google Speech AI}\\Cloud Deep Learning (\code{vi-VN})};
+    \node[block, fill=softpurple, right=2.0cm of google, text width=3.4cm] (output) {\textbf{Khẩu lệnh Hợp lệ}\\Gửi tới NLU Parser};
 
-    \draw[flow] (input) -- node[above]{\small Ưu tiên 1} (google);
-    \draw[flow] (google) -- node[above]{\small Thành công} (output);
-    \draw[flow] (google) -- node[left]{\small Mất mạng / Lỗi} (vosk);
+    \node[block, fill=softorange, below=1.5cm of google, text width=4.0cm] (vosk) {\textbf{Vosk Kaldi Offline}\\\code{vosk-model-small-vn}};
+    \node[block, fill=softorange, below=1.5cm of output, text width=3.4cm] (guard) {\textbf{Domain Keyword Guard}\\Lọc từ khóa điều hướng};
+
+    % Flow lines with perfectly padded text labels
+    \draw[flow] (input) -- node[above=2pt, font=\scriptsize, text=uetblue]{\textbf{Ưu tiên 1}} (google);
+    \draw[flow] (google) -- node[above=2pt, font=\scriptsize, text=codegreen]{\textbf{Thành công}} (output);
+    \draw[flow] (google) -- node[left=2pt, font=\scriptsize, text=red]{\textbf{Mất mạng / Lỗi}} (vosk);
     \draw[flow] (vosk) -- (guard);
-    \draw[flow] (guard) -- node[right]{\small Chứa từ khóa} (output);
-    \draw[flow] (input) |- node[below, near start]{\small Offline} (vosk);
+    \draw[flow] (guard) -- node[right=2pt, font=\scriptsize, text=codegreen]{\textbf{Hợp lệ}} (output);
+    \draw[flow] (input) |- (vosk);
 \end{tikzpicture}
-\caption{Lưu đồ kiến trúc nhận diện giọng nói đa tầng kết hợp bộ lọc từ khóa điều hướng.}
+\caption{Lưu đồ kiến trúc nhận diện giọng nói đa tầng kết hợp bộ lọc từ khóa điều hướng (khoảng cách nhãn và khối được căn chỉnh không đè lấn).}
 \label{fig:stt_flow}
 \end{figure}
 
