@@ -1,0 +1,67 @@
+\section{Tổng quan Kiến trúc Hệ thống}
+\label{sec:architecture}
+
+Trong lĩnh vực tương tác Người -- Robot hiện đại (\textit{Human-Robot Interaction -- HRI}), việc điều khiển robot di động thông qua các giao diện dòng lệnh hoặc chỉ định tọa độ hình học $(x, y, \theta)$ thuần túy bộc lộ nhiều hạn chế về tính trực quan và khả năng thích ứng của người dùng phổ thông. Nhằm giải quyết thách thức này, bài thực hành tập trung nghiên cứu và hiện thực hóa một hệ thống điều hướng ngữ nghĩa theo thời gian thực (\textit{Autonomous Semantic Navigation}) cho nền tảng robot di động TurtleBot 4 trong môi trường mô phỏng 3D Ignition Gazebo và ROS 2 Humble.
+
+\subsection{Mục tiêu Kỹ thuật và Phạm vi Đề tài}
+
+Hệ thống được thiết kế nhằm đáp ứng trọn vẹn 5 mục tiêu cốt lõi:
+\begin{enumerate}[label=\textbf{\arabic*.}]
+    \item \textbf{Phân vùng bản đồ tự động (Map Segmentation):} Phân tích bản đồ lưới chiếm chỗ 2D (\textit{Occupancy Grid Map}) kích thước $14\,\text{m} \times 11\,\text{m}$ (độ phân giải $0.05\,\text{m/pixel}$) của khuôn viên \textit{Smart Campus}, tự động trích xuất ranh giới 5 khu vực chức năng gồm: \textbf{Khu A} (Phòng học), \textbf{Khu B} (Phòng thí nghiệm robot), \textbf{Khu C} (Văn phòng hành chính), \textbf{Khu D} (Thư viện) và \textbf{Khu E} (Sảnh chính / Hành lang trung tâm) thông qua thuật toán Watershed có kiểm soát và biến đổi khoảng cách Euclidean.
+    \item \textbf{Mô hình hóa Ngữ nghĩa Không gian (Semantic Spatial Modeling):} Gắn kết thông tin định danh, tên gọi đa ngôn ngữ (Việt -- Anh), hệ thống từ đồng nghĩa phong phú (\textit{aliases}), tính toán tâm hình học (\textit{centroid}), đường bao lồi (\textit{convex hull}) và tự động sinh điểm tiếp cận điều hướng an toàn (\textit{goal waypoint}) tại tâm cửa mở rộng $1.3\,\text{m}$.
+    \item \textbf{Nhận dạng Giọng nói Tiếng Việt Chống Méo Quá Ngưỡng (Robust Speech-to-Text Pipeline):} Thiết kế chuỗi tiền xử lý âm thanh số bao gồm bộ lọc thông cao 80\,Hz, khử trôi mức một chiều (\textit{DC offset}), nắn méo bão hòa mềm (\textit{$\tanh$ de-clipping}), bộ ngắt khoảng lặng thông minh (\textit{Smart Noise Gate / VAD}) và tự động cân bằng âm lượng thích nghi (\textit{Adaptive Auto AGC}). Tích hợp kiến trúc nhận dạng đa tầng kết hợp giữa \textbf{Google Cloud Deep Learning Speech AI} (độ chính xác $>98\%$) và mô hình \textbf{Vosk Kaldi Offline} có cơ chế lọc nhiễu từ khóa điều hướng (\textit{Domain Keyword Guard}).
+    \item \textbf{Phân tích Ngôn ngữ Tự nhiên & Lập kế hoạch Đa chặng (NLU & Multi-hop Planning):} Xây dựng bộ phân tích cú pháp (\textit{Natural Language Understanding -- NLU}) dựa trên văn phạm biểu thức chính quy mở rộng, hỗ trợ nhận dạng ý định di chuyển đơn điểm, tuần tự đa chặng liên phòng (*"tới khu E rồi tới văn phòng"*), dừng khẩn cấp và tra cứu trạng thái.
+    \item \textbf{Điều hướng Tự trị Nav2 & Giao diện Studio 2D Thời gian thực:} Kết nối Nav2 Action Client (\textit{NavigateToPose}), tối ưu hóa bộ điều khiển DWB Local Planner loại bỏ hiện tượng đơ dừng và dao động góc tại cửa; đồng thời xây dựng giao diện điều khiển \textit{3D Robotics Studio} bằng PyQt5 hỗ trợ Push-to-Talk, VU meter 3 màu và hiển thị bản đồ trực quan.
+\end{enumerate}
+
+\subsection{Sơ đồ Kiến trúc Phân tầng Hệ thống}
+
+Kiến trúc phần mềm tổng thể được tổ chức theo 4 phân tầng độc lập và liên kết chặt chẽ qua cơ chế truyền thông Publish/Subscribe và Action Server của ROS 2 Humble (Hình~\ref{fig:system_architecture}).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=1.2cm and 0.8cm, auto]
+    % Layers background
+    \node[block, fill=softblue, text width=3.8cm, minimum height=1.1cm] (mic) {\textbf{Microphone / Audio}\\PCM Float32 (16\,kHz)};
+    \node[block, fill=softblue, right=1.0cm of mic, text width=4.5cm, minimum height=1.1cm] (cleaner) {\textbf{Bộ tiền xử lý Âm thanh}\\HPF 80\,Hz + AGC + Noise Gate};
+    \node[block, fill=softblue, right=1.0cm of cleaner, text width=4.0cm, minimum height=1.1cm] (stt) {\textbf{Hybrid STT Engine}\\Google AI (Ưu tiên) / Vosk};
+
+    \node[block, fill=softgreen, below=1.2cm of mic, text width=3.8cm, minimum height=1.1cm] (grid) {\textbf{Occupancy Grid Map}\\\code{map.pgm} + \code{map.yaml}};
+    \node[block, fill=softgreen, below=1.2cm of cleaner, text width=4.5cm, minimum height=1.1cm] (seg) {\textbf{Map Segmentation}\\Distance Transform + Watershed};
+    \node[block, fill=softgreen, below=1.2cm of stt, text width=4.0cm, minimum height=1.1cm] (sem_map) {\textbf{Semantic Map Database}\\\code{zones.yaml} (5 Phân vùng)};
+
+    \node[block, fill=softorange, below=1.2cm of seg, text width=4.5cm, minimum height=1.1cm] (nlu) {\textbf{NLU Parser Engine}\\Trích xuất Ý định \& Lộ trình};
+    \node[block, fill=softorange, left=1.0cm of nlu, text width=3.8cm, minimum height=1.1cm] (gui) {\textbf{PyQt5 Robotics Studio}\\UI, VU Meter, Map Telemetry};
+    \node[block, fill=softorange, right=1.0cm of nlu, text width=4.0cm, minimum height=1.1cm] (mgr) {\textbf{Voice Navigation Manager}\\Quản lý Máy trạng thái \& Queue};
+
+    \node[block, fill=softpurple, below=1.2cm of mgr, text width=4.0cm, minimum height=1.1cm] (nav2) {\textbf{Nav2 Navigation Stack}\\BT Navigator + DWB Controller};
+    \node[block, fill=softpurple, left=1.0cm of nav2, text width=4.5cm, minimum height=1.1cm] (amcl) {\textbf{Localization Layer}\\AMCL + LiDAR Scan Matching};
+    \node[block, fill=softpurple, left=1.0cm of amcl, text width=3.8cm, minimum height=1.1cm] (sim) {\textbf{Ignition Gazebo Simulator}\\Mô hình 3D TB4 + Smart Campus};
+
+    % Connections
+    \draw[flow] (mic) -- (cleaner);
+    \draw[flow] (cleaner) -- (stt);
+    \draw[flow] (stt) |- (nlu);
+    \draw[flow] (grid) -- (seg);
+    \draw[flow] (seg) -- (sem_map);
+    \draw[flow] (sem_map) -- (nlu);
+    \draw[flow] (nlu) -- (mgr);
+    \draw[flow] (gui) -- (cleaner);
+    \draw[flow] (gui) -- (nlu);
+    \draw[flow] (mgr) -- (nav2);
+    \draw[flow] (amcl) -- (mgr);
+    \draw[flow] (amcl) -| (gui);
+    \draw[flow] (sim) -- (amcl);
+    \draw[flow] (nav2) -- (sim);
+\end{tikzpicture}
+\caption{Sơ đồ kiến trúc tổng thể hệ thống điều hướng ngữ nghĩa bằng giọng nói cho TurtleBot 4.}
+\label{fig:system_architecture}
+\end{figure}
+
+Hệ thống vận hành theo quy trình khép kín:
+\begin{itemize}
+    \item \textbf{Tầng Cảm nhận Không gian (Perception):} Đọc dữ liệu lưới ô vuông tĩnh, áp dụng hình thái học và giải thuật Watershed tách biệt các phòng, định hình file cấu hình ngữ nghĩa \code{zones.yaml}.
+    \item \textbf{Tầng Xử lý Tín hiệu Ngữ âm (Speech & Audio):} Thu thập sóng âm từ microphone ở định dạng dấu phẩy động 32-bit, lọc sạch tiếng ồn nền quạt máy tính và cân bằng biên độ trước khi chuyển tiếp cho mô hình AI phiên dịch sang chuỗi ký tự tiếng Việt.
+    \item \textbf{Tầng Hiểu Ngôn ngữ & Điều phối (NLU & Management):} Đối chiếu chuỗi văn bản với từ điển ngữ nghĩa của bản đồ để lập kế hoạch chặng đường, sau đó phát lệnh điều khiển tuần tự qua Action Client.
+    \item \textbf{Tầng Thực thi Di chuyển (Execution & Control):} Nav2 hoạch định đường đi toàn cục (\textit{Navfn Planner}) và điều khiển vận tốc tức thời (\textit{DWB Controller}) đẩy tín hiệu \code{/cmd_vel} xuống bộ vi sai của robot trong môi trường Gazebo.
+\end{itemize}

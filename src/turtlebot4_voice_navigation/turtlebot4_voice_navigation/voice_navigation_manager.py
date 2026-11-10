@@ -268,23 +268,12 @@ class VoiceNavigationManager(Node):
         elif intent.intent_type == IntentType.NAVIGATE_FROM_TO:
             orig = intent.origin_zone
             dest = intent.target_zone
-            # If robot is already at origin, navigate directly to destination
-            if cur_zone and cur_zone.id == orig.id:
-                self.get_logger().info(f"Robot already at {orig.name}, navigating directly to {dest.name}.")
-                waypoints = [dest]
-            else:
-                self.get_logger().info(
-                    f"Robot not at {orig.name} (currently at {cur_zone.name if cur_zone else 'outside'}). "
-                    f"Routing via {orig.name} then {dest.name}."
-                )
-                waypoints = [orig, dest]
+            # Full sequential journey from origin to destination
+            waypoints = [orig, dest]
 
         elif intent.intent_type == IntentType.NAVIGATE_WAYPOINTS:
-            # Multi-hop sequential route
+            # Multi-hop sequential route - preserve all waypoints explicitly requested by the user
             waypoints = intent.waypoint_zones.copy()
-            # If robot is already at the first waypoint, can advance past it
-            if cur_zone and len(waypoints) > 1 and cur_zone.id == waypoints[0].id:
-                waypoints = waypoints[1:]
 
         self.active_waypoints = waypoints
         self.active_waypoint_idx = 0

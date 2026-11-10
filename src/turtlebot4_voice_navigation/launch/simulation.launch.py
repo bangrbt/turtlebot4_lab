@@ -16,6 +16,14 @@ def simulator(context):
     world_sdf = pkg_share / 'worlds/smart_campus.sdf'
     gui_cfg = pkg_share / 'config/campus_gui.config'
 
+    # Auto-cleanup stale zombie ignition/bridge processes from prior runs
+    try:
+        import subprocess
+        subprocess.run(['killall', '-9', 'ruby', 'ign-gazebo-gui', 'parameter_bridge'],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
+
     command = ['ign', 'gazebo', '-r', '-v', '2', str(world_sdf)]
     if LaunchConfiguration('gui').perform(context) == 'true':
         if gui_cfg.is_file():
@@ -39,8 +47,24 @@ def generate_launch_description():
     ]
     all_resources = ':'.join(p for p in desc_paths + model_paths if p)
 
-    system_plugins = os.environ.get('LD_LIBRARY_PATH', '') + ':' + str(Path(share('ign_ros2_control')).parents[1] / 'lib')
-    gui_plugins = ':'.join(str(Path(share(n)) / 'lib') for n in ['turtlebot4_ignition_gui_plugins', 'irobot_create_ignition_plugins'])
+    existing_sys = os.environ.get('IGN_GAZEBO_SYSTEM_PLUGIN_PATH', '')
+    sys_list = [
+        existing_sys,
+        os.environ.get('LD_LIBRARY_PATH', ''),
+        str(Path(share('ign_ros2_control')).parents[1] / 'lib'),
+        '/usr/lib/x86_64-linux-gnu/ign-gazebo-6/plugins'
+    ]
+    system_plugins = ':'.join(p for p in sys_list if p)
+
+    existing_gui = os.environ.get('IGN_GUI_PLUGIN_PATH', '')
+    gui_list = [
+        existing_gui,
+        str(Path(share('turtlebot4_ignition_gui_plugins')) / 'lib'),
+        str(Path(share('irobot_create_ignition_plugins')) / 'lib'),
+        '/usr/lib/x86_64-linux-gnu/ign-gazebo-6/plugins/gui',
+        '/usr/lib/x86_64-linux-gnu/ign-gui-6/plugins'
+    ]
+    gui_plugins = ':'.join(p for p in gui_list if p)
 
     return LaunchDescription([
         DeclareLaunchArgument('gui', default_value='true', choices=['true', 'false'], description='Enable Gazebo GUI'),

@@ -64,16 +64,23 @@ class CommandParser:
                 zid_lower,
                 f"khu {zid_lower}",
                 f"khu vuc {zid_lower}",
+                f"khuvuc {zid_lower}",
                 f"phong {zid_lower}",
                 f"sanh {zid_lower}",
                 f"hanh lang {zid_lower}",
                 f"room {zid_lower}",
                 f"zone {zid_lower}",
+                f"cua {zid_lower}",
                 strip_accents(normalize_text(z.name)),
                 strip_accents(normalize_text(z.english_name)),
             }
             for a in z.aliases:
-                aliases.add(strip_accents(normalize_text(a)))
+                a_clean = strip_accents(normalize_text(a))
+                if a_clean:
+                    aliases.add(a_clean)
+                    if not a_clean.startswith("khu"):
+                        aliases.add(f"khu {a_clean}")
+                        aliases.add(f"khu vuc {a_clean}")
 
             for a in aliases:
                 if a:
@@ -130,7 +137,7 @@ class CommandParser:
 
         # 5. Check invalid destinations following navigation prepositions
         # (e.g., "đi đến nhà ăn", "từ phòng A đến phòng ngủ", "chạy tới canteen")
-        segments = re.split(r'\b(?:tu|from|den|toi|sang|qua|via|through|roi|sau do|tiep theo|then|va)\b', unaccented)
+        segments = re.split(r'\b(?:tu|from|den|toi|sang|qua|via|through|roi|sau do|tiep theo|tiep tuc|ke tiep|xong|xong roi|roi moi|truoc|sau|va|vao|ve|ghe|then)\b', unaccented)
         for seg in segments:
             seg_s = seg.strip()
             seg_clean = re.sub(r'^(?:di|di chuyen|chay|hay|move|go|navigate|lan luot|cac|khu vuc|phong)\s*', '', seg_s).strip()

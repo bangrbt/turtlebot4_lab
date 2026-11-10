@@ -60,6 +60,13 @@ def test_from_to_navigation(parser, sentence, expected_orig_id, expected_dest_id
     ("chạy từ B sang D tiếp tục sang E", ["B", "D", "E"]),
     ("đi từ A đến B rồi đến C", ["A", "B", "C"]),
     ("lộ trình từ phòng A qua sảnh E đến văn phòng C", ["A", "E", "C"]),
+    ("tới khu E rồi tới văn phòng", ["E", "C"]),
+    ("tới khu E rồi tói văn phòng", ["E", "C"]),
+    ("tới sảnh chờ rồi sang văn phòng", ["E", "C"]),
+    ("tới khu E xong đi phòng làm việc", ["E", "C"]),
+    ("đi phòng học rồi qua phòng thực hành rồi sang phòng đọc", ["A", "B", "D"]),
+    ("tới sảnh chính rồi qua phòng hành chính", ["E", "C"]),
+    ("đi khu E và đi văn phòng", ["E", "C"]),
 ])
 def test_multi_hop_navigation(parser, sentence, expected_hops):
     res = parser.parse(sentence)

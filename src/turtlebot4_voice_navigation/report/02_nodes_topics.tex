@@ -1,0 +1,81 @@
+\section{Thiết kế Chi tiết Node, Topic và Action ROS 2}
+\label{sec:nodes_topics}
+
+Gói phần mềm \code{turtlebot4_voice_navigation} được tổ chức theo kiến trúc hướng dịch vụ và mô-đun hóa cao độ trên nền tảng ROS 2 Humble. Sự phối hợp nhịp nhàng giữa các tiến trình được mô tả chi tiết thông qua các Node, giao diện thông điệp (\textit{Topics}) và giao thức hành động (\textit{Actions}).
+
+\subsection{Các Node Xử lý Cốt lõi}
+
+Hệ thống bao gồm 4 node ROS 2 chính hoạt động song song trong hệ sinh thái:
+
+\begin{enumerate}[label=\textbf{\arabic*.}]
+    \item \textbf{Node \code{voice_recognizer_node}:}
+    Đảm nhiệm chức năng thu âm thanh nền (nếu cấu hình \code{enable_mic:=true}), xử lý tệp tin âm thanh \code{.wav} được đưa vào qua topic \code{/voice/process_audio_file}, hoặc chuyển tiếp lệnh văn bản trực tiếp từ \code{/voice/command_text}. Node hỗ trợ linh hoạt 3 backend: Google STT Online, Vosk Offline, và Acoustic VAD Fallback. Kết quả phiên dịch được công bố lên topic \code{/voice/recognized_text}.
+    
+    \item \textbf{Node \code{voice_navigation_manager}:}
+    Đóng vai trò "bộ não" điều phối trung tâm. Node đăng ký nhận dữ liệu văn bản từ \code{/voice/recognized_text} và \code{/voice/command_text}, nạp cấu hình bản đồ ngữ nghĩa \code{zones.yaml}, khởi tạo bộ phân tích ngôn ngữ tự nhiên \code{NLUParser}. Node liên tục theo dõi vị trí thực tế của robot qua topic \code{/amcl_pose} để xác định khu vực hiện tại (\textit{current zone}), quản lý hàng đợi các điểm đến (\textit{sequential waypoints queue}), và gửi yêu cầu hành động di chuyển đến Nav2 thông qua Action Client \code{navigate_to_pose}.
+    
+    \item \textbf{Node \code{zone_visualizer_node}:}
+    Chịu trách nhiệm trực quan hóa không gian ngữ nghĩa 3D trên công cụ RViz2. Node đọc tọa độ hình học, màu sắc nhận diện và hướng nhìn của 5 phân vùng, chuyển hóa thành các đối tượng đồ họa \code{visualization_msgs/msg/MarkerArray} (bao gồm: khối hộp 3D trong suốt thể hiện phạm vi phòng, đường viền ranh giới, bảng tên song ngữ nổi trên không và mũi tên định hướng waypoint) xuất bản lên topic \code{/semantic_zones/markers}.
+    
+    \item \textbf{Node \code{voice_navigation_gui} (trong tệp \code{voice_gui.py}):}
+    Giao diện điều khiển đồ họa cao cấp xây dựng bằng PyQt5 kết hợp kiến trúc đa luồng (\textit{multithreading}) và cơ chế truyền tín hiệu hướng sự kiện (\textit{Qt Signals}). Giao diện quản lý trực tiếp luồng thu âm micro phần cứng, hiển thị bản đồ Occupancy grid căn chỉnh vật lý, vệt quét LiDAR động, tọa độ AMCL, quỹ đạo chuyển động thực tế \code{/plan}, đồng hồ VU meter 3 màu và bảng điều khiển nhanh các phân vùng.
+\end{enumerate}
+
+\subsection{Bảng Danh mục Topics và Giao thức Thông điệp}
+
+Bảng~\ref{tab:ros_topics} tổng hợp các topic dữ liệu chính được trao đổi bên trong hệ thống.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Bảng danh mục các ROS 2 Topics cốt lõi trong hệ thống điều hướng giọng nói.}
+\label{tab:ros_topics}
+\begin{tabularx}{\textwidth}{@{}l l P{3.2cm} Y@{}}
+\toprule
+\textbf{Tên Topic} & \textbf{Kiểu Dữ liệu} & \textbf{Node Gửi / Nhận} & \textbf{Ý nghĩa Chức năng} \\
+\midrule
+\code{/voice/command_text} & \code{std_msgs/String} & GUI $\rightarrow$ Manager, Recognizer & Chuỗi lệnh văn bản nhập thủ công từ giao diện hoặc script kiểm thử. \\
+\code{/voice/recognized_text} & \code{std_msgs/String} & Recognizer, GUI $\rightarrow$ Manager & Chuỗi văn bản nhận dạng được từ giọng nói (Google AI / Vosk). \\
+\code{/voice/navigation_status} & \code{std_msgs/String} & Manager $\rightarrow$ GUI, Dashboard & Trạng thái điều hướng thời gian thực (IDLE, NAVIGATING, COMPLETED, FAILED). \\
+\code{/voice/audio_status} & \code{std_msgs/String} & Recognizer $\rightarrow$ GUI & Trạng thái phần cứng micro và tiến trình nhận dạng âm thanh. \\
+\code{/amcl_pose} & \code{geometry_msgs/PoseWith...} & AMCL $\rightarrow$ Manager, GUI & Tọa độ và hướng quay tức thời của robot trên bản đồ toàn cục. \\
+\code{/plan} & \code{nav_msgs/Path} & Nav2 Planner $\rightarrow$ GUI, RViz & Đường đi toàn cục dự kiến tránh vật cản do A* tính toán. \\
+\code{/semantic_zones/markers} & \code{visualization_msgs/Marker...} & Zone Visualizer $\rightarrow$ RViz & Mảng đồ họa 3D hiển thị không gian ngữ nghĩa các phòng. \\
+\code{/cmd_vel} & \code{geometry_msgs/Twist} & Nav2 Controller $\rightarrow$ Robot & Vận tốc dài ($v_x$) và vận tốc góc ($\omega_z$) cấp cho bánh xe. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Giao tiếp Hành động Nav2 (Action Interface)}
+
+Hệ thống sử dụng cơ chế Action bất đồng bộ để điều khiển di chuyển robot mà không làm nghẽn tiến trình xử lý giọng nói:
+\begin{itemize}
+    \item \textbf{Action Name:} \code{/navigate_to_pose} (\code{nav2_msgs/action/NavigateToPose}).
+    \item \textbf{Goal Pose:} Cung cấp tọa độ mục tiêu \code{geometry_msgs/msg/PoseStamped} gồm vị trí $(x, y, 0)$ và hướng quay góc Euler biểu diễn dưới dạng Quaternion $q = (0, 0, \sin(\theta/2), \cos(\theta/2))$.
+    \item \textbf{Feedback Callback:} Nhận thông tin khoảng cách còn lại (\textit{distance remaining}) và thời gian di chuyển để cập nhật giao diện người dùng.
+    \item \textbf{Result Callback:} Nhận diện trạng thái thành công hoặc thất bại. Khi đạt được mục tiêu chặng hiện tại, hệ thống kích hoạt thời gian dừng chân (\textit{waypoint dwell time} $= 2.0\,\text{s}$) trước khi phát lệnh đến trạm tiếp theo trong hành trình đa chặng.
+\end{itemize}
+
+\subsection{Bảng Tham số Cấu hình (ROS 2 Parameters)}
+
+Bảng~\ref{tab:parameters} mô tả các tham số vận hành có thể tùy chỉnh động qua tệp Launch \code{voice_nav.launch.py}.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Bảng tham số cấu hình chính của gói \code{turtlebot4_voice_navigation}.}
+\label{tab:parameters}
+\begin{tabularx}{\textwidth}{@{}l c l Y@{}}
+\toprule
+\textbf{Tên Tham số} & \textbf{Kiểu} & \textbf{Giá trị Mặc định} & \textbf{Mô tả Ý nghĩa} \\
+\midrule
+\code{zones_file} & \code{string} & \code{config/zones.yaml} & Đường dẫn đến tệp định nghĩa phân vùng ngữ nghĩa. \\
+\code{backend} & \code{string} & \code{'auto'} & Mô hình nhận dạng giọng nói (\code{'auto'}, \code{'google'}, \code{'vosk'}). \\
+\code{language} & \code{string} & \code{'vi'} & Ngôn ngữ nhận diện (\code{'vi'} tiếng Việt, \code{'en'} tiếng Anh). \\
+\code{enable_mic} & \code{bool} & \code{false} & Cho phép thu mic ở node nền (để \code{false} khi GUI quản lý mic). \\
+\code{waypoint_dwell_seconds} & \code{float} & \code{2.0} & Thời gian dừng chờ giữa hai chặng liên tiếp trong lộ trình đa điểm. \\
+\code{use_sim_time} & \code{bool} & \code{true} & Đồng bộ thời gian với đồng hồ mô phỏng Ignition Gazebo. \\
+\code{gui} & \code{bool} & \code{true} & Khởi chạy giao diện điều khiển 3D Robotics Studio. \\
+\bottomrule
+\end{tabularx}
+\end{table}

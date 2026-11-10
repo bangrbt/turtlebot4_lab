@@ -17,7 +17,7 @@ def generate_launch_description():
         DeclareLaunchArgument('zones_file', default_value=default_zones, description='Path to zones.yaml'),
         DeclareLaunchArgument('backend', default_value='auto', choices=['auto', 'vosk', 'google', 'whisper', 'text_only'], description='Speech recognition backend'),
         DeclareLaunchArgument('language', default_value='vi', choices=['vi', 'en'], description='Speech language'),
-        DeclareLaunchArgument('enable_mic', default_value='true', choices=['true', 'false'], description='Enable microphone stream'),
+        DeclareLaunchArgument('enable_mic', default_value='false', choices=['true', 'false'], description='Enable microphone stream in background recognizer node (leave false when GUI manages mic)'),
         DeclareLaunchArgument('waypoint_dwell_seconds', default_value='2.0', description='Pause time between sequential waypoints'),
         DeclareLaunchArgument('use_sim_time', default_value='true', description='Use simulation clock'),
         DeclareLaunchArgument('gui', default_value='true', choices=['true', 'false'], description='Launch Voice GUI Control Window'),

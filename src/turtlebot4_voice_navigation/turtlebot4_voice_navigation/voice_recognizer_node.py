@@ -103,7 +103,18 @@ class VoiceRecognizerNode(Node):
         cache_dir.mkdir(parents=True, exist_ok=True)
         local_cache = Path.cwd() / '.cache_voice'
 
-        # 1. Try Vosk offline engine
+        # 1. Try SpeechRecognition (Google STT online) - Highest accuracy for Vietnamese
+        if self.backend_name in ('auto', 'google'):
+            try:
+                import speech_recognition as sr
+                self.speech_recognizer = sr.Recognizer()
+                self.backend_name = 'google'
+                self.get_logger().info("[Google STT] Online speech recognition engine ready.")
+                return
+            except ImportError:
+                pass
+
+        # 2. Try Vosk offline engine
         if self.backend_name in ('auto', 'vosk'):
             try:
                 import vosk
@@ -140,17 +151,6 @@ class VoiceRecognizerNode(Node):
                 else:
                     if self.backend_name == 'vosk':
                         self.get_logger().warn(f"Vosk model not found at {cache_dir}. Falling back to auto.")
-            except ImportError:
-                pass
-
-        # 2. Try SpeechRecognition (Google STT online)
-        if self.backend_name in ('auto', 'google'):
-            try:
-                import speech_recognition as sr
-                self.speech_recognizer = sr.Recognizer()
-                self.backend_name = 'google'
-                self.get_logger().info("[Google STT] Online speech recognition engine ready.")
-                return
             except ImportError:
                 pass
 
@@ -199,12 +199,7 @@ class VoiceRecognizerNode(Node):
             data = wf.readframes(wf.getnframes())
 
         transcribed = ""
-        if self.vosk_recognizer:
-            self.vosk_recognizer.Reset()
-            self.vosk_recognizer.AcceptWaveform(data)
-            res = json.loads(self.vosk_recognizer.FinalResult())
-            transcribed = res.get('text', '')
-        elif self.speech_recognizer:
+        if self.speech_recognizer:
             try:
                 import speech_recognition as sr
                 with sr.AudioFile(str(path)) as source:
@@ -213,6 +208,12 @@ class VoiceRecognizerNode(Node):
                     transcribed = self.speech_recognizer.recognize_google(audio_data, language=lang)
             except Exception as e:
                 self.get_logger().warn(f"Speech recognition fallback: {e}")
+
+        if not transcribed and self.vosk_recognizer:
+            self.vosk_recognizer.Reset()
+            self.vosk_recognizer.AcceptWaveform(data)
+            res = json.loads(self.vosk_recognizer.FinalResult())
+            transcribed = res.get('text', '')
 
         # Check sample audio manifest as verified backup
         if not transcribed:

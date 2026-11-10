@@ -23,21 +23,41 @@ zones:
   - 0.8
   - 4.4
   center:
-  - -3.2
+  - -3.15
   - 2.6
   waypoint:
-  - -2.2
+  - -3.15
   - 2.0
-  - 0.0
+  - 1.57
   description: Khu vực giảng dạy, phòng học trang bị bàn ghế và bảng giảng viên.
   aliases:
   - khu vuc a
   - khu a
+  - khuvuc a
+  - phong a
+  - room a
+  - zone a
+  - cua a
+  - a
   - phong hoc
   - lop hoc
+  - lop
+  - phong giang
+  - phong giang day
+  - giang duong
+  - khu phong hoc
+  - khu hoc tap
+  - khu hoc
+  - khu 1
+  - khu mot
+  - khu một
+  - phong 1
+  - phòng 1
   - classroom
-  - room a
-  - a
+  - class room
+  - class
+  - lecture hall
+  - study room
 - id: B
   name: Phòng thí nghiệm
   name_en: Laboratory
@@ -52,23 +72,41 @@ zones:
   - 0.8
   - 4.4
   center:
-  - 3.2
+  - 3.15
   - 2.6
   waypoint:
-  - 2.2
+  - 3.15
   - 2.0
-  - 0.0
+  - 1.57
   description: Phòng thực hành robot, thiết bị đo kiểm và hệ thống an toàn.
   aliases:
   - khu vuc b
   - khu b
+  - khuvuc b
+  - phong b
+  - room b
+  - zone b
+  - cua b
+  - b
   - phong thi nghiem
   - phong lab
   - lab
   - thi nghiem
+  - phong thuc hanh
+  - thuc hanh
+  - khu thuc hanh
+  - khu thi nghiem
+  - khu lab
+  - phong nghien cuu
+  - nghien cuu
+  - khu 2
+  - khu hai
+  - phong 2
+  - phòng 2
   - laboratory
-  - room b
-  - b
+  - lab room
+  - research lab
+  - experiment room
 - id: C
   name: Văn phòng
   name_en: Office
@@ -83,21 +121,41 @@ zones:
   - -4.4
   - -0.8
   center:
-  - 3.2
+  - 3.15
   - -2.6
   waypoint:
-  - 2.2
+  - 3.15
   - -2.0
-  - 0.0
+  - -1.57
   description: Khu vực bàn làm việc quản lý, máy tính văn phòng và tài liệu hành chính.
   aliases:
   - khu vuc c
   - khu c
+  - khuvuc c
+  - phong c
+  - room c
+  - zone c
+  - cua c
+  - c
   - van phong
   - phong lam viec
+  - lam viec
+  - phong hanh chinh
+  - hanh chinh
+  - phong quan ly
+  - phong ban
+  - phong tiep dan
+  - khu van phong
+  - khu lam viec
+  - khu hanh chinh
+  - khu 3
+  - khu ba
+  - phong 3
+  - phòng 3
   - office
-  - room c
-  - c
+  - workplace
+  - staff room
+  - administration
 - id: D
   name: Thư viện
   name_en: Library
@@ -112,22 +170,38 @@ zones:
   - -4.4
   - -0.8
   center:
-  - -3.2
+  - -3.15
   - -2.6
   waypoint:
-  - -2.2
+  - -3.15
   - -2.0
-  - 0.0
+  - -1.57
   description: Không gian yên tĩnh đọc sách, cây xanh trang trí và bàn đọc cá nhân.
   aliases:
   - khu vuc d
   - khu d
+  - khuvuc d
+  - phong d
+  - room d
+  - zone d
+  - cua d
+  - d
   - thu vien
   - phong doc
+  - phong doc sach
+  - doc sach
+  - khu thu vien
+  - khu sach
+  - khu 4
+  - khu bon
+  - khu bốn
+  - khu tu
+  - khu tư
+  - phong 4
+  - phòng 4
   - library
   - reading room
-  - room d
-  - d
+  - book room
 - id: E
   name: Hành lang & Sảnh chờ
   name_en: Corridor & Lobby
@@ -153,11 +227,33 @@ zones:
   aliases:
   - khu vuc e
   - khu e
+  - khuvuc e
+  - phong e
+  - room e
+  - zone e
+  - cua e
+  - e
   - hanh lang
   - sanh
   - sanh cho
+  - sanh trung tam
+  - sanh chinh
+  - sanh don
+  - sanh ngoai
+  - khu sanh
+  - khu hanh lang
+  - loi di
+  - loi di chung
+  - hanh lang chinh
+  - truc chinh
+  - khu 5
+  - khu nam
+  - khu năm
+  - phong 5
+  - phòng 5
   - corridor
   - lobby
   - hallway
-  - room e
-  - e
+  - hall
+  - central hall
+  - main corridor

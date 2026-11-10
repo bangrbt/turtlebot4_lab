@@ -87,8 +87,8 @@ class MapSegmenter:
         if max_dist <= 0:
             return np.zeros_like(free_mask), []
 
-        # Local maxima as seeds: threshold at 45% of max room clearance
-        _, sure_fg = cv2.threshold(dist_transform, 0.45 * max_dist, 255, cv2.THRESH_BINARY)
+        # Local maxima as seeds: threshold at 50% of max room clearance
+        _, sure_fg = cv2.threshold(dist_transform, 0.50 * max_dist, 255, cv2.THRESH_BINARY)
         sure_fg = np.uint8(sure_fg)
 
         # 4. Unknown boundary region

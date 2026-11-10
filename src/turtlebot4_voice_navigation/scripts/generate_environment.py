@@ -88,206 +88,128 @@ def generate_environment():
         grid[r_start:r_end+1, c_start:c_end+1] = 0
 
     # 3. Realistic 3D Objects specification
-    # All objects are placed with large clearances (>1.0m) from walls and doorways.
-    # The bicycle is completely removed as requested.
+    # Strictly simplified per requirements:
+    # - Only 2 rooms have tables (Zone A and Zone B).
+    # - Small chairs and people distributed across rooms.
+    # - Corridor (Zone E) and all doorways are 100% CLEAR for effortless, smooth navigation.
     objects = [
-        # --- ZONE A: PHÒNG HỌC (Classroom) ---
+        # --- ZONE A: PHÒNG HỌC (Classroom) - HAS TABLE ---
         {
             "name": "zone_a_teacher_desk",
             "asset": "furniture",
-            "pose": (-3.6, 2.7, 0.375, 0, 0, 0),
+            "pose": (-3.4, 3.2, 0.375, 0, 0, 0),
             "collision_type": "box",
-            "collision_size": (0.7, 1.4, 0.75),
+            "collision_size": (0.7, 1.2, 0.75),
             "color_rgba": (0.6, 0.4, 0.25, 1.0)
         },
         {
             "name": "zone_a_chair_teacher",
             "asset": "chair",
-            "pose": (-4.3, 2.7, 0.0, 0, 0, 0),
-            "mesh_scale": (0.00817, 0.00817, 0.00817),
+            "pose": (-4.1, 3.2, 0.0, 0, 0, 0),
+            "mesh_scale": (0.0075, 0.0075, 0.0075),
             "collision_type": "box",
-            "collision_size": (0.65, 0.65, 0.9)
+            "collision_size": (0.45, 0.45, 0.8)
         },
         {
-            "name": "zone_a_chair_student1",
+            "name": "zone_a_chair_student",
             "asset": "chair",
-            "pose": (-2.9, 2.7, 0.0, 0, 0, 3.1415),
-            "mesh_scale": (0.00817, 0.00817, 0.00817),
+            "pose": (-2.7, 3.2, 0.0, 0, 0, 3.1415),
+            "mesh_scale": (0.0075, 0.0075, 0.0075),
             "collision_type": "box",
-            "collision_size": (0.65, 0.65, 0.9)
+            "collision_size": (0.45, 0.45, 0.8)
         },
         {
             "name": "zone_a_person_student",
             "asset": "person",
-            "pose": (-1.8, 3.0, 0.0, 0, 0, -1.57),
+            "pose": (-1.6, 3.2, 0.0, 0, 0, -1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
-            "collision_size": (0.45, 0.4, 1.7)
-        },
-        {
-            "name": "zone_a_backpack",
-            "asset": "backpack",
-            "pose": (-4.8, 3.6, 0.0, 0, 0, 0),
-            "mesh_scale": (0.8, 0.8, 0.8),
-            "collision_type": "box",
-            "collision_size": (0.35, 0.35, 0.45)
+            "collision_size": (0.4, 0.4, 1.7)
         },
 
-        # --- ZONE B: PHÒNG THÍ NGHIỆM (Laboratory) ---
+        # --- ZONE B: PHÒNG THÍ NGHIỆM (Laboratory) - HAS TABLE ---
         {
             "name": "zone_b_lab_bench",
             "asset": "furniture",
-            "pose": (3.6, 2.7, 0.4, 0, 0, 0),
+            "pose": (3.4, 3.2, 0.4, 0, 0, 0),
             "collision_type": "box",
-            "collision_size": (0.8, 1.6, 0.8),
+            "collision_size": (0.7, 1.2, 0.8),
             "color_rgba": (0.2, 0.4, 0.6, 1.0)
         },
         {
-            "name": "zone_b_chair_lab",
+            "name": "zone_b_chair_lab1",
             "asset": "chair",
-            "pose": (4.4, 2.7, 0.0, 0, 0, 3.1415),
-            "mesh_scale": (0.00817, 0.00817, 0.00817),
+            "pose": (2.7, 3.2, 0.0, 0, 0, 0),
+            "mesh_scale": (0.0075, 0.0075, 0.0075),
             "collision_type": "box",
-            "collision_size": (0.65, 0.65, 0.9)
+            "collision_size": (0.45, 0.45, 0.8)
+        },
+        {
+            "name": "zone_b_chair_lab2",
+            "asset": "chair",
+            "pose": (4.1, 3.2, 0.0, 0, 0, 3.1415),
+            "mesh_scale": (0.0075, 0.0075, 0.0075),
+            "collision_type": "box",
+            "collision_size": (0.45, 0.45, 0.8)
         },
         {
             "name": "zone_b_person_researcher",
             "asset": "person",
-            "pose": (1.8, 3.0, 0.0, 0, 0, -1.57),
+            "pose": (1.6, 3.2, 0.0, 0, 0, -1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
-            "collision_size": (0.45, 0.4, 1.7)
-        },
-        {
-            "name": "zone_b_fire_extinguisher",
-            "asset": "fire_hydrant",
-            "pose": (4.8, 1.8, 0.0, 0, 0, 0),
-            "mesh_scale": (0.85, 0.85, 0.85),
-            "collision_type": "cylinder",
-            "collision_size": (0.2, 0.8)
+            "collision_size": (0.4, 0.4, 1.7)
         },
 
-        # --- ZONE C: VĂN PHÒNG (Office) ---
-        {
-            "name": "zone_c_office_desk",
-            "asset": "furniture",
-            "pose": (3.6, -2.7, 0.375, 0, 0, 0),
-            "collision_type": "box",
-            "collision_size": (0.8, 1.6, 0.75),
-            "color_rgba": (0.45, 0.28, 0.18, 1.0)
-        },
+        # --- ZONE C: VĂN PHÒNG (Office) - NO TABLE ---
         {
             "name": "zone_c_chair_exec",
             "asset": "chair",
-            "pose": (4.4, -2.7, 0.0, 0, 0, 3.1415),
-            "mesh_scale": (0.00817, 0.00817, 0.00817),
+            "pose": (4.5, -3.2, 0.0, 0, 0, 3.1415),
+            "mesh_scale": (0.0075, 0.0075, 0.0075),
             "collision_type": "box",
-            "collision_size": (0.65, 0.65, 0.9)
+            "collision_size": (0.45, 0.45, 0.8)
         },
         {
             "name": "zone_c_person_staff",
             "asset": "person",
-            "pose": (1.8, -3.0, 0.0, 0, 0, 1.57),
+            "pose": (2.0, -3.2, 0.0, 0, 0, 1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
-            "collision_size": (0.45, 0.4, 1.7)
+            "collision_size": (0.4, 0.4, 1.7)
         },
         {
             "name": "zone_c_backpack",
             "asset": "backpack",
-            "pose": (5.0, -3.6, 0.0, 0, 0, 0),
+            "pose": (5.0, -3.8, 0.0, 0, 0, 0),
             "mesh_scale": (0.8, 0.8, 0.8),
             "collision_type": "box",
             "collision_size": (0.35, 0.35, 0.45)
         },
 
-        # --- ZONE D: THƯ VIỆN (Library / Reading Room) ---
-        {
-            "name": "zone_d_reading_table",
-            "asset": "furniture",
-            "pose": (-3.6, -2.7, 0.35, 0, 0, 0),
-            "collision_type": "box",
-            "collision_size": (0.8, 1.4, 0.7),
-            "color_rgba": (0.55, 0.45, 0.35, 1.0)
-        },
+        # --- ZONE D: THƯ VIỆN (Library / Reading Room) - NO TABLE ---
         {
             "name": "zone_d_chair_reading",
             "asset": "chair",
-            "pose": (-4.3, -2.7, 0.0, 0, 0, 0),
-            "mesh_scale": (0.00817, 0.00817, 0.00817),
+            "pose": (-4.5, -3.2, 0.0, 0, 0, 0),
+            "mesh_scale": (0.0075, 0.0075, 0.0075),
             "collision_type": "box",
-            "collision_size": (0.65, 0.65, 0.9)
-        },
-        {
-            "name": "zone_d_indoor_potted_plant",
-            "asset": "potted_plant",
-            "pose": (-4.6, -1.8, 0.0, 0, 0, 0),
-            "collision_type": "cylinder",
-            "collision_size": (0.24, 1.1)
+            "collision_size": (0.45, 0.45, 0.8)
         },
         {
             "name": "zone_d_person_reader",
             "asset": "person",
-            "pose": (-1.8, -3.0, 0.0, 0, 0, 1.57),
+            "pose": (-2.0, -3.2, 0.0, 0, 0, 1.57),
             "mesh_scale": (0.85, 0.85, 0.85),
             "collision_type": "box",
-            "collision_size": (0.45, 0.4, 1.7)
+            "collision_size": (0.4, 0.4, 1.7)
         },
-
-        # --- ZONE E: HÀNH LANG & SẢNH CHỜ (Corridor & Lobby) ---
-        # Bicycle is removed completely. Fire hydrant placed at far west end.
         {
-            "name": "zone_e_lobby_hydrant",
-            "asset": "fire_hydrant",
-            "pose": (-5.2, 0.0, 0.0, 0, 0, 0),
-            "mesh_scale": (0.85, 0.85, 0.85),
+            "name": "zone_d_indoor_potted_plant",
+            "asset": "potted_plant",
+            "pose": (-5.0, -3.8, 0.0, 0, 0, 0),
             "collision_type": "cylinder",
-            "collision_size": (0.2, 0.8)
-        },
-
-        # --- SMALL PASSAGEWAY OBSTACLES: CORRIDOR & ROOM FLANKS ---
-        # Positioned with generous clearances (>0.9m) from doorways to ensure smooth, unhindered Nav2 navigation
-        {
-            "name": "obs_wet_floor_sign_corridor",
-            "asset": "wet_floor_sign",
-            "pose": (-1.4, 0.45, 0.0, 0, 0, 0),
-            "collision_type": "box",
-            "collision_size": (0.28, 0.20, 0.48)
-        },
-        {
-            "name": "obs_caution_cone_corridor",
-            "asset": "caution_cone",
-            "pose": (1.4, -0.45, 0.0, 0, 0, 0),
-            "collision_type": "cylinder",
-            "collision_size": (0.15, 0.45)
-        },
-        {
-            "name": "obs_recycling_bin_door_a",
-            "asset": "trash_bin",
-            "pose": (-1.2, 1.8, 0.0, 0, 0, 0),
-            "collision_type": "cylinder",
-            "collision_size": (0.16, 0.58)
-        },
-        {
-            "name": "obs_parcel_box_door_b",
-            "asset": "parcel_box",
-            "pose": (1.2, 1.8, 0.0, 0, 0, 0.2),
-            "collision_type": "box",
-            "collision_size": (0.32, 0.28, 0.24)
-        },
-        {
-            "name": "obs_caution_cone_door_c",
-            "asset": "caution_cone",
-            "pose": (1.2, -1.8, 0.0, 0, 0, 0),
-            "collision_type": "cylinder",
-            "collision_size": (0.15, 0.45)
-        },
-        {
-            "name": "obs_supply_box_door_d",
-            "asset": "parcel_box",
-            "pose": (-1.2, -1.8, 0.0, 0, 0, -0.2),
-            "collision_type": "box",
-            "collision_size": (0.32, 0.28, 0.24)
+            "collision_size": (0.22, 1.1)
         },
     ]
 
@@ -353,10 +275,16 @@ def generate_environment():
                 "color_bgr": [140, 210, 245],       # Soft warm yellow/orange
                 "color_hex": "#F5D28C",
                 "bounds": [-5.8, -0.15, 0.8, 4.4],   # [x_min, x_max, y_min, y_max]
-                "center": [-3.2, 2.6],
-                "waypoint": [-2.2, 2.0, 0.0],       # [x, y, yaw]
+                "center": [-3.15, 2.6],
+                "waypoint": [-3.15, 2.0, 1.57],       # Centered directly in door opening [-3.8, -2.5]
                 "description": "Khu vực giảng dạy, phòng học trang bị bàn ghế và bảng giảng viên.",
-                "aliases": ["khu vuc a", "khu a", "phong hoc", "lop hoc", "classroom", "room a", "a"]
+                "aliases": [
+                    "khu vuc a", "khu a", "khuvuc a", "phong a", "room a", "zone a", "cua a", "a",
+                    "phong hoc", "lop hoc", "lop", "phong giang", "phong giang day", "giang duong",
+                    "khu phong hoc", "khu hoc tap", "khu hoc",
+                    "khu 1", "khu mot", "khu một", "phong 1", "phòng 1",
+                    "classroom", "class room", "class", "lecture hall", "study room"
+                ]
             },
             {
                 "id": "B",
@@ -365,10 +293,17 @@ def generate_environment():
                 "color_bgr": [235, 205, 140],       # Soft cyan/teal
                 "color_hex": "#8CCDDE",
                 "bounds": [0.15, 5.8, 0.8, 4.4],
-                "center": [3.2, 2.6],
-                "waypoint": [2.2, 2.0, 0.0],
+                "center": [3.15, 2.6],
+                "waypoint": [3.15, 2.0, 1.57],        # Centered directly in door opening [2.5, 3.8]
                 "description": "Phòng thực hành robot, thiết bị đo kiểm và hệ thống an toàn.",
-                "aliases": ["khu vuc b", "khu b", "phong thi nghiem", "phong lab", "lab", "thi nghiem", "laboratory", "room b", "b"]
+                "aliases": [
+                    "khu vuc b", "khu b", "khuvuc b", "phong b", "room b", "zone b", "cua b", "b",
+                    "phong thi nghiem", "phong lab", "lab", "thi nghiem",
+                    "phong thuc hanh", "thuc hanh", "khu thuc hanh", "khu thi nghiem", "khu lab",
+                    "phong nghien cuu", "nghien cuu",
+                    "khu 2", "khu hai", "phong 2", "phòng 2",
+                    "laboratory", "lab room", "research lab", "experiment room"
+                ]
             },
             {
                 "id": "C",
@@ -377,10 +312,17 @@ def generate_environment():
                 "color_bgr": [215, 160, 230],       # Soft lavender/purple
                 "color_hex": "#E6A0D7",
                 "bounds": [0.15, 5.8, -4.4, -0.8],
-                "center": [3.2, -2.6],
-                "waypoint": [2.2, -2.0, 0.0],
+                "center": [3.15, -2.6],
+                "waypoint": [3.15, -2.0, -1.57],      # Centered directly in door opening [2.5, 3.8]
                 "description": "Khu vực bàn làm việc quản lý, máy tính văn phòng và tài liệu hành chính.",
-                "aliases": ["khu vuc c", "khu c", "van phong", "phong lam viec", "office", "room c", "c"]
+                "aliases": [
+                    "khu vuc c", "khu c", "khuvuc c", "phong c", "room c", "zone c", "cua c", "c",
+                    "van phong", "phong lam viec", "lam viec", "phong hanh chinh", "hanh chinh",
+                    "phong quan ly", "phong ban", "phong tiep dan",
+                    "khu van phong", "khu lam viec", "khu hanh chinh",
+                    "khu 3", "khu ba", "phong 3", "phòng 3",
+                    "office", "workplace", "staff room", "administration"
+                ]
             },
             {
                 "id": "D",
@@ -389,10 +331,16 @@ def generate_environment():
                 "color_bgr": [160, 225, 170],       # Soft green
                 "color_hex": "#AAD5A0",
                 "bounds": [-5.8, -0.15, -4.4, -0.8],
-                "center": [-3.2, -2.6],
-                "waypoint": [-2.2, -2.0, 0.0],
+                "center": [-3.15, -2.6],
+                "waypoint": [-3.15, -2.0, -1.57],     # Centered directly in door opening [-3.8, -2.5]
                 "description": "Không gian yên tĩnh đọc sách, cây xanh trang trí và bàn đọc cá nhân.",
-                "aliases": ["khu vuc d", "khu d", "thu vien", "phong doc", "library", "reading room", "room d", "d"]
+                "aliases": [
+                    "khu vuc d", "khu d", "khuvuc d", "phong d", "room d", "zone d", "cua d", "d",
+                    "thu vien", "phong doc", "phong doc sach", "doc sach",
+                    "khu thu vien", "khu sach",
+                    "khu 4", "khu bon", "khu bốn", "khu tu", "khu tư", "phong 4", "phòng 4",
+                    "library", "reading room", "book room"
+                ]
             },
             {
                 "id": "E",
@@ -404,7 +352,13 @@ def generate_environment():
                 "center": [0.0, 0.0],
                 "waypoint": [0.0, 0.0, 0.0],
                 "description": "Trục giao thông chính kết nối 4 phòng chức năng, sảnh đón và bãi đỗ xe đạp.",
-                "aliases": ["khu vuc e", "khu e", "hanh lang", "sanh", "sanh cho", "corridor", "lobby", "hallway", "room e", "e"]
+                "aliases": [
+                    "khu vuc e", "khu e", "khuvuc e", "phong e", "room e", "zone e", "cua e", "e",
+                    "hanh lang", "sanh", "sanh cho", "sanh trung tam", "sanh chinh", "sanh don", "sanh ngoai",
+                    "khu sanh", "khu hanh lang", "loi di", "loi di chung", "hanh lang chinh", "truc chinh",
+                    "khu 5", "khu nam", "khu năm", "phong 5", "phòng 5",
+                    "corridor", "lobby", "hallway", "hall", "central hall", "main corridor"
+                ]
             }
         ]
     }
@@ -508,6 +462,12 @@ def generate_environment():
         '    <plugin name="ignition::gazebo::systems::Contact" filename="ignition-gazebo-contact-system" />',
         '    <plugin name="ignition::gazebo::systems::Imu" filename="ignition-gazebo-imu-system" />',
         '    <gravity>0 0 -9.8</gravity>',
+        '    <gui fullscreen="0">',
+        '      <camera name="user_camera">',
+        '        <pose>0.0 -7.5 10.0 0 0.95 1.57</pose>',
+        '        <view_controller>orbit</view_controller>',
+        '      </camera>',
+        '    </gui>',
         '    <scene>',
         '      <ambient>0.7 0.7 0.7 1.0</ambient>',
         '      <background>0.78 0.84 0.90 1.0</background>',
@@ -700,31 +660,31 @@ def generate_environment():
         elif asset == "wet_floor_sign":
             sdf_lines += [
                 '        <visual name="sign_board">',
-                '          <pose>0 0 0.24 0 0 0</pose>',
-                '          <geometry><box><size>0.28 0.16 0.48</size></box></geometry>',
+                '          <pose>0 0 0.22 0 0 0</pose>',
+                '          <geometry><box><size>0.22 0.10 0.44</size></box></geometry>',
                 '          <material><ambient>0.98 0.80 0.08 1</ambient><diffuse>0.98 0.80 0.08 1</diffuse></material>',
                 '        </visual>',
                 '        <visual name="sign_stripe">',
-                '          <pose>0 0 0.24 0 0 0</pose>',
-                '          <geometry><box><size>0.29 0.17 0.12</size></box></geometry>',
+                '          <pose>0 0 0.22 0 0 0</pose>',
+                '          <geometry><box><size>0.23 0.11 0.10</size></box></geometry>',
                 '          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>',
                 '        </visual>'
             ]
         elif asset == "caution_cone":
             sdf_lines += [
                 '        <visual name="cone_base">',
-                '          <pose>0 0 0.02 0 0 0</pose>',
-                '          <geometry><box><size>0.28 0.28 0.04</size></box></geometry>',
+                '          <pose>0 0 0.015 0 0 0</pose>',
+                '          <geometry><box><size>0.16 0.16 0.03</size></box></geometry>',
                 '          <material><ambient>0.96 0.45 0.08 1</ambient><diffuse>0.96 0.45 0.08 1</diffuse></material>',
                 '        </visual>',
                 '        <visual name="cone_body">',
-                '          <pose>0 0 0.23 0 0 0</pose>',
-                '          <geometry><cylinder><radius>0.12</radius><length>0.42</length></cylinder></geometry>',
+                '          <pose>0 0 0.21 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.065</radius><length>0.39</length></cylinder></geometry>',
                 '          <material><ambient>0.96 0.45 0.08 1</ambient><diffuse>0.96 0.45 0.08 1</diffuse></material>',
                 '        </visual>',
                 '        <visual name="cone_stripe">',
-                '          <pose>0 0 0.25 0 0 0</pose>',
-                '          <geometry><cylinder><radius>0.13</radius><length>0.10</length></cylinder></geometry>',
+                '          <pose>0 0 0.23 0 0 0</pose>',
+                '          <geometry><cylinder><radius>0.07</radius><length>0.09</length></cylinder></geometry>',
                 '          <material><ambient>0.95 0.95 0.95 1</ambient><diffuse>0.95 0.95 0.95 1</diffuse></material>',
                 '        </visual>'
             ]
