@@ -1,0 +1,47 @@
+# Cấu hình Tham số Nhận diện Biểu cảm & Điều khiển TurtleBot 4
+emotion_recognition_node:
+  ros__parameters:
+    camera_index: 0
+    camera_width: 640
+    camera_height: 480
+    camera_fps: 30
+    backend: 'auto'               # 'auto', 'deepface', 'onnx', 'mediapipe', 'mock'
+    min_face_size: 60             # Kích thước tối thiểu của khuôn mặt (pixels)
+    confidence_threshold: 0.35    # Ngưỡng tin cậy chấp nhận biểu cảm
+    smooth_window: 5              # Cửa sổ lọc mượt biểu cảm (frames)
+    show_window: true             # Hiển thị cửa sổ OpenCV thời gian thực
+    mirror_camera: true           # Lật gương camera cho tự nhiên khi nhìn
+
+robot_behavior_node:
+  ros__parameters:
+    cmd_vel_topic: '/cmd_vel'
+    emotion_topic: '/detected_emotion'
+    control_rate_hz: 20.0
+    signal_timeout: 1.0           # Dừng khẩn cấp sau 1.0s nếu mất tín hiệu khuôn mặt
+    linear_accel_limit: 0.60      # Gia tốc dài tối đa (m/s^2)
+    angular_accel_limit: 2.00     # Gia tốc góc tối đa (rad/s^2)
+
+    # 6 Trạng thái Biểu cảm & Vận tốc TurtleBot 4:
+    # 1. Happy: Quỹ đạo cong sang trái
+    happy_linear_x: 0.20
+    happy_angular_z: 0.60
+
+    # 2. Sad: Quỹ đạo cong sang phải
+    sad_linear_x: 0.20
+    sad_angular_z: -0.60
+
+    # 3. Neutral: Dừng tại chỗ
+    neutral_linear_x: 0.00
+    neutral_angular_z: 0.00
+
+    # 4. Angry: Lùi nhẹ về phía sau
+    angry_linear_x: -0.15
+    angry_angular_z: 0.00
+
+    # 5. Surprise: Xoay một vòng tại chỗ
+    surprise_linear_x: 0.00
+    surprise_angular_z: 1.20
+
+    # 6. Fear: Tiến nhẹ về phía trước
+    fear_linear_x: 0.18
+    fear_angular_z: 0.00

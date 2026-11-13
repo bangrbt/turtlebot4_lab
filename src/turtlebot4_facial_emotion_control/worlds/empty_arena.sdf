@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='utf-8'?>
+<sdf version="1.8">
+  <world name="emotion_arena">
+    <physics name="emotion_physics" type="ignored">
+      <max_step_size>0.003</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin name="ignition::gazebo::systems::Physics" filename="ignition-gazebo-physics-system" />
+    <plugin name="ignition::gazebo::systems::UserCommands" filename="ignition-gazebo-user-commands-system" />
+    <plugin name="ignition::gazebo::systems::SceneBroadcaster" filename="ignition-gazebo-scene-broadcaster-system" />
+    <plugin name="ignition::gazebo::systems::Contact" filename="ignition-gazebo-contact-system" />
+    <plugin name="ignition::gazebo::systems::Imu" filename="ignition-gazebo-imu-system" />
+    <gravity>0 0 -9.8</gravity>
+    <scene>
+      <ambient>0.6 0.6 0.6 1</ambient>
+      <background>0.72 0.80 0.88 1</background>
+    </scene>
+    <light name="sun" type="directional">
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.4 0.2 -0.9</direction>
+      <cast_shadows>true</cast_shadows>
+    </light>
+
+    <!-- Mặt sàn di chuyển 14m x 14m với lưới kẻ ô trực quan -->
+    <model name="ground">
+      <static>true</static>
+      <pose>0 0 -0.05 0 0 0</pose>
+      <link name="body">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>14 14 0.1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>14 14 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.88 0.88 0.88 1</ambient>
+            <diffuse>0.92 0.92 0.92 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Tường bao an toàn xung quanh sân tập -->
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 7.0 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>14.4 0.2 0.8</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>14.4 0.2 0.8</size></box></geometry>
+        <material><ambient>0.25 0.38 0.52 1</ambient><diffuse>0.25 0.38 0.52 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -7.0 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>14.4 0.2 0.8</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>14.4 0.2 0.8</size></box></geometry>
+        <material><ambient>0.25 0.38 0.52 1</ambient><diffuse>0.25 0.38 0.52 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="wall_east">
+      <static>true</static>
+      <pose>7.0 0 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.2 14.4 0.8</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 14.4 0.8</size></box></geometry>
+        <material><ambient>0.25 0.38 0.52 1</ambient><diffuse>0.25 0.38 0.52 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-7.0 0 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.2 14.4 0.8</size></box></geometry></collision>
+        <visual name="v"><geometry><box><size>0.2 14.4 0.8</size></box></geometry>
+        <material><ambient>0.25 0.38 0.52 1</ambient><diffuse>0.25 0.38 0.52 1</diffuse></material></visual>
+      </link>
+    </model>
+  </world>
+</sdf>
