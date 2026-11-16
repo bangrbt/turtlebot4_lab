@@ -4,6 +4,7 @@ Supports DeepFace ONNX weights, OpenCV Haar Cascade, and MediaPipe fallback.
 """
 from collections import deque
 from dataclasses import dataclass, field
+import math
 import os
 from pathlib import Path
 import sys
@@ -289,19 +290,26 @@ class EmotionDetector:
     def _extract_geometric_features(self, landmarks, img_w: int, img_h: int) -> Dict[str, float]:
         """Extract scale-invariant Action Unit (AU) metrics from MediaPipe 468 landmarks."""
         lm = landmarks
-        # Scale reference: Face Width (zygomatic arch) & Face Height
-        fw = max(1e-3, abs(lm[454].x - lm[234].x))
-        fh = max(1e-3, abs(lm[152].y - lm[10].y))
+
+        def _dist(p1, p2):
+            dx = p1.x - p2.x
+            dy = p1.y - p2.y
+            dz = getattr(p1, 'z', 0.0) - getattr(p2, 'z', 0.0)
+            return math.sqrt(dx * dx + dy * dy + dz * dz)
+
+        # Scale reference: Face Width (zygomatic arch) & Face Height in 3D
+        fw = max(1e-3, _dist(lm[454], lm[234]))
+        fh = max(1e-3, _dist(lm[152], lm[10]))
 
         # 1. Mouth Aspect Ratio (MAR: AU26/AU27 jaw drop) & Mouth Width Ratio (AU20 horizontal stretch)
-        mw = max(1e-3, abs(lm[291].x - lm[61].x))
-        mh = abs(lm[14].y - lm[13].y)
+        mw = max(1e-3, _dist(lm[291], lm[61]))
+        mh = _dist(lm[14], lm[13])
         mar = mh / mw
         mouth_width_ratio = mw / fw
 
         # 2. Inner Brow Knit (AU4 Corrugator supercilii - Glabella distance)
-        # In anger, inner brows pull tightly together -> brow_knit decreases significantly (< 0.22)
-        brow_knit = abs(lm[285].x - lm[55].x) / fw
+        # Using 3D distance ensures rotation-invariance so head tilt does not distort brow knit
+        brow_knit = _dist(lm[285], lm[55]) / fw
 
         # 3. Eyebrow Elevation relative to eyes (AU1 + AU2 Frontalis)
         # In surprise, brows arch high (> 0.065); in anger, brows are lowered (< 0.048)
@@ -368,43 +376,47 @@ class EmotionDetector:
             probs['happy'] *= 0.10
 
         # Rule C: SURPRISE vs FEAR
-        # High MAR (gaping jaw) + wide popped eyes (high EAR) -> shock, surprise or horror/fear
-        if d_mar > 0.20 and geom['ear'] > 0.30:
-            if d_elev > 0.008 or raw_probs.get('surprise', 0.0) > raw_probs.get('fear', 0.0):
-                probs['surprise'] += 45.0
-                probs['fear'] *= 0.30
-            else:
-                probs['fear'] += 45.0
-                probs['surprise'] *= 0.30
+        # Surprise: Vertical jaw drop ("O"-mouth) WITHOUT horizontal stretch, brows raised or normal
+        is_surprise = (d_mar > 0.14 or geom['mar'] > 0.32) and (d_mw < 0.020) and (d_elev > -0.005)
+        # Fear: Lateral mouth stretch (AU20 risorius pull) OR elevated CNN fear with wide eyes
+        is_fear = (d_mw > 0.022 and d_mar < 0.35) or (raw_probs.get('fear', 0.0) > 30.0 and d_mw > 0.010 and d_knit < -0.004)
+
+        if is_surprise:
+            probs['surprise'] += 55.0
+            probs['fear'] *= 0.04       # Decisively suppress Fear so it drops to ~1-2%
             probs['happy'] *= 0.05
             probs['sad'] *= 0.05
-            probs['angry'] *= 0.10
+            probs['angry'] *= 0.05
             probs['neutral'] *= 0.05
-        # Surprise: vertical jaw drop significantly higher than personal baseline
-        elif d_mar > 0.18 and d_elev > -0.005:
-            probs['surprise'] += 45.0
-            probs['fear'] *= 0.20
+        elif is_fear:
+            probs['fear'] += 55.0
+            probs['surprise'] *= 0.04   # Decisively suppress Surprise
             probs['happy'] *= 0.05
             probs['sad'] *= 0.05
-        # Fear: mouth stretched horizontally wider than personal baseline without jaw drop
-        elif d_mw > 0.04 and d_mar < 0.18 and geom['ear'] > 0.26:
-            probs['fear'] += 40.0
-            probs['surprise'] *= 0.25
-            probs['happy'] *= 0.05
-            probs['sad'] *= 0.05
+            probs['angry'] *= 0.05
+            probs['neutral'] *= 0.05
 
         # Rule D: ANGRY vs NEUTRAL
-        # Angry: brows knit significantly closer together than personal baseline (AU4 furrow)
-        if d_knit < -0.025 and geom['mar'] < 0.22:
-            probs['angry'] += 45.0
-            probs['neutral'] *= 0.15
-        elif d_knit >= -0.010 and geom['mar'] < 0.18:
-            # Brows relaxed AND mouth closed -> resting state, suppress false resting anger
-            probs['angry'] *= 0.20
-            probs['neutral'] += 35.0
+        # Sensitive anger: AU4 glabella knit brows OR lowered brow ridge with closed/tightened mouth
+        is_angry = (
+            (d_knit < -0.008 and geom['mar'] < 0.20 and d_smile < 0.006) or
+            (d_knit < -0.005 and d_elev < -0.003 and geom['mar'] < 0.20) or
+            (raw_probs.get('angry', 0.0) >= 25.0 and d_knit < -0.005 and geom['mar'] < 0.20)
+        )
+
+        if is_angry:
+            probs['angry'] += 55.0
+            probs['neutral'] *= 0.08
+            probs['happy'] *= 0.05
+            probs['surprise'] *= 0.05
+            probs['fear'] *= 0.15
+        elif d_knit >= -0.004 and geom['mar'] < 0.15 and d_smile < 0.006:
+            # Brows are relaxed (not knit together) AND mouth closed -> Resting Neutral!
+            probs['neutral'] += 45.0
+            probs['angry'] *= 0.15
 
         # Rule E: NEUTRAL (facial features match personal resting baseline)
-        if abs(d_smile) < 0.007 and geom['mar'] < 0.15 and abs(d_knit) < 0.020:
+        if abs(d_smile) < 0.007 and geom['mar'] < 0.12 and abs(d_knit) < 0.015:
             probs['neutral'] += 35.0
 
         # Normalize to 100%
