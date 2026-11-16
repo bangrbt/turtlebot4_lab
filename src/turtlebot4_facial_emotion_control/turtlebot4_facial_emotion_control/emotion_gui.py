@@ -32,15 +32,16 @@ from PyQt5.QtWidgets import (
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+from sensor_msgs.msg import CompressedImage
 
 from .emotion_detector import TARGET_EMOTIONS, EMOTION_VIETNAMESE, ACTION_DESCRIPTIONS
-from .camera import CameraManager
 
 
 class RosBridge(QObject):
     """Bridges ROS 2 topics to Qt signals."""
     emotion_received = pyqtSignal(dict)
     status_received = pyqtSignal(dict)
+    image_received = pyqtSignal(bytes)
 
 
 class EmotionGuiNode(Node):
@@ -54,6 +55,18 @@ class EmotionGuiNode(Node):
 
         self.emotion_sub = self.create_subscription(String, '/detected_emotion', self._on_emotion, 10)
         self.status_sub = self.create_subscription(String, '/emotion/behavior_status', self._on_status, 10)
+        self.image_sub = self.create_subscription(
+            CompressedImage,
+            '/emotion/camera_image/compressed',
+            self._on_image,
+            10
+        )
+
+    def _on_image(self, msg: CompressedImage):
+        try:
+            self.bridge.image_received.emit(bytes(msg.data))
+        except Exception:
+            pass
 
     def _on_emotion(self, msg: String):
         try:
@@ -278,14 +291,43 @@ class EmotionStudioWindow(QMainWindow):
         # Connect Signals
         self.bridge.emotion_received.connect(self._update_emotion_display)
         self.bridge.status_received.connect(self._update_status_display)
+        self.bridge.image_received.connect(self._on_image_frame)
 
-        # Local camera capture for smooth UI rendering
-        self.camera = CameraManager(camera_index=0, width=640, height=480, fps=30, use_mock_if_failed=True)
-        self.cam_timer = QTimer()
-        self.cam_timer.timeout.connect(self._render_camera_frame)
-        self.cam_timer.start(33)  # ~30 FPS
-
+        self.last_image_time = 0.0
         self.last_annotated_result: Optional[dict] = None
+
+        # Watchdog timer to detect camera feed interruption
+        self.watchdog_timer = QTimer()
+        self.watchdog_timer.timeout.connect(self._check_camera_watchdog)
+        self.watchdog_timer.start(500)  # Check every 500ms
+
+        # Initial placeholder on camera screen
+        self._set_placeholder_screen("Đang chờ luồng hình ảnh từ node nhận diện biểu cảm...")
+
+    def _set_placeholder_screen(self, message: str):
+        pixmap = QPixmap(640, 480)
+        pixmap.fill(QColor("#1a1e24"))
+        painter = QPainter(pixmap)
+        painter.setPen(QColor("#85929e"))
+        painter.setFont(QFont("Arial", 13, QFont.Bold))
+        painter.drawText(pixmap.rect(), Qt.AlignCenter, message)
+        painter.end()
+        self.cam_label.setPixmap(pixmap)
+
+    def _on_image_frame(self, img_bytes: bytes):
+        """Receive compressed JPEG from emotion recognition node and display directly."""
+        self.last_image_time = time.monotonic()
+        q_img = QImage()
+        if q_img.loadFromData(img_bytes):
+            pixmap = QPixmap.fromImage(q_img).scaled(640, 480, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.cam_label.setPixmap(pixmap)
+            self.cam_status_lbl.setText("Camera: Luồng Trực tiếp ROS 2 (/emotion/camera_image/compressed) | 640x480")
+
+    def _check_camera_watchdog(self):
+        """If no image has arrived for > 2.0s, update status label."""
+        if self.last_image_time > 0 and (time.monotonic() - self.last_image_time > 2.0):
+            self.cam_status_lbl.setText("Camera: Mất tín hiệu luồng ảnh | Đang chờ kết nối lại...")
+            self._set_placeholder_screen("Mất kết nối luồng ảnh Camera\nĐang chờ node nhận diện biểu cảm...")
 
     def _send_override(self, cmd: str):
         self.ros_node.send_override(cmd)
@@ -360,26 +402,8 @@ class EmotionStudioWindow(QMainWindow):
             self.watchdog_lbl.setText("Watchdog: HOẠT ĐỘNG BÌNH THƯỜNG (TỰ ĐỘNG)")
             self.watchdog_lbl.setStyleSheet("font-size: 12px; font-weight: bold; color: #27ae60;")
 
-    def _render_camera_frame(self):
-        ret, frame = self.camera.read_frame()
-        if not ret or frame is None:
-            return
-
-        h, w = frame.shape[:2]
-        cam_type = "Mô phỏng (Mock Face)" if self.camera.use_mock else "Webcam Phần cứng"
-        self.cam_status_lbl.setText(f"Camera: {cam_type} | Độ phân giải: {w}x{h}")
-
-        # Convert to QImage
-        import cv2
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        bytes_per_line = 3 * w
-        q_img = QImage(rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
-        pixmap = QPixmap.fromImage(q_img).scaled(640, 480, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.cam_label.setPixmap(pixmap)
-
     def closeEvent(self, event):
-        self.cam_timer.stop()
-        self.camera.release()
+        self.watchdog_timer.stop()
         event.accept()
 
 

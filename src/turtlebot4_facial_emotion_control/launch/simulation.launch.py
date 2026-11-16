@@ -20,6 +20,9 @@ def generate_launch_description():
         for n in ['turtlebot4_description', 'irobot_create_description']
     )
 
+    sys_plugins = os.environ.get('LD_LIBRARY_PATH', '') + ':' + str(Path(get_package_share_directory('ign_ros2_control')).parents[1] / 'lib')
+    gui_plugins = ':'.join(str(Path(get_package_share_directory(n)) / 'lib') for n in ['turtlebot4_ignition_gui_plugins', 'irobot_create_ignition_plugins'])
+
     declare_gui = DeclareLaunchArgument('gazebo_gui', default_value='true', choices=['true', 'false'])
 
     ign_gazebo = ExecuteProcess(
@@ -55,10 +58,25 @@ def generate_launch_description():
         }.items(),
     )
 
+    prepare_sim_node = Node(
+        package='turtlebot4_facial_emotion_control',
+        executable='prepare_simulation',
+        name='emotion_prepare_simulation',
+        output='screen',
+        parameters=[{'use_sim_time': True}],
+    )
+
     return LaunchDescription([
         declare_gui,
+        SetEnvironmentVariable('ROS_DOMAIN_ID', '88'),
+        SetEnvironmentVariable('ROS_LOCALHOST_ONLY', '1'),
+        SetEnvironmentVariable('IGN_IP', '127.0.0.1'),
+        SetEnvironmentVariable('IGN_PARTITION', 'turtlebot4_emotion_88'),
         SetEnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', resources),
+        SetEnvironmentVariable('IGN_GAZEBO_SYSTEM_PLUGIN_PATH', sys_plugins),
+        SetEnvironmentVariable('IGN_GUI_PLUGIN_PATH', gui_plugins),
         ign_gazebo,
         clock_bridge,
         tb4_spawn,
+        prepare_sim_node,
     ])

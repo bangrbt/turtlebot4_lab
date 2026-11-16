@@ -13,6 +13,7 @@ setup(
         ('share/' + package_name + '/launch', glob('launch/*.launch.py')),
         ('share/' + package_name + '/config', glob('config/*')),
         ('share/' + package_name + '/worlds', glob('worlds/*')),
+        ('share/' + package_name + '/scripts', glob('scripts/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -27,6 +28,7 @@ setup(
             'robot_behavior_node = turtlebot4_facial_emotion_control.robot_behavior_node:main',
             'emotion_gui = turtlebot4_facial_emotion_control.emotion_gui:main',
             'emotion_pipeline = turtlebot4_facial_emotion_control.emotion_pipeline:main',
+            'prepare_simulation = turtlebot4_facial_emotion_control.prepare_simulation:main',
         ],
     },
 )

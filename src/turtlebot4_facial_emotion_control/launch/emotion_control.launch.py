@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
@@ -66,6 +66,10 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        SetEnvironmentVariable('ROS_DOMAIN_ID', '88'),
+        SetEnvironmentVariable('ROS_LOCALHOST_ONLY', '1'),
+        SetEnvironmentVariable('IGN_IP', '127.0.0.1'),
+        SetEnvironmentVariable('IGN_PARTITION', 'turtlebot4_emotion_88'),
         declare_gui,
         declare_config,
         declare_camera_idx,

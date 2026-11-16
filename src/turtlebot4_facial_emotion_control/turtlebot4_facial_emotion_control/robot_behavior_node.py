@@ -23,6 +23,7 @@ for _cand in [
 
 import rclpy
 from rclpy.node import Node
+from rclpy.clock import Clock, ClockType
 from geometry_msgs.msg import Twist
 from std_msgs.msg import String
 
@@ -97,14 +98,15 @@ class RobotBehaviorNode(Node):
 
         # Publishers & Subscribers
         self.cmd_vel_pub = self.create_publisher(Twist, self.cmd_vel_topic, 10)
+        self.diffdrive_pub = self.create_publisher(Twist, '/diffdrive_controller/cmd_vel_unstamped', 10)
         self.status_pub = self.create_publisher(String, self.status_topic, 10)
 
         self.emotion_sub = self.create_subscription(String, self.emotion_topic, self._on_emotion_msg, 10)
         self.override_sub = self.create_subscription(String, self.override_topic, self._on_override_msg, 10)
 
-        # Control Loop Timer (20 Hz)
+        # Control Loop Timer (20 Hz - Steady Clock guarantees continuous execution)
         timer_period = 1.0 / self.control_rate_hz
-        self.timer = self.create_timer(timer_period, self._control_loop)
+        self.timer = self.create_timer(timer_period, self._control_loop, clock=Clock(clock_type=ClockType.STEADY_TIME))
         self.last_tick_time = time.monotonic()
 
         self.get_logger().info(
@@ -130,6 +132,10 @@ class RobotBehaviorNode(Node):
                 if detected_emo != self.current_emotion:
                     self.current_emotion = detected_emo
                     self.state_start_time = time.monotonic()
+                    t_vx, t_wz = self.speed_map[detected_emo]
+                    self.get_logger().info(
+                        f"Kích hoạt hành vi: {detected_emo.upper()} ({EMOTION_VIETNAMESE.get(detected_emo, '')}) -> vx={t_vx:+.2f} m/s, wz={t_wz:+.2f} rad/s"
+                    )
                 self.target_linear_x, self.target_angular_z = self.speed_map[detected_emo]
                 self.last_msg_time = time.monotonic()
                 self.is_safety_stopped = False
@@ -188,7 +194,7 @@ class RobotBehaviorNode(Node):
         else:
             self.current_angular_z += math.copysign(max_ang_delta, ang_diff)
 
-        # 3. Publish /cmd_vel
+        # 3. Publish /cmd_vel (and direct to Ignition Gazebo diffdrive controller)
         twist = Twist()
         twist.linear.x = float(self.current_linear_x)
         twist.linear.y = 0.0
@@ -197,6 +203,7 @@ class RobotBehaviorNode(Node):
         twist.angular.y = 0.0
         twist.angular.z = float(self.current_angular_z)
         self.cmd_vel_pub.publish(twist)
+        self.diffdrive_pub.publish(twist)
 
         # 4. Publish Telemetry Status
         action_name, action_desc = ACTION_DESCRIPTIONS.get(self.current_emotion, ('STOP', 'Dừng'))

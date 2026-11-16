@@ -45,6 +45,65 @@ ACTION_DESCRIPTIONS = {
 
 ALL_MODEL_LABELS = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
 
+# Initialize TrueType font for Vietnamese UTF-8 rendering on frames
+_TTF_FONT_PATH = None
+for _cand_font in [
+    '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+    '/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf',
+    '/usr/share/fonts/truetype/freefont/FreeSansBold.ttf',
+]:
+    if os.path.isfile(_cand_font):
+        _TTF_FONT_PATH = _cand_font
+        break
+
+
+def draw_text_utf8(
+    image: np.ndarray,
+    text: str,
+    pos: Tuple[int, int],
+    font_size: int = 16,
+    color_bgr: Tuple[int, int, int] = (255, 255, 255),
+    bg_color_bgr: Optional[Tuple[int, int, int]] = None,
+    padding: int = 4
+) -> np.ndarray:
+    """Draw crisp Unicode / Vietnamese UTF-8 text onto a BGR numpy image using PIL."""
+    if _TTF_FONT_PATH is None:
+        # Fallback to OpenCV putText with ASCII translation
+        import unicodedata
+        ascii_text = ''.join(c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn')
+        cv2.putText(image, ascii_text, pos, cv2.FONT_HERSHEY_SIMPLEX, font_size / 28.0, color_bgr, 1, cv2.LINE_AA)
+        return image
+
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+        # Convert BGR to RGB PIL image
+        pil_img = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        draw = ImageDraw.Draw(pil_img)
+        font = ImageFont.truetype(_TTF_FONT_PATH, font_size)
+
+        # Calculate bounding box of text
+        x, y = pos
+        bbox = draw.textbbox((x, y), text, font=font)
+        if bg_color_bgr is not None:
+            bg_rgb = (bg_color_bgr[2], bg_color_bgr[1], bg_color_bgr[0])
+            draw.rectangle(
+                [bbox[0] - padding, bbox[1] - padding, bbox[2] + padding, bbox[3] + padding],
+                fill=bg_rgb
+            )
+
+        text_rgb = (color_bgr[2], color_bgr[1], color_bgr[0])
+        draw.text((x, y), text, font=font, fill=text_rgb)
+
+        # Convert back to BGR numpy array
+        return cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2BGR)
+    except Exception:
+        import unicodedata
+        ascii_text = ''.join(c for c in unicodedata.normalize('NFD', text) if unicodedata.category(c) != 'Mn')
+        cv2.putText(image, ascii_text, pos, cv2.FONT_HERSHEY_SIMPLEX, font_size / 28.0, color_bgr, 1, cv2.LINE_AA)
+        return image
+
+
 
 @dataclass
 class EmotionResult:
@@ -363,6 +422,17 @@ class EmotionDetector:
         vis = frame.copy()
         h, w = vis.shape[:2]
 
+        # Top Overlay: Current Action and velocities
+        overlay = vis.copy()
+        cv2.rectangle(overlay, (0, 0), (w, 56), (20, 24, 32), -1)
+        cv2.addWeighted(overlay, 0.75, vis, 0.25, 0, vis)
+
+        action_str = f"ROBOT: {result.action} | {result.action_desc}"
+        vis = draw_text_utf8(vis, action_str, (12, 6), font_size=15, color_bgr=(0, 220, 255))
+
+        vel_str = f"vx={result.linear_x:+.2f} m/s | wz={result.angular_z:+.2f} rad/s | FPS={fps:.1f}"
+        cv2.putText(vis, vel_str, (12, 48), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (200, 200, 200), 1, cv2.LINE_AA)
+
         # Draw Face Bounding Box
         if result.face_detected and result.face_box:
             bx, by, bw, bh = result.face_box
@@ -380,22 +450,18 @@ class EmotionDetector:
             # Bounding box
             cv2.rectangle(vis, (bx, by), (bx + bw, by + bh), border_color, 2)
 
-            # Top label banner
-            label_text = f"{result.emotion.upper()} ({int(result.confidence * 100)}%) - {result.vietnamese}"
-            (tw, th), _ = cv2.getTextSize(label_text, cv2.FONT_HERSHEY_SIMPLEX, 0.65, 2)
-            cv2.rectangle(vis, (bx, by - th - 12), (bx + tw + 16, by), border_color, -1)
-            cv2.putText(vis, label_text, (bx + 8, by - 6), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 255, 255), 2, cv2.LINE_AA)
-
-        # Top Overlay: Current Action and velocities
-        overlay = vis.copy()
-        cv2.rectangle(overlay, (0, 0), (w, 52), (20, 24, 32), -1)
-        cv2.addWeighted(overlay, 0.75, vis, 0.25, 0, vis)
-
-        action_str = f"ROBOT: {result.action} | {result.action_desc}"
-        cv2.putText(vis, action_str, (12, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.60, (255, 220, 0), 2, cv2.LINE_AA)
-
-        vel_str = f"vx={result.linear_x:+.2f} m/s | wz={result.angular_z:+.2f} rad/s | FPS={fps:.1f}"
-        cv2.putText(vis, vel_str, (12, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (200, 200, 200), 1, cv2.LINE_AA)
+            # Top label banner with full Vietnamese UTF-8 support
+            label_text = f"{result.emotion.upper()} ({int(result.confidence * 100)}%) — {result.vietnamese}"
+            label_y = max(60, by - 26)
+            vis = draw_text_utf8(
+                vis,
+                label_text,
+                (bx + 4, label_y),
+                font_size=14,
+                color_bgr=(255, 255, 255),
+                bg_color_bgr=border_color,
+                padding=3
+            )
 
         # Left Overlay: Emotion Probabilities HUD
         hud_y = 70

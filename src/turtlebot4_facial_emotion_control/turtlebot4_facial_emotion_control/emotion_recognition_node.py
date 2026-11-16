@@ -27,6 +27,7 @@ for _cand in [
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+from sensor_msgs.msg import CompressedImage
 
 from .camera import CameraManager
 from .emotion_detector import EmotionDetector, EmotionResult
@@ -50,6 +51,7 @@ class EmotionRecognitionNode(Node):
         self.declare_parameter('show_window', True)
         self.declare_parameter('mirror_camera', True)
         self.declare_parameter('emotion_topic', '/detected_emotion')
+        self.declare_parameter('image_topic', '/emotion/camera_image/compressed')
 
         # Load parameters
         camera_index = self.get_parameter('camera_index').value
@@ -63,6 +65,7 @@ class EmotionRecognitionNode(Node):
         self.show_window = self.get_parameter('show_window').value
         mirror_camera = self.get_parameter('mirror_camera').value
         emotion_topic = self.get_parameter('emotion_topic').value
+        image_topic = self.get_parameter('image_topic').value
 
         # Check DISPLAY environment
         has_display = bool(os.environ.get('DISPLAY') or os.environ.get('WAYLAND_DISPLAY'))
@@ -88,8 +91,9 @@ class EmotionRecognitionNode(Node):
             smooth_window=smooth_window,
         )
 
-        # Publisher
+        # Publishers
         self.emotion_pub = self.create_publisher(String, emotion_topic, 10)
+        self.image_pub = self.create_publisher(CompressedImage, image_topic, 10)
 
         # FPS Tracking
         self.fps = 0.0
@@ -138,9 +142,23 @@ class EmotionRecognitionNode(Node):
             else:
                 self.get_logger().info("Searching for face... (Robot stopped)")
 
+        # Generate annotated frame
+        annotated = self.detector.annotate_frame(frame, result, fps=self.fps)
+
+        # Publish Compressed Image for GUI and visualization
+        try:
+            ok, enc_buf = cv2.imencode('.jpg', annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
+            if ok:
+                comp_msg = CompressedImage()
+                comp_msg.header.stamp = self.get_clock().now().to_msg()
+                comp_msg.format = 'jpeg'
+                comp_msg.data = enc_buf.tobytes()
+                self.image_pub.publish(comp_msg)
+        except Exception as e:
+            self.get_logger().debug(f"Failed to publish compressed image: {e}")
+
         # Display window
         if self.show_window:
-            annotated = self.detector.annotate_frame(frame, result, fps=self.fps)
             cv2.imshow("TurtleBot 4 - Facial Emotion Recognition", annotated)
             key = cv2.waitKey(1) & 0xFF
             if key == 27 or key == ord('q'):
