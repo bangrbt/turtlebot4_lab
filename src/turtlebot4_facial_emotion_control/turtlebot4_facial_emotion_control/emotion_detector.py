@@ -118,6 +118,9 @@ class EmotionResult:
     face_box: Optional[Tuple[int, int, int, int]] = None
     linear_x: float = 0.0
     angular_z: float = 0.0
+    is_calibrated: bool = False
+    calibrating: bool = False
+    calibration_progress: int = 0
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -131,6 +134,9 @@ class EmotionResult:
             'face_box': list(self.face_box) if self.face_box else None,
             'linear_x': round(self.linear_x, 3),
             'angular_z': round(self.angular_z, 3),
+            'is_calibrated': self.is_calibrated,
+            'calibrating': self.calibrating,
+            'calibration_progress': self.calibration_progress,
         }
 
 
@@ -219,6 +225,46 @@ class EmotionDetector:
         except Exception:
             self.mp_face_mesh = None
 
+        # 4. Personal Face Baseline Calibrator (Quét hiệu chuẩn khuôn mặt cá nhân)
+        self.calibrating: bool = False
+        self.is_calibrated: bool = False
+        self.calibration_target_frames: int = 40  # ~1.3 seconds at 30 FPS
+        self.calibration_samples: List[Dict[str, float]] = []
+        self.baseline: Dict[str, float] = {
+            'brow_knit': 0.25,
+            'brow_elevation': 0.060,
+            'mouth_width_ratio': 0.32,
+            'mar': 0.10,
+            'smile_elevation': 0.0,
+            'ear': 0.25,
+        }
+
+    def start_calibration(self, target_frames: int = 40) -> None:
+        """Trigger personal face calibration: learn user's unique resting neutral geometry."""
+        self.calibrating = True
+        self.calibration_target_frames = max(5, target_frames)
+        self.calibration_samples.clear()
+
+    def reset_calibration(self) -> None:
+        """Reset personal calibration back to population defaults."""
+        self.calibrating = False
+        self.is_calibrated = False
+        self.calibration_samples.clear()
+        self.baseline = {
+            'brow_knit': 0.25,
+            'brow_elevation': 0.060,
+            'mouth_width_ratio': 0.32,
+            'mar': 0.10,
+            'smile_elevation': 0.0,
+            'ear': 0.25,
+        }
+
+    def get_calibration_progress(self) -> float:
+        """Return calibration progress from 0.0 to 1.0."""
+        if not self.calibrating or self.calibration_target_frames <= 0:
+            return 1.0 if self.is_calibrated else 0.0
+        return min(1.0, len(self.calibration_samples) / float(self.calibration_target_frames))
+
     def detect_face(self, bgr_image: np.ndarray) -> Optional[Tuple[int, int, int, int]]:
         """Detect the largest frontal face bounding box (x, y, w, h)."""
         if bgr_image is None or bgr_image.size == 0 or self.face_cascade is None:
@@ -288,64 +334,78 @@ class EmotionDetector:
         raw_probs: Dict[str, float],
         geom: Optional[Dict[str, float]]
     ) -> Dict[str, float]:
-        """Bi-modal fusion: refine CNN probabilities using Action Unit geometry."""
+        """Smart Fusion: Respect decisive CNN predictions; use personal baseline deviations to resolve ambiguity."""
         probs = dict(raw_probs)
         if geom is None:
             return probs
 
-        mar = geom.get('mar', 0.0)
-        mw_ratio = geom.get('mouth_width_ratio', 0.30)
-        brow_knit = geom.get('brow_knit', 0.25)
-        brow_elev = geom.get('brow_elevation', 0.06)
-        smile_elev = geom.get('smile_elevation', 0.0)
-        ear = geom.get('ear', 0.25)
+        # Rank CNN predictions
+        sorted_cnn = sorted(raw_probs.items(), key=lambda x: x[1], reverse=True)
+        top_class, top_val = sorted_cnn[0]
+        second_class, second_val = sorted_cnn[1]
 
-        # Geometric Action Unit flags
-        # True smile requires corners pulled UP and mouth NOT gaping open in scream/gasp
-        is_true_smile = (mar < 0.25) and (smile_elev > 0.006) and (mw_ratio > 0.30)
-        # True frown requires mouth corners drooping down below upper lip
-        is_true_frown = (smile_elev < -0.006) and (mar < 0.20) and not is_true_smile
+        # 1. GOLDEN RULE: If CNN is decisively confident (> 60% and gap > 20%), trust CNN directly!
+        if top_val >= 60.0 and (top_val - second_val) >= 20.0:
+            return raw_probs
 
-        # Rule 1: HAPPY (Only for genuine smile with relaxed brows)
-        if is_true_smile and brow_knit > 0.20:
-            boost = min(50.0, 35.0 * (smile_elev / 0.015))
-            probs['happy'] += boost
-            probs['angry'] *= 0.15
+        # 2. Ambiguity resolution using deviations from user's personal baseline
+        b = self.baseline
+        d_mar = geom['mar'] - b.get('mar', 0.10)
+        d_mw = geom['mouth_width_ratio'] - b.get('mouth_width_ratio', 0.32)
+        d_knit = geom['brow_knit'] - b.get('brow_knit', 0.25)
+        d_elev = geom['brow_elevation'] - b.get('brow_elevation', 0.060)
+        d_smile = geom['smile_elevation'] - b.get('smile_elevation', 0.0)
+
+        # Rule A: HAPPY (Corners lifted above personal baseline, mouth widened, not gaping)
+        if d_smile > 0.007 and geom['mar'] < 0.25 and d_mw > 0.010:
+            probs['happy'] += 40.0
             probs['sad'] *= 0.15
             probs['fear'] *= 0.15
 
-        # Rule 2: SAD (AU15 Frown detection: corners pulled down, closed mouth)
-        elif is_true_frown or (raw_probs.get('sad', 0.0) > 35.0 and mar < 0.20 and not is_true_smile):
+        # Rule B: SAD (Corners droop below personal baseline)
+        elif d_smile < -0.007 and geom['mar'] < 0.20:
             probs['sad'] += 40.0
-            probs['happy'] *= 0.05
+            probs['happy'] *= 0.10
 
-        # Rule 3: ANGRY (AU4 Glabella furrowed brow + lowered brows OR very high CNN angry)
-        if (brow_knit < 0.22 or (raw_probs.get('angry', 0.0) > 65.0 and brow_knit < 0.24)) and not is_true_smile and mar < 0.25:
-            probs['angry'] += 40.0
+        # Rule C: SURPRISE vs FEAR
+        # High MAR (gaping jaw) + wide popped eyes (high EAR) -> shock, surprise or horror/fear
+        if d_mar > 0.20 and geom['ear'] > 0.30:
+            if d_elev > 0.008 or raw_probs.get('surprise', 0.0) > raw_probs.get('fear', 0.0):
+                probs['surprise'] += 45.0
+                probs['fear'] *= 0.30
+            else:
+                probs['fear'] += 45.0
+                probs['surprise'] *= 0.30
             probs['happy'] *= 0.05
-            probs['neutral'] *= 0.20
-        else:
-            # If brows are relaxed/normal (brow_knit >= 0.24), suppress false angry from resting faces!
-            if brow_knit >= 0.24:
-                probs['angry'] *= 0.20
-
-        # Rule 4: SURPRISE vs FEAR DISAMBIGUATION
-        # Surprise: Vertical jaw drop (high MAR > 0.30, O-shape mouth) + high arched eyebrows
-        if (mar > 0.30 and brow_elev > 0.062) or (raw_probs.get('surprise', 0.0) > 45.0 and mar > 0.25):
+            probs['sad'] *= 0.05
+            probs['angry'] *= 0.10
+            probs['neutral'] *= 0.05
+        # Surprise: vertical jaw drop significantly higher than personal baseline
+        elif d_mar > 0.18 and d_elev > -0.005:
             probs['surprise'] += 45.0
-            probs['fear'] *= 0.20       # Suppress false fear
+            probs['fear'] *= 0.20
             probs['happy'] *= 0.05
-        # Fear: Horizontal mouth stretch (mw_ratio > 0.36) + wide tense eyes (ear > 0.28) OR strong CNN fear
-        elif (mw_ratio > 0.36 and ear > 0.27 and mar < 0.32) or raw_probs.get('fear', 0.0) > 35.0:
-            probs['fear'] += 45.0
-            probs['surprise'] *= 0.25   # Suppress false surprise
+            probs['sad'] *= 0.05
+        # Fear: mouth stretched horizontally wider than personal baseline without jaw drop
+        elif d_mw > 0.04 and d_mar < 0.18 and geom['ear'] > 0.26:
+            probs['fear'] += 40.0
+            probs['surprise'] *= 0.25
             probs['happy'] *= 0.05
+            probs['sad'] *= 0.05
 
-        # Rule 5: STABLE RESTING NEUTRAL CONFIRMATION
-        # When Action Units are at baseline (mouth closed, no smile/frown, brows relaxed and unknit)
-        if not is_true_smile and not is_true_frown and mar < 0.14 and brow_knit >= 0.23 and (0.048 <= brow_elev <= 0.078):
-            if raw_probs.get('neutral', 0.0) > 20.0 or (probs['angry'] < 30.0 and probs['happy'] < 30.0):
-                probs['neutral'] += 35.0
+        # Rule D: ANGRY vs NEUTRAL
+        # Angry: brows knit significantly closer together than personal baseline (AU4 furrow)
+        if d_knit < -0.025 and geom['mar'] < 0.22:
+            probs['angry'] += 45.0
+            probs['neutral'] *= 0.15
+        elif d_knit >= -0.010 and geom['mar'] < 0.18:
+            # Brows relaxed AND mouth closed -> resting state, suppress false resting anger
+            probs['angry'] *= 0.20
+            probs['neutral'] += 35.0
+
+        # Rule E: NEUTRAL (facial features match personal resting baseline)
+        if abs(d_smile) < 0.007 and geom['mar'] < 0.15 and abs(d_knit) < 0.020:
+            probs['neutral'] += 35.0
 
         # Normalize to 100%
         total = sum(probs.values())
@@ -399,6 +459,23 @@ class EmotionDetector:
             self._stable_emotion = 'neutral'
             self._candidate_emotion = 'neutral'
             self._candidate_count = 0
+            if self.calibrating:
+                prog = int((len(self.calibration_samples) / float(self.calibration_target_frames)) * 100)
+                return EmotionResult(
+                    emotion='neutral',
+                    vietnamese=f'ĐANG QUÉT MẶT ({prog}%)',
+                    confidence=prog / 100.0,
+                    probabilities={k: 0.0 for k in TARGET_EMOTIONS},
+                    action='CALIBRATING',
+                    action_desc='Đang chờ khuôn mặt rõ ràng trong camera...',
+                    face_detected=False,
+                    face_box=None,
+                    linear_x=0.0,
+                    angular_z=0.0,
+                    is_calibrated=self.is_calibrated,
+                    calibrating=True,
+                    calibration_progress=prog,
+                )
             action, desc = ACTION_DESCRIPTIONS['neutral']
             return EmotionResult(
                 emotion='neutral',
@@ -411,6 +488,45 @@ class EmotionDetector:
                 face_box=None,
                 linear_x=0.0,
                 angular_z=0.0,
+                is_calibrated=self.is_calibrated,
+                calibrating=False,
+                calibration_progress=100 if self.is_calibrated else 0,
+            )
+
+        # Handle calibration mode (Quét khuôn mặt cá nhân)
+        if self.calibrating:
+            prog = int((len(self.calibration_samples) / float(self.calibration_target_frames)) * 100)
+            if geom_features is not None:
+                self.calibration_samples.append(geom_features)
+                prog = min(100, int((len(self.calibration_samples) / float(self.calibration_target_frames)) * 100))
+                if len(self.calibration_samples) >= self.calibration_target_frames:
+                    keys = ['brow_knit', 'brow_elevation', 'mouth_width_ratio', 'mar', 'smile_elevation', 'ear']
+                    self.baseline = {
+                        k: float(np.mean([s[k] for s in self.calibration_samples if k in s]))
+                        for k in keys
+                    }
+                    self.calibrating = False
+                    self.is_calibrated = True
+
+            self._history.clear()
+            self._stable_emotion = 'neutral'
+            self._candidate_emotion = 'neutral'
+            self._candidate_count = 0
+
+            return EmotionResult(
+                emotion='neutral',
+                vietnamese=f'ĐANG QUÉT MẶT ({prog}%)' if self.calibrating else 'ĐÃ QUÉT XONG',
+                confidence=prog / 100.0,
+                probabilities={'neutral': 100.0, 'happy': 0.0, 'sad': 0.0, 'angry': 0.0, 'surprise': 0.0, 'fear': 0.0},
+                action='CALIBRATING',
+                action_desc=f'Giữ khuôn mặt tự nhiên nhìn thẳng camera ({prog}%)' if self.calibrating else 'Đã ghi nhận cấu trúc mặt cá nhân!',
+                face_detected=True,
+                face_box=box,
+                linear_x=0.0,
+                angular_z=0.0,
+                is_calibrated=self.is_calibrated,
+                calibrating=self.calibrating,
+                calibration_progress=prog,
             )
 
         x, y, w, h = box
@@ -508,6 +624,9 @@ class EmotionDetector:
             face_box=box,
             linear_x=linear_x,
             angular_z=angular_z,
+            is_calibrated=self.is_calibrated,
+            calibrating=False,
+            calibration_progress=100 if self.is_calibrated else 0,
         )
 
     def _get_velocity_for_emotion(self, emotion: str) -> Tuple[float, float]:
@@ -593,8 +712,13 @@ class EmotionDetector:
         cv2.rectangle(overlay, (0, 0), (w, 56), (20, 24, 32), -1)
         cv2.addWeighted(overlay, 0.75, vis, 0.25, 0, vis)
 
-        action_str = f"ROBOT: {result.action} | {result.action_desc}"
-        vis = draw_text_utf8(vis, action_str, (12, 6), font_size=15, color_bgr=(0, 220, 255))
+        if result.calibrating:
+            action_str = f"ROBOT: DỪNG (ĐANG QUÉT MẶT CÁ NHÂN) | TIẾN ĐỘ: {result.calibration_progress}%"
+            vis = draw_text_utf8(vis, action_str, (12, 6), font_size=15, color_bgr=(0, 220, 255))
+        else:
+            calib_tag = " [✓ Mặt cá nhân]" if result.is_calibrated else " [Chưa quét mặt]"
+            action_str = f"ROBOT: {result.action} | {result.action_desc}{calib_tag}"
+            vis = draw_text_utf8(vis, action_str, (12, 6), font_size=15, color_bgr=(0, 220, 255))
 
         vel_str = f"vx={result.linear_x:+.2f} m/s | wz={result.angular_z:+.2f} rad/s | FPS={fps:.1f}"
         cv2.putText(vis, vel_str, (12, 48), cv2.FONT_HERSHEY_SIMPLEX, 0.50, (200, 200, 200), 1, cv2.LINE_AA)
@@ -602,32 +726,56 @@ class EmotionDetector:
         # Draw Face Bounding Box
         if result.face_detected and result.face_box:
             bx, by, bw, bh = result.face_box
-            # Choose color based on emotion
-            color_map = {
-                'happy': (46, 204, 113),      # Emerald Green
-                'sad': (231, 76, 60),         # Alizarin Red/Blue
-                'neutral': (149, 165, 166),   # Gray
-                'angry': (0, 0, 220),         # Vivid Crimson
-                'surprise': (243, 156, 18),   # Orange
-                'fear': (155, 89, 182),       # Amethyst Purple
-            }
-            border_color = color_map.get(result.emotion, (0, 255, 0))
 
-            # Bounding box
-            cv2.rectangle(vis, (bx, by), (bx + bw, by + bh), border_color, 2)
+            if result.calibrating:
+                # Calibration visual: vibrant gold/cyan bounding box with live progress bar
+                calib_color = (255, 180, 0)
+                cv2.rectangle(vis, (bx, by), (bx + bw, by + bh), calib_color, 3)
 
-            # Top label banner with full Vietnamese UTF-8 support
-            label_text = f"{result.emotion.upper()} ({int(result.confidence * 100)}%) — {result.vietnamese}"
-            label_y = max(60, by - 26)
-            vis = draw_text_utf8(
-                vis,
-                label_text,
-                (bx + 4, label_y),
-                font_size=14,
-                color_bgr=(255, 255, 255),
-                bg_color_bgr=border_color,
-                padding=3
-            )
+                bar_y = by + bh + 6
+                cv2.rectangle(vis, (bx, bar_y), (bx + bw, bar_y + 10), (50, 50, 50), -1)
+                fill_w = int((result.calibration_progress / 100.0) * bw)
+                if fill_w > 0:
+                    cv2.rectangle(vis, (bx, bar_y), (bx + fill_w, bar_y + 10), (0, 220, 255), -1)
+
+                label_text = f"🎯 ĐANG QUÉT MẶT: {result.calibration_progress}% (Giữ mặt thả lỏng)"
+                label_y = max(60, by - 26)
+                vis = draw_text_utf8(
+                    vis,
+                    label_text,
+                    (bx + 4, label_y),
+                    font_size=14,
+                    color_bgr=(255, 255, 255),
+                    bg_color_bgr=calib_color,
+                    padding=3
+                )
+            else:
+                # Choose color based on emotion
+                color_map = {
+                    'happy': (46, 204, 113),      # Emerald Green
+                    'sad': (231, 76, 60),         # Alizarin Red/Blue
+                    'neutral': (149, 165, 166),   # Gray
+                    'angry': (0, 0, 220),         # Vivid Crimson
+                    'surprise': (243, 156, 18),   # Orange
+                    'fear': (155, 89, 182),       # Amethyst Purple
+                }
+                border_color = color_map.get(result.emotion, (0, 255, 0))
+
+                # Bounding box
+                cv2.rectangle(vis, (bx, by), (bx + bw, by + bh), border_color, 2)
+
+                # Top label banner with full Vietnamese UTF-8 support
+                label_text = f"{result.emotion.upper()} ({int(result.confidence * 100)}%) — {result.vietnamese}"
+                label_y = max(60, by - 26)
+                vis = draw_text_utf8(
+                    vis,
+                    label_text,
+                    (bx + 4, label_y),
+                    font_size=14,
+                    color_bgr=(255, 255, 255),
+                    bg_color_bgr=border_color,
+                    padding=3
+                )
 
         # Left Overlay: Emotion Probabilities HUD
         hud_y = 70

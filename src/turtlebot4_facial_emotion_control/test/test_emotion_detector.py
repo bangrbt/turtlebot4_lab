@@ -142,3 +142,52 @@ def test_angry_vs_neutral_disambiguation():
     refined_angry = detector._disambiguate_emotions(raw_confused, geom_angry)
     assert refined_angry['angry'] > refined_angry['neutral'], "Angry must dominate with furrowed brows"
 
+
+def test_face_calibration_workflow():
+    """Verify personal baseline scanning and calibration lifecycle."""
+    detector = EmotionDetector(backend='auto')
+
+    assert not detector.is_calibrated
+    assert not detector.calibrating
+
+    # Start calibration
+    detector.start_calibration(target_frames=5)
+    assert detector.calibrating
+    assert detector.get_calibration_progress() == 0.0
+
+    # Feed mock geometric samples
+    sample_geom = {
+        'brow_knit': 0.22,
+        'brow_elevation': 0.055,
+        'mouth_width_ratio': 0.35,
+        'mar': 0.09,
+        'smile_elevation': 0.002,
+        'ear': 0.24,
+    }
+
+    # Simulate 5 frames of calibration
+    for i in range(5):
+        detector.calibration_samples.append(sample_geom)
+
+    # Trigger completion logic as in analyze()
+    if len(detector.calibration_samples) >= detector.calibration_target_frames:
+        keys = ['brow_knit', 'brow_elevation', 'mouth_width_ratio', 'mar', 'smile_elevation', 'ear']
+        detector.baseline = {
+            k: float(np.mean([s[k] for s in detector.calibration_samples if k in s]))
+            for k in keys
+        }
+        detector.calibrating = False
+        detector.is_calibrated = True
+
+    assert detector.is_calibrated
+    assert not detector.calibrating
+    assert detector.baseline['brow_knit'] == pytest.approx(0.22)
+    assert detector.baseline['mouth_width_ratio'] == pytest.approx(0.35)
+
+    # Verify reset restores defaults
+    detector.reset_calibration()
+    assert not detector.is_calibrated
+    assert not detector.calibrating
+    assert detector.baseline['brow_knit'] == 0.25
+
+

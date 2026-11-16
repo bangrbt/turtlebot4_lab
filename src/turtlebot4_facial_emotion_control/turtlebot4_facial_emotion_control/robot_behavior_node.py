@@ -119,8 +119,8 @@ class RobotBehaviorNode(Node):
             data = json.loads(msg.data)
             face_detected = data.get('face_detected', False)
 
-            if not face_detected:
-                # No face detected
+            if not face_detected or data.get('calibrating', False):
+                # No face detected or actively calibrating user face baseline
                 self.target_linear_x, self.target_angular_z = 0.0, 0.0
                 if self.current_emotion != 'neutral':
                     self.current_emotion = 'neutral'

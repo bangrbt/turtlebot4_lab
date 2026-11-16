@@ -95,6 +95,14 @@ class EmotionRecognitionNode(Node):
         self.emotion_pub = self.create_publisher(String, emotion_topic, 10)
         self.image_pub = self.create_publisher(CompressedImage, image_topic, 10)
 
+        # Calibration Subscription
+        self.calibrate_sub = self.create_subscription(
+            String,
+            '/emotion/calibrate',
+            self._on_calibrate_cmd,
+            10
+        )
+
         # FPS Tracking
         self.fps = 0.0
         self.last_frame_time = time.monotonic()
@@ -164,6 +172,15 @@ class EmotionRecognitionNode(Node):
             if key == 27 or key == ord('q'):
                 self.get_logger().info("Window closed by user.")
                 rclpy.shutdown()
+
+    def _on_calibrate_cmd(self, msg: String) -> None:
+        cmd = msg.data.strip().lower()
+        if cmd == 'start':
+            self.get_logger().info("Bắt đầu quét hiệu chuẩn khuôn mặt cá nhân (40 frames)...")
+            self.detector.start_calibration(target_frames=40)
+        elif cmd == 'reset':
+            self.get_logger().info("Đặt lại cấu trúc khuôn mặt về mặc định quần thể.")
+            self.detector.reset_calibration()
 
     def destroy_node(self):
         if self.show_window:

@@ -52,6 +52,7 @@ class EmotionGuiNode(Node):
         self.bridge = bridge
 
         self.override_pub = self.create_publisher(String, '/emotion/manual_override', 10)
+        self.calibrate_pub = self.create_publisher(String, '/emotion/calibrate', 10)
 
         self.emotion_sub = self.create_subscription(String, '/detected_emotion', self._on_emotion, 10)
         self.status_sub = self.create_subscription(String, '/emotion/behavior_status', self._on_status, 10)
@@ -86,6 +87,11 @@ class EmotionGuiNode(Node):
         msg = String()
         msg.data = command
         self.override_pub.publish(msg)
+
+    def send_calibrate(self, command: str):
+        msg = String()
+        msg.data = command
+        self.calibrate_pub.publish(msg)
 
 
 class EmotionStudioWindow(QMainWindow):
@@ -166,6 +172,82 @@ class EmotionStudioWindow(QMainWindow):
         cam_layout.addWidget(self.cam_status_lbl)
 
         left_pane.addWidget(cam_box)
+
+        # Calibration Box (Quét & Hiệu chuẩn khuôn mặt cá nhân)
+        calib_box = QGroupBox("🎯 Quét & Hiệu Chuẩn Khuôn Mặt Cá Nhân (Face Baseline Calibration)")
+        calib_layout = QVBoxLayout(calib_box)
+        calib_layout.setSpacing(8)
+
+        calib_btn_layout = QHBoxLayout()
+        self.btn_calibrate = QPushButton("🎯 Quét khuôn mặt của tôi (1.5s)")
+        self.btn_calibrate.setStyleSheet("""
+            QPushButton {
+                background-color: #e8f4fc;
+                color: #004e87;
+                border: 1.5px solid #004e87;
+                border-radius: 5px;
+                font-weight: bold;
+                font-size: 13px;
+                padding: 7px 14px;
+            }
+            QPushButton:hover {
+                background-color: #004e87;
+                color: #ffffff;
+            }
+        """)
+        self.btn_calibrate.clicked.connect(self._start_calibration)
+        calib_btn_layout.addWidget(self.btn_calibrate, 3)
+
+        self.btn_reset_calib = QPushButton("↺ Đặt lại mặc định")
+        self.btn_reset_calib.setStyleSheet("""
+            QPushButton {
+                background-color: #ffffff;
+                color: #7f8c8d;
+                border: 1px solid #bdc3c7;
+                border-radius: 5px;
+                font-size: 12px;
+                padding: 7px 10px;
+            }
+            QPushButton:hover {
+                background-color: #fadbd8;
+                color: #c0392b;
+                border-color: #e74c3c;
+            }
+        """)
+        self.btn_reset_calib.clicked.connect(self._reset_calibration)
+        calib_btn_layout.addWidget(self.btn_reset_calib, 1)
+
+        calib_layout.addLayout(calib_btn_layout)
+
+        # Calibration Progress Bar
+        self.calib_bar = QProgressBar()
+        self.calib_bar.setRange(0, 100)
+        self.calib_bar.setValue(0)
+        self.calib_bar.setFixedHeight(18)
+        self.calib_bar.setVisible(False)
+        self.calib_bar.setStyleSheet("""
+            QProgressBar {
+                border: 1px solid #004e87;
+                border-radius: 4px;
+                text-align: center;
+                background-color: #ebedef;
+                font-size: 11px;
+                font-weight: bold;
+                color: #004e87;
+            }
+            QProgressBar::chunk {
+                background-color: #3498db;
+                border-radius: 3px;
+            }
+        """)
+        calib_layout.addWidget(self.calib_bar)
+
+        # Status Label
+        self.calib_status_lbl = QLabel("⚪ Trạng thái: Chưa quét mặt riêng (Dùng chỉ số trung bình mặc định)")
+        self.calib_status_lbl.setStyleSheet("font-size: 12px; color: #7f8c8d; font-weight: bold;")
+        calib_layout.addWidget(self.calib_status_lbl)
+
+        left_pane.addWidget(calib_box)
         main_layout.addLayout(left_pane, 6)
 
         # RIGHT PANE: Telemetry, Meters & Controls
@@ -332,8 +414,47 @@ class EmotionStudioWindow(QMainWindow):
     def _send_override(self, cmd: str):
         self.ros_node.send_override(cmd)
 
+    def _start_calibration(self):
+        self.ros_node.send_calibrate('start')
+        self.calib_bar.setVisible(True)
+        self.calib_bar.setValue(0)
+        self.btn_calibrate.setEnabled(False)
+        self.calib_status_lbl.setText("⏳ ĐANG KHỞI ĐỘNG QUÉT: Hãy giữ mặt tự nhiên, thả lỏng nhìn camera...")
+        self.calib_status_lbl.setStyleSheet("font-size: 12px; color: #d35400; font-weight: bold;")
+
+    def _reset_calibration(self):
+        self.ros_node.send_calibrate('reset')
+        self.calib_bar.setVisible(False)
+        self.calib_bar.setValue(0)
+        self.btn_calibrate.setEnabled(True)
+        self.btn_calibrate.setText("🎯 Quét khuôn mặt của tôi (1.5s)")
+        self.calib_status_lbl.setText("⚪ Trạng thái: Đã đặt lại về cấu trúc mặc định quần thể.")
+        self.calib_status_lbl.setStyleSheet("font-size: 12px; color: #7f8c8d; font-weight: bold;")
+
     def _update_emotion_display(self, data: dict):
         self.last_annotated_result = data
+
+        # Update calibration UI state
+        calibrating = data.get('calibrating', False)
+        is_calibrated = data.get('is_calibrated', False)
+        calib_prog = data.get('calibration_progress', 0)
+
+        if calibrating:
+            self.calib_bar.setVisible(True)
+            self.calib_bar.setValue(calib_prog)
+            self.btn_calibrate.setEnabled(False)
+            self.calib_status_lbl.setText(f"⏳ ĐANG QUÉT MẶT ({calib_prog}%): Giữ mặt bình thường nhìn camera...")
+            self.calib_status_lbl.setStyleSheet("font-size: 12px; color: #d35400; font-weight: bold;")
+        elif is_calibrated:
+            self.calib_bar.setVisible(False)
+            self.btn_calibrate.setEnabled(True)
+            self.btn_calibrate.setText("🎯 Quét lại khuôn mặt (1.5s)")
+            self.calib_status_lbl.setText("🟢 Đã quét mặt cá nhân thành công! Các biểu cảm nhận diện theo khuôn mặt bạn.")
+            self.calib_status_lbl.setStyleSheet("font-size: 12px; color: #27ae60; font-weight: bold;")
+        else:
+            self.calib_bar.setVisible(False)
+            self.btn_calibrate.setEnabled(True)
+            self.btn_calibrate.setText("🎯 Quét khuôn mặt của tôi (1.5s)")
 
         emo = data.get('emotion', 'neutral')
         vn = data.get('vietnamese', 'Bình thường')
