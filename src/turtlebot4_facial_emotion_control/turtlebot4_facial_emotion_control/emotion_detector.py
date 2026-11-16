@@ -263,11 +263,11 @@ class EmotionDetector:
         right_brow_dist = lm[386].y - lm[300].y
         brow_elevation = (left_brow_dist + right_brow_dist) / (2.0 * fh)
 
-        # 4. Smile / Frown Score (AU12 Zygomaticus major vs AU15 Depressor anguli oris)
-        # Distance of mouth corners relative to center of lips
-        lip_center_y = (lm[0].y + lm[17].y) / 2.0
+        # 4. Smile / Frown Elevation (AU12 Zygomaticus major vs AU15 Depressor anguli oris)
+        # Measured relative to upper lip: In a smile, corners lift UP (corners_y < upper_lip_y -> positive elevation)
+        upper_lip_y = (lm[0].y + lm[13].y) / 2.0
         corners_y = (lm[61].y + lm[291].y) / 2.0
-        smile_score = (lip_center_y - corners_y) / fh
+        smile_elevation = (upper_lip_y - corners_y) / fh
 
         # 5. Eye Aspect Ratio (EAR: AU5 eye widener vs AU7 lid tightener)
         left_ear = abs(lm[145].y - lm[159].y) / max(1e-3, abs(lm[133].x - lm[33].x))
@@ -279,7 +279,7 @@ class EmotionDetector:
             'mouth_width_ratio': mouth_width_ratio,
             'brow_knit': brow_knit,
             'brow_elevation': brow_elevation,
-            'smile_score': smile_score,
+            'smile_elevation': smile_elevation,
             'ear': ear,
         }
 
@@ -297,48 +297,55 @@ class EmotionDetector:
         mw_ratio = geom.get('mouth_width_ratio', 0.30)
         brow_knit = geom.get('brow_knit', 0.25)
         brow_elev = geom.get('brow_elevation', 0.06)
-        smile = geom.get('smile_score', 0.0)
+        smile_elev = geom.get('smile_elevation', 0.0)
         ear = geom.get('ear', 0.25)
 
-        # Rule 1: HAPPY (AU12 Smile detection)
-        if smile > 0.020:
-            boost = min(60.0, 45.0 * (smile / 0.030))
+        # Geometric Action Unit flags
+        # True smile requires corners pulled UP and mouth NOT gaping open in scream/gasp
+        is_true_smile = (mar < 0.25) and (smile_elev > 0.006) and (mw_ratio > 0.30)
+        # True frown requires mouth corners drooping down below upper lip
+        is_true_frown = (smile_elev < -0.006) and (mar < 0.20) and not is_true_smile
+
+        # Rule 1: HAPPY (Only for genuine smile with relaxed brows)
+        if is_true_smile and brow_knit > 0.20:
+            boost = min(50.0, 35.0 * (smile_elev / 0.015))
             probs['happy'] += boost
-            probs['angry'] *= 0.10
-            probs['sad'] *= 0.10
+            probs['angry'] *= 0.15
+            probs['sad'] *= 0.15
             probs['fear'] *= 0.15
 
-        # Rule 2: SAD (AU15 Frown detection: corners pulled down, mouth closed)
-        elif smile < -0.015 and mar < 0.20:
+        # Rule 2: SAD (AU15 Frown detection: corners pulled down, closed mouth)
+        elif is_true_frown or (raw_probs.get('sad', 0.0) > 35.0 and mar < 0.20 and not is_true_smile):
             probs['sad'] += 40.0
-            probs['happy'] *= 0.10
+            probs['happy'] *= 0.05
 
-        # Rule 3: SURPRISE vs FEAR DISAMBIGUATION (Addresses user's primary confusion)
-        # Surprise: Vertical jaw drop (high MAR > 0.32, O-shape mouth) + high arched eyebrows (brow_elev > 0.065)
-        if mar > 0.30 and brow_elev > 0.062:
-            boost_surprise = min(75.0, 50.0 * (mar / 0.38))
-            probs['surprise'] += boost_surprise
-            probs['fear'] *= 0.15       # Heavily suppress false fear!
-            probs['neutral'] *= 0.10
-        # Fear: Horizontal mouth stretch (mw_ratio > 0.38) + tense/wide eyes (ear > 0.27) with modest/wide MAR
-        elif mw_ratio > 0.38 and ear > 0.27 and brow_elev <= 0.065:
+        # Rule 3: ANGRY (AU4 Glabella furrowed brow + lowered brows OR very high CNN angry)
+        if (brow_knit < 0.22 or (raw_probs.get('angry', 0.0) > 65.0 and brow_knit < 0.24)) and not is_true_smile and mar < 0.25:
+            probs['angry'] += 40.0
+            probs['happy'] *= 0.05
+            probs['neutral'] *= 0.20
+        else:
+            # If brows are relaxed/normal (brow_knit >= 0.24), suppress false angry from resting faces!
+            if brow_knit >= 0.24:
+                probs['angry'] *= 0.20
+
+        # Rule 4: SURPRISE vs FEAR DISAMBIGUATION
+        # Surprise: Vertical jaw drop (high MAR > 0.30, O-shape mouth) + high arched eyebrows
+        if (mar > 0.30 and brow_elev > 0.062) or (raw_probs.get('surprise', 0.0) > 45.0 and mar > 0.25):
+            probs['surprise'] += 45.0
+            probs['fear'] *= 0.20       # Suppress false fear
+            probs['happy'] *= 0.05
+        # Fear: Horizontal mouth stretch (mw_ratio > 0.36) + wide tense eyes (ear > 0.28) OR strong CNN fear
+        elif (mw_ratio > 0.36 and ear > 0.27 and mar < 0.32) or raw_probs.get('fear', 0.0) > 35.0:
             probs['fear'] += 45.0
             probs['surprise'] *= 0.25   # Suppress false surprise
-
-        # Rule 4: ANGRY vs NEUTRAL DISAMBIGUATION (Addresses user's second confusion)
-        # Genuine Anger requires AU4 (knit/furrowed brows, brow_knit < 0.21) + lowered brows + closed mouth
-        if brow_knit < 0.21 and brow_elev < 0.050 and mar < 0.16:
-            probs['angry'] += 45.0
-            probs['neutral'] *= 0.25
-        else:
-            # If brows are relaxed/normal (brow_knit >= 0.23), REJECT false angry from resting faces!
-            if brow_knit >= 0.23:
-                probs['angry'] *= 0.20
+            probs['happy'] *= 0.05
 
         # Rule 5: STABLE RESTING NEUTRAL CONFIRMATION
         # When Action Units are at baseline (mouth closed, no smile/frown, brows relaxed and unknit)
-        if abs(smile) < 0.015 and mar < 0.15 and brow_knit >= 0.23 and (0.048 <= brow_elev <= 0.078):
-            probs['neutral'] += 35.0
+        if not is_true_smile and not is_true_frown and mar < 0.14 and brow_knit >= 0.23 and (0.048 <= brow_elev <= 0.078):
+            if raw_probs.get('neutral', 0.0) > 20.0 or (probs['angry'] < 30.0 and probs['happy'] < 30.0):
+                probs['neutral'] += 35.0
 
         # Normalize to 100%
         total = sum(probs.values())

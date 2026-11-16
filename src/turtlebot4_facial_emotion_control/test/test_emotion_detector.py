@@ -92,7 +92,7 @@ def test_fear_vs_surprise_disambiguation():
         'mouth_width_ratio': 0.32,
         'brow_knit': 0.26,
         'brow_elevation': 0.080,
-        'smile_score': 0.0,
+        'smile_elevation': -0.005,
         'ear': 0.34
     }
     refined_surprise = detector._disambiguate_emotions(raw, geom_surprise)
@@ -105,7 +105,7 @@ def test_fear_vs_surprise_disambiguation():
         'mouth_width_ratio': 0.42,
         'brow_knit': 0.22,
         'brow_elevation': 0.055,
-        'smile_score': -0.005,
+        'smile_elevation': -0.005,
         'ear': 0.30
     }
     refined_fear = detector._disambiguate_emotions(raw, geom_fear)
@@ -123,7 +123,7 @@ def test_angry_vs_neutral_disambiguation():
         'mouth_width_ratio': 0.28,
         'brow_knit': 0.26,           # Relaxed unknit brows
         'brow_elevation': 0.060,     # Normal height
-        'smile_score': 0.001,
+        'smile_elevation': 0.001,
         'ear': 0.25
     }
     refined_neutral = detector._disambiguate_emotions(raw_confused, geom_resting)
@@ -136,7 +136,7 @@ def test_angry_vs_neutral_disambiguation():
         'mouth_width_ratio': 0.28,
         'brow_knit': 0.18,           # Furrowed brows
         'brow_elevation': 0.040,     # Lowered brows
-        'smile_score': -0.008,
+        'smile_elevation': -0.008,
         'ear': 0.20
     }
     refined_angry = detector._disambiguate_emotions(raw_confused, geom_angry)
