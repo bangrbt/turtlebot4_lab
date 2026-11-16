@@ -78,3 +78,67 @@ def test_detector_smoothing_and_normalization():
         if res.face_detected:
             prob_sum = sum(res.probabilities.values())
             assert abs(prob_sum - 100.0) < 1.0
+
+
+def test_fear_vs_surprise_disambiguation():
+    """Verify that vertical jaw drop + arched brows strongly selects surprise over fear."""
+    detector = EmotionDetector(backend='auto')
+    # Ambiguous raw CNN output where fear > surprise
+    raw = {'happy': 5.0, 'sad': 5.0, 'neutral': 5.0, 'angry': 5.0, 'surprise': 35.0, 'fear': 45.0}
+
+    # Case A: Surprise face geometry (tall mouth MAR > 0.35, high brows)
+    geom_surprise = {
+        'mar': 0.45,
+        'mouth_width_ratio': 0.32,
+        'brow_knit': 0.26,
+        'brow_elevation': 0.080,
+        'smile_score': 0.0,
+        'ear': 0.34
+    }
+    refined_surprise = detector._disambiguate_emotions(raw, geom_surprise)
+    assert refined_surprise['surprise'] > refined_surprise['fear'] * 3.0, "Surprise must dominate with high MAR"
+    assert refined_surprise['surprise'] > 60.0
+
+    # Case B: Fear face geometry (horizontal mouth stretch, lower brow arch)
+    geom_fear = {
+        'mar': 0.22,
+        'mouth_width_ratio': 0.42,
+        'brow_knit': 0.22,
+        'brow_elevation': 0.055,
+        'smile_score': -0.005,
+        'ear': 0.30
+    }
+    refined_fear = detector._disambiguate_emotions(raw, geom_fear)
+    assert refined_fear['fear'] > refined_fear['surprise'], "Fear must dominate with horizontal stretch"
+
+
+def test_angry_vs_neutral_disambiguation():
+    """Verify that unknit/relaxed eyebrows suppress false angry and confirm neutral."""
+    detector = EmotionDetector(backend='auto')
+
+    # Case A: Resting face where CNN falsely outputs angry
+    raw_confused = {'happy': 5.0, 'sad': 10.0, 'neutral': 30.0, 'angry': 40.0, 'surprise': 5.0, 'fear': 10.0}
+    geom_resting = {
+        'mar': 0.08,
+        'mouth_width_ratio': 0.28,
+        'brow_knit': 0.26,           # Relaxed unknit brows
+        'brow_elevation': 0.060,     # Normal height
+        'smile_score': 0.001,
+        'ear': 0.25
+    }
+    refined_neutral = detector._disambiguate_emotions(raw_confused, geom_resting)
+    assert refined_neutral['neutral'] > refined_neutral['angry'] * 3.0, "Neutral must dominate on resting face"
+    assert refined_neutral['neutral'] > 50.0
+
+    # Case B: Genuine anger (furrowed brow knit < 0.21, low brow elevation)
+    geom_angry = {
+        'mar': 0.06,
+        'mouth_width_ratio': 0.28,
+        'brow_knit': 0.18,           # Furrowed brows
+        'brow_elevation': 0.040,     # Lowered brows
+        'smile_score': -0.008,
+        'ear': 0.20
+    }
+    refined_angry = detector._disambiguate_emotions(raw_confused, geom_angry)
+    assert refined_angry['angry'] > refined_angry['neutral'], "Angry must dominate with furrowed brows"
+

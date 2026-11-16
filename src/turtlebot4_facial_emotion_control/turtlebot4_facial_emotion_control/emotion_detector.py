@@ -135,7 +135,9 @@ class EmotionResult:
 
 
 class EmotionDetector:
-    """Robust Facial Emotion Detector with multi-tier engine support."""
+    """Robust Facial Emotion Detector with Multi-Modal CNN + Geometric Action Unit Fusion.
+    Solves ambiguity between Fear vs Surprise, and Angry vs Resting Neutral.
+    """
 
     def __init__(
         self,
@@ -144,14 +146,21 @@ class EmotionDetector:
         min_face_size: int = 60,
         confidence_threshold: float = 0.35,
         smooth_window: int = 5,
+        hysteresis_frames: int = 3,
     ):
         self.backend = backend
         self.min_face_size = min_face_size
         self.confidence_threshold = confidence_threshold
         self.smooth_window = max(1, smooth_window)
+        self.hysteresis_frames = max(1, hysteresis_frames)
 
         # History for temporal smoothing
         self._history: deque = deque(maxlen=self.smooth_window)
+
+        # Hysteresis state machine to prevent frame-to-frame jitter
+        self._stable_emotion: str = 'neutral'
+        self._candidate_emotion: str = 'neutral'
+        self._candidate_count: int = 0
 
         # 1. Face Detector: OpenCV Haar Cascade
         haardir = getattr(getattr(cv2, 'data', None), 'haarcascades', '')
@@ -196,7 +205,7 @@ class EmotionDetector:
         except Exception:
             self.onnx_session = None
 
-        # 3. MediaPipe fallback
+        # 3. High-precision MediaPipe FaceMesh for 3D Action Unit geometry
         self.mp_face_mesh = None
         try:
             import mediapipe as mp
@@ -231,15 +240,158 @@ class EmotionDetector:
         x, y, w, h = faces[0]
         return int(x), int(y), int(w), int(h)
 
+    def _extract_geometric_features(self, landmarks, img_w: int, img_h: int) -> Dict[str, float]:
+        """Extract scale-invariant Action Unit (AU) metrics from MediaPipe 468 landmarks."""
+        lm = landmarks
+        # Scale reference: Face Width (zygomatic arch) & Face Height
+        fw = max(1e-3, abs(lm[454].x - lm[234].x))
+        fh = max(1e-3, abs(lm[152].y - lm[10].y))
+
+        # 1. Mouth Aspect Ratio (MAR: AU26/AU27 jaw drop) & Mouth Width Ratio (AU20 horizontal stretch)
+        mw = max(1e-3, abs(lm[291].x - lm[61].x))
+        mh = abs(lm[14].y - lm[13].y)
+        mar = mh / mw
+        mouth_width_ratio = mw / fw
+
+        # 2. Inner Brow Knit (AU4 Corrugator supercilii - Glabella distance)
+        # In anger, inner brows pull tightly together -> brow_knit decreases significantly (< 0.22)
+        brow_knit = abs(lm[285].x - lm[55].x) / fw
+
+        # 3. Eyebrow Elevation relative to eyes (AU1 + AU2 Frontalis)
+        # In surprise, brows arch high (> 0.065); in anger, brows are lowered (< 0.048)
+        left_brow_dist = lm[159].y - lm[70].y
+        right_brow_dist = lm[386].y - lm[300].y
+        brow_elevation = (left_brow_dist + right_brow_dist) / (2.0 * fh)
+
+        # 4. Smile / Frown Score (AU12 Zygomaticus major vs AU15 Depressor anguli oris)
+        # Distance of mouth corners relative to center of lips
+        lip_center_y = (lm[0].y + lm[17].y) / 2.0
+        corners_y = (lm[61].y + lm[291].y) / 2.0
+        smile_score = (lip_center_y - corners_y) / fh
+
+        # 5. Eye Aspect Ratio (EAR: AU5 eye widener vs AU7 lid tightener)
+        left_ear = abs(lm[145].y - lm[159].y) / max(1e-3, abs(lm[133].x - lm[33].x))
+        right_ear = abs(lm[374].y - lm[386].y) / max(1e-3, abs(lm[263].x - lm[362].x))
+        ear = (left_ear + right_ear) / 2.0
+
+        return {
+            'mar': mar,
+            'mouth_width_ratio': mouth_width_ratio,
+            'brow_knit': brow_knit,
+            'brow_elevation': brow_elevation,
+            'smile_score': smile_score,
+            'ear': ear,
+        }
+
+    def _disambiguate_emotions(
+        self,
+        raw_probs: Dict[str, float],
+        geom: Optional[Dict[str, float]]
+    ) -> Dict[str, float]:
+        """Bi-modal fusion: refine CNN probabilities using Action Unit geometry."""
+        probs = dict(raw_probs)
+        if geom is None:
+            return probs
+
+        mar = geom.get('mar', 0.0)
+        mw_ratio = geom.get('mouth_width_ratio', 0.30)
+        brow_knit = geom.get('brow_knit', 0.25)
+        brow_elev = geom.get('brow_elevation', 0.06)
+        smile = geom.get('smile_score', 0.0)
+        ear = geom.get('ear', 0.25)
+
+        # Rule 1: HAPPY (AU12 Smile detection)
+        if smile > 0.020:
+            boost = min(60.0, 45.0 * (smile / 0.030))
+            probs['happy'] += boost
+            probs['angry'] *= 0.10
+            probs['sad'] *= 0.10
+            probs['fear'] *= 0.15
+
+        # Rule 2: SAD (AU15 Frown detection: corners pulled down, mouth closed)
+        elif smile < -0.015 and mar < 0.20:
+            probs['sad'] += 40.0
+            probs['happy'] *= 0.10
+
+        # Rule 3: SURPRISE vs FEAR DISAMBIGUATION (Addresses user's primary confusion)
+        # Surprise: Vertical jaw drop (high MAR > 0.32, O-shape mouth) + high arched eyebrows (brow_elev > 0.065)
+        if mar > 0.30 and brow_elev > 0.062:
+            boost_surprise = min(75.0, 50.0 * (mar / 0.38))
+            probs['surprise'] += boost_surprise
+            probs['fear'] *= 0.15       # Heavily suppress false fear!
+            probs['neutral'] *= 0.10
+        # Fear: Horizontal mouth stretch (mw_ratio > 0.38) + tense/wide eyes (ear > 0.27) with modest/wide MAR
+        elif mw_ratio > 0.38 and ear > 0.27 and brow_elev <= 0.065:
+            probs['fear'] += 45.0
+            probs['surprise'] *= 0.25   # Suppress false surprise
+
+        # Rule 4: ANGRY vs NEUTRAL DISAMBIGUATION (Addresses user's second confusion)
+        # Genuine Anger requires AU4 (knit/furrowed brows, brow_knit < 0.21) + lowered brows + closed mouth
+        if brow_knit < 0.21 and brow_elev < 0.050 and mar < 0.16:
+            probs['angry'] += 45.0
+            probs['neutral'] *= 0.25
+        else:
+            # If brows are relaxed/normal (brow_knit >= 0.23), REJECT false angry from resting faces!
+            if brow_knit >= 0.23:
+                probs['angry'] *= 0.20
+
+        # Rule 5: STABLE RESTING NEUTRAL CONFIRMATION
+        # When Action Units are at baseline (mouth closed, no smile/frown, brows relaxed and unknit)
+        if abs(smile) < 0.015 and mar < 0.15 and brow_knit >= 0.23 and (0.048 <= brow_elev <= 0.078):
+            probs['neutral'] += 35.0
+
+        # Normalize to 100%
+        total = sum(probs.values())
+        if total > 0:
+            return {k: round((v / total) * 100.0, 2) for k, v in probs.items()}
+        return probs
+
     def analyze(self, bgr_image: np.ndarray) -> EmotionResult:
-        """Analyze facial expression in frame and return EmotionResult."""
+        """Analyze facial expression with bi-modal CNN + Landmark fusion and hysteresis."""
         if bgr_image is None or bgr_image.size == 0:
             return EmotionResult(emotion='neutral', face_detected=False)
 
-        box = self.detect_face(bgr_image)
+        img_h, img_w = bgr_image.shape[:2]
+        geom_features: Optional[Dict[str, float]] = None
+        box: Optional[Tuple[int, int, int, int]] = None
+
+        # Step 1: Run MediaPipe FaceMesh to extract 3D landmarks & precise bounding box
+        if self.mp_face_mesh is not None:
+            try:
+                rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+                mesh_results = self.mp_face_mesh.process(rgb_image)
+                if mesh_results.multi_face_landmarks:
+                    lms = mesh_results.multi_face_landmarks[0].landmark
+                    geom_features = self._extract_geometric_features(lms, img_w, img_h)
+
+                    # Compute precise, jitter-free bounding box from landmarks
+                    xs = [l.x for l in lms]
+                    ys = [l.y for l in lms]
+                    min_x, max_x = min(xs) * img_w, max(xs) * img_w
+                    min_y, max_y = min(ys) * img_h, max(ys) * img_h
+                    bw = max_x - min_x
+                    bh = max_y - min_y
+
+                    # 12% margin
+                    pad_w, pad_h = 0.12 * bw, 0.12 * bh
+                    bx = int(max(0, min_x - pad_w))
+                    by = int(max(0, min_y - pad_h))
+                    bw = int(min(img_w - bx, bw + 2 * pad_w))
+                    bh = int(min(img_h - by, bh + 2 * pad_h))
+                    box = (bx, by, bw, bh)
+            except Exception:
+                geom_features = None
+
+        # Step 2: Fallback to OpenCV Haar Cascade if MediaPipe didn't produce a box
+        if box is None:
+            box = self.detect_face(bgr_image)
+
         if box is None:
             # No face detected
             self._history.clear()
+            self._stable_emotion = 'neutral'
+            self._candidate_emotion = 'neutral'
+            self._candidate_count = 0
             action, desc = ACTION_DESCRIPTIONS['neutral']
             return EmotionResult(
                 emotion='neutral',
@@ -255,36 +407,28 @@ class EmotionDetector:
             )
 
         x, y, w, h = box
-        img_h, img_w = bgr_image.shape[:2]
-
-        # Add 10% margin around face
-        pad_x = int(0.10 * w)
-        pad_y = int(0.10 * h)
-        x1 = max(0, x - pad_x)
-        y1 = max(0, y - pad_y)
-        x2 = min(img_w, x + w + pad_x)
-        y2 = min(img_h, y + h + pad_y)
-
-        face_roi = bgr_image[y1:y2, x1:x2]
+        face_roi = bgr_image[y:y+h, x:x+w]
         if face_roi.size == 0:
             return EmotionResult(face_detected=True, face_box=box)
 
-        # 1. Run ONNX Inference
-        probs_dict: Dict[str, float] = {}
+        # Step 3: Run DeepFace ONNX CNN with proper [0.0, 1.0] normalization
+        raw_probs: Dict[str, float] = {}
         if self.onnx_session is not None:
             try:
                 face_gray = cv2.cvtColor(face_roi, cv2.COLOR_BGR2GRAY)
+                # Histogram equalization to enhance local facial contrast
+                face_gray = cv2.equalizeHist(face_gray)
                 face_48 = cv2.resize(face_gray, (48, 48), interpolation=cv2.INTER_AREA)
-                blob = np.expand_dims(np.expand_dims(face_48, axis=0), axis=-1).astype(np.float32)
+
+                # CRITICAL: Normalize to [0.0, 1.0] float32 as trained by DeepFace
+                blob = (face_48.astype(np.float32) / 255.0)[np.newaxis, :, :, np.newaxis]
 
                 raw_out = self.onnx_session.run(None, {'input': blob})[0][0]
                 raw_dict = {label: float(val) for label, val in zip(ALL_MODEL_LABELS, raw_out)}
 
                 # Map disgust into angry
-                disgust_val = raw_dict.get('disgust', 0.0)
-                angry_val = raw_dict.get('angry', 0.0) + disgust_val
+                angry_val = raw_dict.get('angry', 0.0) + raw_dict.get('disgust', 0.0)
 
-                # Extract 6 target emotions
                 extracted = {
                     'happy': raw_dict.get('happy', 0.0),
                     'sad': raw_dict.get('sad', 0.0),
@@ -294,45 +438,60 @@ class EmotionDetector:
                     'fear': raw_dict.get('fear', 0.0),
                 }
 
-                # Normalize to percentages summing to 100%
                 total = sum(extracted.values())
                 if total > 0:
-                    probs_dict = {k: (v / total) * 100.0 for k, v in extracted.items()}
-                else:
-                    probs_dict = {k: (100.0 / 6.0) for k in TARGET_EMOTIONS}
+                    raw_probs = {k: (v / total) * 100.0 for k, v in extracted.items()}
             except Exception:
-                probs_dict = {}
+                raw_probs = {}
 
-        # 2. MediaPipe Landmark Geometry Fallback (if ONNX didn't produce results)
-        if not probs_dict and self.mp_face_mesh is not None:
-            probs_dict = self._mediapipe_geometry_fallback(bgr_image)
+        # Default distribution if ONNX failed
+        if not raw_probs:
+            raw_probs = {'neutral': 100.0, 'happy': 0.0, 'sad': 0.0, 'angry': 0.0, 'surprise': 0.0, 'fear': 0.0}
 
-        # 3. Default fallback if all fail
-        if not probs_dict:
-            probs_dict = {'neutral': 100.0, 'happy': 0.0, 'sad': 0.0, 'angry': 0.0, 'surprise': 0.0, 'fear': 0.0}
+        # Step 4: Multi-Modal Geometric Disambiguation
+        refined_probs = self._disambiguate_emotions(raw_probs, geom_features)
 
-        # Apply Temporal Smoothing
-        self._history.append(probs_dict)
+        # Step 5: Temporal Sliding Window Smoothing
+        self._history.append(refined_probs)
         smoothed_probs: Dict[str, float] = {}
         for emo in TARGET_EMOTIONS:
             smoothed_probs[emo] = float(np.mean([h[emo] for h in self._history]))
 
-        # Dominant emotion
-        dominant_emotion = max(smoothed_probs, key=smoothed_probs.get)
-        confidence = smoothed_probs[dominant_emotion] / 100.0
+        # Step 6: Hysteresis State Machine (Jitter-free state switching)
+        instant_dominant = max(smoothed_probs, key=smoothed_probs.get)
+        instant_prob = smoothed_probs[instant_dominant] / 100.0
+        current_prob = smoothed_probs.get(self._stable_emotion, 0.0) / 100.0
 
-        # Confidence gate: If confidence is too low or neutral dominates
+        if instant_dominant == self._stable_emotion:
+            self._candidate_emotion = instant_dominant
+            self._candidate_count = 0
+        else:
+            # If probability difference is very decisive (> 20% margin and > 60% confidence), switch faster
+            if instant_prob >= 0.60 and (instant_prob - current_prob) >= 0.20:
+                self._stable_emotion = instant_dominant
+                self._candidate_emotion = instant_dominant
+                self._candidate_count = 0
+            elif instant_dominant == self._candidate_emotion:
+                self._candidate_count += 1
+                if self._candidate_count >= self.hysteresis_frames:
+                    self._stable_emotion = instant_dominant
+                    self._candidate_count = 0
+            else:
+                self._candidate_emotion = instant_dominant
+                self._candidate_count = 1
+
+        chosen_emotion = self._stable_emotion
+        confidence = smoothed_probs[chosen_emotion] / 100.0
+
         if confidence < self.confidence_threshold:
-            dominant_emotion = 'neutral'
+            chosen_emotion = 'neutral'
 
-        action_name, action_desc = ACTION_DESCRIPTIONS[dominant_emotion]
-        vietnamese = EMOTION_VIETNAMESE[dominant_emotion]
-
-        # Velocity mapping
-        linear_x, angular_z = self._get_velocity_for_emotion(dominant_emotion)
+        action_name, action_desc = ACTION_DESCRIPTIONS[chosen_emotion]
+        vietnamese = EMOTION_VIETNAMESE[chosen_emotion]
+        linear_x, angular_z = self._get_velocity_for_emotion(chosen_emotion)
 
         return EmotionResult(
-            emotion=dominant_emotion,
+            emotion=chosen_emotion,
             vietnamese=vietnamese,
             confidence=confidence,
             probabilities=smoothed_probs,
