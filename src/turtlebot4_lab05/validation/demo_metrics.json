@@ -1,0 +1,27 @@
+{
+  "wall_duration_seconds": 162.338942527771,
+  "simulation_duration_seconds": 81.801,
+  "inference_ms_median": 116.12564999995811,
+  "inference_ms_p95": 156.55117539990894,
+  "observer_window_seconds": 172.28202390670776,
+  "goal_end_pose_errors_m": [
+    {
+      "goal": "Goal_1",
+      "amcl_position_error": 0.24579776523130914,
+      "truth_position_error": 0.21114677418187236,
+      "sample_time_difference_seconds": 0.13829898834228516
+    },
+    {
+      "goal": "Goal_2",
+      "amcl_position_error": 0.17371189998552228,
+      "truth_position_error": 0.30176948530254577,
+      "sample_time_difference_seconds": -0.14310336112976074
+    },
+    {
+      "goal": "Goal_3",
+      "amcl_position_error": 0.1779635948223367,
+      "truth_position_error": 0.07300711093140026,
+      "sample_time_difference_seconds": 0.08146977424621582
+    }
+  ]
+}

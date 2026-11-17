@@ -1,0 +1,224 @@
+[
+  {
+    "event": "mission_loaded",
+    "wall_time_unix": 1792048914.9942727,
+    "sim_time_ns": 0,
+    "state": "WAIT_READY",
+    "goal_index": 1,
+    "total": 3,
+    "waypoint_file": "/home/anhbang/turtlebot4_lab_ws/install/turtlebot4_lab05/share/turtlebot4_lab05/config/waypoints.yaml",
+    "goals": [
+      {
+        "name": "Goal_1",
+        "x": -1.1121399402618408,
+        "y": 0.31541872024536133,
+        "yaw": 3.128184615974512,
+        "source": "Lab04 NavigateToPose SUCCEEDED UUID c5c0d1b2b15b5f542f7be056856bfff4; evidence/navigation_20261011_232532/goals_summary.json"
+      },
+      {
+        "name": "Goal_2",
+        "x": 3.174917459487915,
+        "y": -3.194671392440796,
+        "yaw": 3.128184717680322,
+        "source": "Lab04 NavigateToPose SUCCEEDED UUID 19745ac8a283b74717d12f00fd990ec4; evidence/navigation_20261011_232532/goals_summary.json"
+      },
+      {
+        "name": "Goal_3",
+        "x": 3.615193822926026,
+        "y": 5.427634985033652,
+        "yaw": 0.25813537564075917,
+        "source": "Lab04 final AMCL map pose after SUCCEEDED UUID 4708934f3ab0fd436000c0d282d5625d; original planner endpoint lacked 0.25 m clearance with unknown preserved"
+      }
+    ],
+    "note": "Only Nav2 actions; no cmd_vel publisher; localization_confirmed required"
+  },
+  {
+    "event": "waiting",
+    "wall_time_unix": 1792048917.11634,
+    "sim_time_ns": 1067751000000,
+    "state": "WAIT_READY",
+    "goal_index": 1,
+    "total": 3,
+    "reason": "Waiting for map->odom->base_link TF"
+  },
+  {
+    "event": "readiness_passed",
+    "wall_time_unix": 1792048918.6430597,
+    "sim_time_ns": 1068600000000,
+    "state": "WAIT_READY",
+    "goal_index": 1,
+    "total": 3
+  },
+  {
+    "event": "goal_sent",
+    "wall_time_unix": 1792048918.647314,
+    "sim_time_ns": 1068600000000,
+    "state": "SENDING",
+    "goal_index": 1,
+    "total": 3,
+    "name": "Goal_1",
+    "target": {
+      "name": "Goal_1",
+      "x": -1.1121399402618408,
+      "y": 0.31541872024536133,
+      "yaw": 3.128184615974512,
+      "source": "Lab04 NavigateToPose SUCCEEDED UUID c5c0d1b2b15b5f542f7be056856bfff4; evidence/navigation_20261011_232532/goals_summary.json"
+    },
+    "attempt": 1
+  },
+  {
+    "event": "goal_accepted",
+    "wall_time_unix": 1792048918.6587434,
+    "sim_time_ns": 1068609000000,
+    "state": "RUNNING",
+    "goal_index": 1,
+    "total": 3,
+    "goal_uuid": "458ca4bc94d243da8099abe6bf6aece9"
+  },
+  {
+    "event": "goal_result",
+    "wall_time_unix": 1792048925.4269788,
+    "sim_time_ns": 1071972000000,
+    "state": "RUNNING",
+    "goal_index": 1,
+    "total": 3,
+    "name": "Goal_1",
+    "status": 4,
+    "goal_uuid": "458ca4bc94d243da8099abe6bf6aece9",
+    "cancel_reason": null
+  },
+  {
+    "event": "goal_succeeded",
+    "wall_time_unix": 1792048925.4299884,
+    "sim_time_ns": 1071972000000,
+    "state": "DWELL",
+    "goal_index": 2,
+    "total": 3,
+    "completed": 1,
+    "dwell_seconds": 8.0
+  },
+  {
+    "event": "waiting_between_goals",
+    "wall_time_unix": 1792048933.5434558,
+    "sim_time_ns": 1076400000000,
+    "state": "DWELL",
+    "goal_index": 2,
+    "total": 3,
+    "reason": "amcl not confirmed active"
+  },
+  {
+    "event": "goal_sent",
+    "wall_time_unix": 1792048933.7443001,
+    "sim_time_ns": 1076502000000,
+    "state": "SENDING",
+    "goal_index": 2,
+    "total": 3,
+    "name": "Goal_2",
+    "target": {
+      "name": "Goal_2",
+      "x": 3.174917459487915,
+      "y": -3.194671392440796,
+      "yaw": 3.128184717680322,
+      "source": "Lab04 NavigateToPose SUCCEEDED UUID 19745ac8a283b74717d12f00fd990ec4; evidence/navigation_20261011_232532/goals_summary.json"
+    },
+    "attempt": 1
+  },
+  {
+    "event": "goal_accepted",
+    "wall_time_unix": 1792048933.755902,
+    "sim_time_ns": 1076511000000,
+    "state": "RUNNING",
+    "goal_index": 2,
+    "total": 3,
+    "goal_uuid": "3bc5b982b32f4590aeb9762862026fb5"
+  },
+  {
+    "event": "goal_result",
+    "wall_time_unix": 1792048986.07309,
+    "sim_time_ns": 1103682000000,
+    "state": "RUNNING",
+    "goal_index": 2,
+    "total": 3,
+    "name": "Goal_2",
+    "status": 4,
+    "goal_uuid": "3bc5b982b32f4590aeb9762862026fb5",
+    "cancel_reason": null
+  },
+  {
+    "event": "goal_succeeded",
+    "wall_time_unix": 1792048986.0761995,
+    "sim_time_ns": 1103682000000,
+    "state": "DWELL",
+    "goal_index": 3,
+    "total": 3,
+    "completed": 2,
+    "dwell_seconds": 8.0
+  },
+  {
+    "event": "waiting_between_goals",
+    "wall_time_unix": 1792048994.2755535,
+    "sim_time_ns": 1108101000000,
+    "state": "DWELL",
+    "goal_index": 3,
+    "total": 3,
+    "reason": "amcl not confirmed active"
+  },
+  {
+    "event": "goal_sent",
+    "wall_time_unix": 1792048994.4466624,
+    "sim_time_ns": 1108200000000,
+    "state": "SENDING",
+    "goal_index": 3,
+    "total": 3,
+    "name": "Goal_3",
+    "target": {
+      "name": "Goal_3",
+      "x": 3.615193822926026,
+      "y": 5.427634985033652,
+      "yaw": 0.25813537564075917,
+      "source": "Lab04 final AMCL map pose after SUCCEEDED UUID 4708934f3ab0fd436000c0d282d5625d; original planner endpoint lacked 0.25 m clearance with unknown preserved"
+    },
+    "attempt": 1
+  },
+  {
+    "event": "goal_accepted",
+    "wall_time_unix": 1792048994.4558718,
+    "sim_time_ns": 1108209000000,
+    "state": "RUNNING",
+    "goal_index": 3,
+    "total": 3,
+    "goal_uuid": "3b94aceb424747c1aa8e8f00309c6094"
+  },
+  {
+    "event": "goal_result",
+    "wall_time_unix": 1792049072.8512383,
+    "sim_time_ns": 1146534000000,
+    "state": "RUNNING",
+    "goal_index": 3,
+    "total": 3,
+    "name": "Goal_3",
+    "status": 4,
+    "goal_uuid": "3b94aceb424747c1aa8e8f00309c6094",
+    "cancel_reason": null
+  },
+  {
+    "event": "goal_succeeded",
+    "wall_time_unix": 1792049072.8557038,
+    "sim_time_ns": 1146534000000,
+    "state": "DWELL",
+    "goal_index": 4,
+    "total": 3,
+    "completed": 3,
+    "dwell_seconds": 8.0
+  },
+  {
+    "event": "mission_completed",
+    "wall_time_unix": 1792049080.9862566,
+    "sim_time_ns": 1150401000000,
+    "state": "DONE",
+    "goal_index": 4,
+    "total": 3,
+    "yolo_interrupted": false,
+    "completed": 3
+  }
+]

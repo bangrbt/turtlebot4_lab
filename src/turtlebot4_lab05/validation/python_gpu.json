@@ -1,0 +1,10 @@
+{
+  "python": "/home/anhbang/turtlebot4_lab_ws/.venv_yolo/bin/python",
+  "torch": "2.5.1+cu121",
+  "torch_cuda": "12.1",
+  "cuda_available": true,
+  "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+  "opencv": "4.10.0",
+  "ultralytics": "8.3.221",
+  "cuda_tensor_device": "cuda:0"
+}

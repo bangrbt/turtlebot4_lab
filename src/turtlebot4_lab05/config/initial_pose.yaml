@@ -1,0 +1,11 @@
+validated: true
+frame_id: map
+world_map_alignment_verified: true
+source: Lab04 saved map aligned with maze SDF landmarks; map/ground-truth pose checks
+  in navigation_20261011_232532. Configured pose is the measured post-undock pose;
+  do not assume yaw=0.
+pose:
+  x: -0.35274612130488825
+  y: 0.0
+  yaw: -2.946290403232828
+map_image_sha256: 3703cf26d1c6d7b7e6e65b40dc2d4e54419bf533e4fd401e12f88c8037153d37

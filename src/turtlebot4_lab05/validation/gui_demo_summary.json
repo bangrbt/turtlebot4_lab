@@ -1,0 +1,106 @@
+{
+  "counts": {
+    "raw": 2600,
+    "annotated": 555,
+    "header_matches": 554,
+    "inference_while_moving": 451
+  },
+  "goal_results": [
+    {
+      "event": "goal_result",
+      "wall_time_unix": 1792076530.2359385,
+      "sim_time_ns": 122001000000,
+      "state": "RUNNING",
+      "goal_index": 1,
+      "total": 3,
+      "name": "Goal_1",
+      "status": 4,
+      "goal_uuid": "e31eed98b33d42c9bb9f672448cf2200",
+      "cancel_reason": null
+    },
+    {
+      "event": "goal_result",
+      "wall_time_unix": 1792076594.4580152,
+      "sim_time_ns": 153540000000,
+      "state": "RUNNING",
+      "goal_index": 2,
+      "total": 3,
+      "name": "Goal_2",
+      "status": 4,
+      "goal_uuid": "5f1207d020f64745bfa24a02c54f98b8",
+      "cancel_reason": null
+    },
+    {
+      "event": "goal_result",
+      "wall_time_unix": 1792076681.1985452,
+      "sim_time_ns": 195657000000,
+      "state": "RUNNING",
+      "goal_index": 3,
+      "total": 3,
+      "name": "Goal_3",
+      "status": 4,
+      "goal_uuid": "69714f9835aa4b21a0c5f6fc2b76d88f",
+      "cancel_reason": null
+    }
+  ],
+  "mission_completed": true,
+  "max_confidence": {
+    "horse": 0.9464356899261475,
+    "chair": 0.9104162454605103,
+    "person": 0.8316976428031921,
+    "dog": 0.6773702502250671
+  },
+  "actual_model_devices": [
+    "cuda:0"
+  ],
+  "hazard_types_observed": [
+    0
+  ],
+  "bump_cliff_stall_wheel_drop_observed": false,
+  "final_state": {
+    "odom": {
+      "pose": {
+        "x": 3.4194902343725158,
+        "y": 6.856664710713665,
+        "yaw": 0.6149560351290837
+      },
+      "linear_x": -1.528248028430776e-15,
+      "angular_z": -1.617124409170277e-15
+    },
+    "truth": {
+      "x": 3.528003834683414,
+      "y": 5.4067633084881015,
+      "yaw": 0.5703141877587894
+    },
+    "amcl": {
+      "x": 3.5870616268087603,
+      "y": 5.239436037540922,
+      "yaw": 0.6573981148052295
+    },
+    "status": {
+      "event": "mission_completed",
+      "wall_time_unix": 1792076689.2592235,
+      "sim_time_ns": 199905000000,
+      "state": "DONE",
+      "goal_index": 4,
+      "total": 3,
+      "yolo_interrupted": false,
+      "completed": 3
+    },
+    "yolo": {
+      "state": "ready",
+      "device": "cuda:0",
+      "cuda": true,
+      "actual_model_device": "cuda:0",
+      "frames": 584,
+      "camera_topic": "/oakd/rgb/preview/image_raw",
+      "camera_age_wall_s": 0.05913354699998763,
+      "last_success_age_wall_s": 0.04770466499996928,
+      "inference_ms": 130.78240599998026,
+      "average_fps": 3.0930922666635077,
+      "error": null
+    },
+    "hazards": []
+  },
+  "scope": "Read-only live simulation observations, no velocity or action publisher; no general collision-avoidance guarantee."
+}

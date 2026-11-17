@@ -1,0 +1,82 @@
+{
+  "passed": true,
+  "map_image_sha256": "3703cf26d1c6d7b7e6e65b40dc2d4e54419bf533e4fd401e12f88c8037153d37",
+  "world_sdf_sha256": "f8efe4e456e4152ed94d330e5c52a168b7acbbfb759bc589bd8d2d092f1e62d2",
+  "minimum_wall_gap_m": 0.35,
+  "minimum_object_gap_m": 0.6,
+  "objects": [
+    {
+      "name": "lab05_person",
+      "asset": "person",
+      "x": -3.0,
+      "y": 3.3,
+      "radius": 0.42,
+      "map_body_gap_m": 1.594644660940673,
+      "world_wall_body_gap_m": 1.58
+    },
+    {
+      "name": "lab05_horse",
+      "asset": "horse",
+      "x": -2.6,
+      "y": 0.1,
+      "radius": 0.6,
+      "map_body_gap_m": 1.1450940424171585,
+      "world_wall_body_gap_m": 1.1804493814764854
+    },
+    {
+      "name": "lab05_chair_1",
+      "asset": "chair",
+      "x": -3.9,
+      "y": 1.3,
+      "radius": 0.5,
+      "map_body_gap_m": 0.5146446609406726,
+      "world_wall_body_gap_m": 0.6000000000000001
+    },
+    {
+      "name": "lab05_chair_2",
+      "asset": "chair",
+      "x": 6.3,
+      "y": -2.1,
+      "radius": 0.5,
+      "map_body_gap_m": 1.4646446609406727,
+      "world_wall_body_gap_m": 1.4
+    },
+    {
+      "name": "lab05_bicycle",
+      "asset": "bicycle",
+      "x": 2.1,
+      "y": -2.85,
+      "radius": 0.6800735254367722,
+      "map_body_gap_m": 0.3845711355039005,
+      "world_wall_body_gap_m": 0.41992647456322785
+    },
+    {
+      "name": "lab05_fire_hydrant",
+      "asset": "fire_hydrant",
+      "x": 1.5,
+      "y": 0.0,
+      "radius": 0.25,
+      "map_body_gap_m": 0.7658344630221047,
+      "world_wall_body_gap_m": 0.8680339887498949
+    },
+    {
+      "name": "lab05_oak_tree",
+      "asset": "oak_tree",
+      "x": 2.5,
+      "y": 3.25,
+      "radius": 0.3535533905932738,
+      "map_body_gap_m": 1.011091270347399,
+      "world_wall_body_gap_m": 1.1464466094067263
+    },
+    {
+      "name": "lab05_chair_3",
+      "asset": "chair",
+      "x": 4.5,
+      "y": -3.2,
+      "radius": 0.5,
+      "map_body_gap_m": 0.4708752508155782,
+      "world_wall_body_gap_m": 0.44339811320566025
+    }
+  ],
+  "scope": "Conservative enclosing XY disks; known-free map including unknown and actual maze wall boxes; not a navigation/collision guarantee."
+}
